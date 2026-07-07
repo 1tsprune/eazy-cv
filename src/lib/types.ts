@@ -7,12 +7,29 @@ export type CvProfile = "professional" | "internship" | "student";
 
 export type ModernTemplate =
   | "elegant"
-  | "minimal"
   | "professional"
   | "executive"
   | "creative"
   | "compact"
   | "academic";
+
+const MODERN_TEMPLATES: ModernTemplate[] = [
+  "elegant",
+  "professional",
+  "executive",
+  "creative",
+  "compact",
+  "academic",
+];
+
+/** Map legacy/invalid template ids (e.g. removed `minimal`) → safe default. */
+export function normalizeModernTemplate(value?: string): ModernTemplate {
+  if (value === "minimal") return "elegant";
+  if (MODERN_TEMPLATES.includes(value as ModernTemplate)) {
+    return value as ModernTemplate;
+  }
+  return "elegant";
+}
 
 export type ColorTheme =
   | "indigo"

@@ -67,6 +67,13 @@ function createStyles() {
       color: "#000000",
       textDecoration: "none",
     },
+    summary: {
+      fontSize: 10,
+      color: "#000000",
+      lineHeight: 1.35,
+      textAlign: "justify",
+      marginBottom: s.sectionGap,
+    },
     section: {
       marginTop: s.sectionGap,
     },
@@ -206,9 +213,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
         <AtsContact data={data} styles={styles} />
 
         {personal.summary ? (
-          <AtsSection title={t(lang, "summary")} styles={styles}>
-            <Text style={styles.body}>{personal.summary}</Text>
-          </AtsSection>
+          <Text style={styles.summary}>{personal.summary}</Text>
         ) : null}
 
         {data.experiences.length > 0 ? (

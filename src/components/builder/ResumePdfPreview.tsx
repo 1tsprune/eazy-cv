@@ -16,14 +16,10 @@ const DOWNLOAD_SECONDS = 10;
 const PREVIEW_DEBOUNCE_MS = 300;
 
 interface Props {
-  wysiwygHint?: string;
   showToolbar?: boolean;
 }
 
-export function ResumePdfPreview({
-  wysiwygHint,
-  showToolbar = true,
-}: Props) {
+export function ResumePdfPreview({ showToolbar = true }: Props) {
   const { data, config } = useResume();
   const { blob, loading, error, waitForBlob } = useResumePdf();
   const { uiLocale } = useTheme();
@@ -36,7 +32,6 @@ export function ResumePdfPreview({
   const [progress, setProgress] = useState(0);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const hint = wysiwygHint ?? t.previewWysiwyg;
   // display width = container minus the p-3 padding (12px each side)
   const displayWidth = Math.max(0, Math.round(containerWidth) - 24);
 
@@ -116,18 +111,6 @@ export function ResumePdfPreview({
 
   return (
     <div className="relative w-full">
-      <div className="mb-1 flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-500 shadow-sm ring-1 ring-zinc-200/60 dark:bg-zinc-800/90 dark:text-zinc-400 dark:ring-zinc-700">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-          A4
-        </span>
-        {hint ? (
-          <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-400 dark:ring-emerald-900/60">
-            {hint}
-          </span>
-        ) : null}
-      </div>
-
       <div className="overflow-hidden rounded-lg bg-white text-zinc-900 shadow-lg ring-1 ring-black/5">
         {showToolbar ? (
           <div className="flex items-center justify-end gap-2 border-b border-zinc-200 px-3 py-2">

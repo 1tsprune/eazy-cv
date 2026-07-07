@@ -27,7 +27,6 @@ import { PreviewPaper } from "./PreviewPaper";
 interface Props {
   data: ResumeData;
   config: ResumeConfig;
-  wysiwygHint?: string;
 }
 
 function ContactRow({
@@ -52,7 +51,7 @@ function ContactRow({
   );
 }
 
-export function ResumePreview({ data, config, wysiwygHint }: Props) {
+export function ResumePreview({ data, config }: Props) {
   const colors = themeColors[config.colorTheme];
   const lang = config.language;
   const isAts = config.exportMode === "ats";
@@ -358,7 +357,7 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
   );
 
   return (
-    <PreviewPaper showBadge={isAts} wysiwygHint={isAts ? wysiwygHint : undefined}>
+    <PreviewPaper>
       <div style={docStyle}>{pageBody}</div>
     </PreviewPaper>
   );
@@ -373,7 +372,7 @@ function PreviewSections({
 }: {
   data: ResumeData;
   config: ResumeConfig;
-  colors: { primary: string; light: string };
+  colors: { primary: string; light: string; text: string; border: string };
   ty: ReturnType<typeof getPreviewTypography>;
   ats: AtsPreviewMetrics | null;
 }) {
@@ -751,7 +750,8 @@ function PreviewSections({
                       style={{
                         fontSize: ty.sizes.xs,
                         backgroundColor: colors.light,
-                        color: colors.primary,
+                        color: colors.text,
+                        border: `1px solid ${colors.border}`,
                       }}
                     >
                       {s}
@@ -771,7 +771,8 @@ function PreviewSections({
                       style={{
                         fontSize: ty.sizes.xs,
                         backgroundColor: colors.light,
-                        color: colors.primary,
+                        color: colors.text,
+                        border: `1px solid ${colors.border}`,
                       }}
                     >
                       {s}

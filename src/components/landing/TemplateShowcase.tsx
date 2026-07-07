@@ -9,12 +9,6 @@ const templates = [
     color: "indigo" as const,
   },
   {
-    id: "minimal",
-    name: "Minimal",
-    desc: "Tipografi besar, whitespace luas — clean & premium",
-    color: "slate" as const,
-  },
-  {
     id: "professional",
     name: "Professional",
     desc: "Sidebar berwarna — ideal untuk tech & corporate",

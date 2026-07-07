@@ -29,7 +29,6 @@ const PDFDownload = dynamic(
 
 const templates: { id: ModernTemplate; label: string }[] = [
   { id: "elegant", label: "Elegant" },
-  { id: "minimal", label: "Minimal" },
   { id: "professional", label: "Professional" },
   { id: "executive", label: "Executive" },
   { id: "creative", label: "Creative" },

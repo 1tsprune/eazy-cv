@@ -7,7 +7,12 @@ import {
   syncLegacySkills,
 } from "./skill-groups";
 import { DEFAULT_TYPOGRAPHY, normalizeFontFamily } from "./typography";
-import { DEFAULT_SECTION_ORDER, type ResumeState, type SectionKey } from "./types";
+import {
+  DEFAULT_SECTION_ORDER,
+  normalizeModernTemplate,
+  type ResumeState,
+  type SectionKey,
+} from "./types";
 
 const STORAGE_KEY = `${APP.slug}-resume-v1`;
 const LEGACY_STORAGE_KEYS = ["cvcepat-resume-v1", "cvforge-resume-v1"];
@@ -50,6 +55,7 @@ function normalizeState(parsed: ResumeState): ResumeState {
       fontFamily: normalizeFontFamily(parsed.config?.fontFamily),
       fontSize: parsed.config?.fontSize ?? DEFAULT_TYPOGRAPHY.fontSize,
       fontBold: parsed.config?.fontBold ?? DEFAULT_TYPOGRAPHY.fontBold,
+      template: normalizeModernTemplate(parsed.config?.template),
     },
     coverLetter: {
       ...defaultResumeState.coverLetter,

@@ -92,9 +92,6 @@ const dict = {
     privacyDesc:
       "Gak masuk database, gak ke server. Semua tersimpan lokal di perangkat kamu.",
     previewTitle: "Preview CV",
-    previewWysiwyg: "Preview sama dengan PDF",
-    sampleDataBanner:
-      "Ini data contoh supaya kamu lihat bentuk CV-nya. Ganti semua dengan info kamu sendiri.",
 
     scoreTitle: "Skor ATS",
     atsTipsTitle: "Yang perlu dilengkapi",
@@ -275,9 +272,6 @@ const dict = {
     privacyDesc:
       "No database, no server. Everything is stored locally on your device.",
     previewTitle: "CV Preview",
-    previewWysiwyg: "Preview matches PDF download",
-    sampleDataBanner:
-      "This is sample data so you can see how the CV looks. Replace everything with your own info.",
 
     scoreTitle: "ATS Score",
     atsTipsTitle: "What to complete",

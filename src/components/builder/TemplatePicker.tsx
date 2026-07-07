@@ -14,7 +14,6 @@ const MODERN_TEMPLATES: {
   color: keyof typeof themeColors;
 }[] = [
   { id: "elegant", label: "Elegant", color: "indigo" },
-  { id: "minimal", label: "Minimal", color: "slate" },
   { id: "professional", label: "Professional", color: "emerald" },
   { id: "executive", label: "Executive", color: "violet" },
   { id: "creative", label: "Creative", color: "rose" },

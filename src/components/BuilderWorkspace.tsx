@@ -7,15 +7,15 @@ import {
   BuilderBottomNav,
   type BuilderTab,
 } from "@/components/builder/BuilderBottomNav";
+import { CvTipsButton } from "@/components/builder/CvTipsButton";
 import { CvTipsDrawer } from "@/components/builder/CvTipsDrawer";
-import { CvTipsFab } from "@/components/builder/CvTipsFab";
 import { ResumeForm } from "@/components/builder/ResumeForm";
 import { ResumePdfPreview } from "@/components/builder/ResumePdfPreview";
 import { CoverLetterForm } from "@/components/builder/CoverLetterForm";
 import { CoverLetterPreview } from "@/components/builder/CoverLetterPreview";
 import { QuickActions } from "@/components/builder/QuickActions";
 import { PreviewDesk } from "@/components/builder/PreviewDesk";
-import { SampleDataBanner } from "@/components/builder/SampleDataBanner";
+
 import { TemplatePicker } from "@/components/builder/TemplatePicker";
 import { WelcomePanel } from "@/components/builder/WelcomePanel";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
@@ -68,6 +68,18 @@ export function BuilderWorkspace() {
   const showMobileCvPreview = !showCover && tab === "preview";
   const showMobileCoverPreview = showCover;
 
+  const actionBar = (
+    <div className="flex items-center justify-between gap-4">
+      <QuickActions
+        showCover={showCover}
+        onToggleCover={() => setShowCover((v) => !v)}
+      />
+      {!showCover ? (
+        <CvTipsButton onClick={() => setTipsOpen(true)} />
+      ) : null}
+    </div>
+  );
+
   return (
     <div className="bg-zinc-50 dark:bg-zinc-950">
       <div className="border-b border-zinc-200 px-4 py-2 md:hidden dark:border-zinc-800">
@@ -90,18 +102,18 @@ export function BuilderWorkspace() {
         </div>
       ) : null}
 
-      <div className="mx-auto hidden max-w-screen-2xl items-start gap-4 p-4 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
-        <div className="space-y-4">
+      {/* Desktop */}
+      <div className="mx-auto hidden max-w-screen-2xl gap-x-4 gap-y-3 p-4 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+        <div className="col-span-2">
           <PrivacyBadge variant="subtle" />
-          <QuickActions
-            showCover={showCover}
-            onToggleCover={() => setShowCover((v) => !v)}
-          />
+        </div>
+
+        <div className="space-y-4">
+          {actionBar}
           {showCover ? (
             <CoverLetterForm />
           ) : (
             <>
-              <SampleDataBanner />
               <WelcomePanel />
               <TemplatePicker />
               <SectionOrderPanel />
@@ -145,18 +157,16 @@ export function BuilderWorkspace() {
         </div>
       </div>
 
+      {/* Mobile */}
       <div className="mx-auto min-w-0 max-w-full space-y-4 overflow-x-hidden p-3 pb-20 md:hidden sm:p-4 sm:pb-20">
+        <div className="px-0">{actionBar}</div>
+
         {showMobileLeft && (
           <div className="space-y-4">
-            <QuickActions
-              showCover={showCover}
-              onToggleCover={() => setShowCover((v) => !v)}
-            />
             {showCover ? (
               <CoverLetterForm />
             ) : (
               <>
-                <SampleDataBanner />
                 <WelcomePanel />
                 <TemplatePicker />
                 <SectionOrderPanel />
@@ -202,19 +212,19 @@ export function BuilderWorkspace() {
       </div>
 
       {!showCover ? (
-        <>
-          <BuilderBottomNav
-            tab={tab}
-            onTabChange={setTab}
-            labels={bottomNavLabels}
-          />
-          <CvTipsFab onClick={() => setTipsOpen(true)} />
-          <CvTipsDrawer
-            open={tipsOpen}
-            onClose={() => setTipsOpen(false)}
-            onFixCheck={handleFixCheck}
-          />
-        </>
+        <BuilderBottomNav
+          tab={tab}
+          onTabChange={setTab}
+          labels={bottomNavLabels}
+        />
+      ) : null}
+
+      {!showCover ? (
+        <CvTipsDrawer
+          open={tipsOpen}
+          onClose={() => setTipsOpen(false)}
+          onFixCheck={handleFixCheck}
+        />
       ) : null}
     </div>
   );

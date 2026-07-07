@@ -55,7 +55,10 @@ function ContactLine({
   );
 }
 
-function baseStyles(tk: ReturnType<typeof getPdfSheetTokens>, colors?: { primary: string; light: string }): ModernPdfStyles {
+function baseStyles(
+  tk: ReturnType<typeof getPdfSheetTokens>,
+  colors?: { primary: string; light: string; text: string; border: string },
+): ModernPdfStyles {
   return {
     sectionTitle: {
       fontSize: tk.md,
@@ -75,7 +78,9 @@ function baseStyles(tk: ReturnType<typeof getPdfSheetTokens>, colors?: { primary
     tag: colors
       ? {
           backgroundColor: colors.light,
-          color: colors.primary,
+          color: colors.text,
+          borderWidth: 1,
+          borderColor: colors.border,
           paddingHorizontal: 6,
           paddingVertical: 2,
           borderRadius: 3,
@@ -225,87 +230,6 @@ function ProfessionalTemplate({ data, config }: Props) {
             }}
           />
         </View>
-      </Page>
-    </Document>
-  );
-}
-
-function MinimalTemplate({ data, config }: Props) {
-  const lang = config.language;
-  const { personal } = data;
-  const showPhoto = shouldShowPhoto(config, data);
-  const tk = getPdfSheetTokens(config);
-  const body = baseStyles(tk);
-
-  const styles = StyleSheet.create({
-    page: {
-      padding: MODERN_PAD_PT,
-      paddingBottom: PDF_MAIN_BOTTOM_PAD,
-      fontFamily: tk.fontFamily,
-      fontSize: tk.base,
-      lineHeight: tk.lh,
-      color: "#1a1a1a",
-    },
-    name: {
-      fontSize: tk.display,
-      fontFamily: tk.headingFamily,
-      letterSpacing: -0.5,
-      marginBottom: 4,
-    },
-    title: { fontSize: tk.md, color: "#888888", marginBottom: 8 },
-    contact: { fontSize: tk.xs, color: "#666666", marginBottom: 6 },
-    headerRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
-      marginBottom: 8,
-    },
-    photo: { width: 64, height: 64, borderRadius: 32, marginLeft: 12 },
-    sectionTitle: {
-      fontSize: tk.xs,
-      fontFamily: tk.headingFamily,
-      color: "#999",
-      letterSpacing: 2,
-      marginTop: 16,
-      marginBottom: 8,
-      textTransform: "uppercase",
-    },
-  });
-
-  const minimalBody: ModernPdfStyles = {
-    ...body,
-    sectionTitle: styles.sectionTitle,
-  };
-
-  return (
-    <Document>
-      <Page size="A4" style={styles.page} wrap>
-        <View style={styles.headerRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
-            {personal.title ? (
-              <Text style={styles.title}>{personal.title}</Text>
-            ) : null}
-          </View>
-          {showPhoto ? (
-            <PdfPhoto src={personal.photo} style={styles.photo} />
-          ) : null}
-        </View>
-        <ContactLine data={data} style={styles.contact} />
-        {personal.summary ? (
-          <>
-            <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
-            <Text style={{ fontSize: tk.sm, lineHeight: 1.5 }}>
-              {personal.summary}
-            </Text>
-          </>
-        ) : null}
-        <PdfModernBody
-          data={data}
-          config={config}
-          styles={minimalBody}
-          options={{ experienceLayout: "row" }}
-        />
       </Page>
     </Document>
   );
@@ -557,7 +481,9 @@ function CreativeTemplate({ data, config }: Props) {
     sectionTitle: styles.sectionTitle,
     tag: {
       backgroundColor: colors.light,
-      color: colors.primary,
+      color: colors.text,
+      borderWidth: 1,
+      borderColor: colors.border,
       paddingHorizontal: 8,
       paddingVertical: 3,
       borderRadius: 10,
@@ -790,13 +716,12 @@ function AcademicTemplate({ data, config }: Props) {
 export default function ModernResumeDocument({ data, config }: Props) {
   const templates: Record<ModernTemplate, FC<Props>> = {
     elegant: ElegantTemplate,
-    minimal: MinimalTemplate,
     professional: ProfessionalTemplate,
     executive: ExecutiveTemplate,
     creative: CreativeTemplate,
     compact: CompactTemplate,
     academic: AcademicTemplate,
   };
-  const Template = templates[config.template];
+  const Template = templates[config.template] ?? ElegantTemplate;
   return <Template data={data} config={config} />;
 }

@@ -17,6 +17,16 @@ type Props = {
   onFixCheck?: (checkId: string, scrollTarget: string) => void;
 };
 
+function progressTone(passed: number, total: number) {
+  if (passed === total) {
+    return "bg-emerald-100 text-emerald-900 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-200 dark:ring-emerald-800";
+  }
+  if (passed === 0) {
+    return "bg-rose-100 text-rose-900 ring-rose-200 dark:bg-rose-950 dark:text-rose-200 dark:ring-rose-800";
+  }
+  return "bg-amber-100 text-amber-900 ring-amber-200 dark:bg-amber-950 dark:text-amber-100 dark:ring-amber-800";
+}
+
 function CategoryBlock({
   category,
   expanded,
@@ -38,37 +48,40 @@ function CategoryBlock({
   let lastGroup: string | undefined;
 
   return (
-    <div className="border-b border-zinc-100 last:border-0 dark:border-zinc-800">
+    <section className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between gap-3 py-4 text-left"
+        className="flex w-full items-start justify-between gap-3 px-4 py-4 text-left transition hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
       >
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-zinc-900 dark:text-white">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-base font-bold leading-tight text-zinc-950 dark:text-white">
               {category.title}
             </span>
-            <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-              {category.passedCount} / {category.totalCount}
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-xs font-bold tabular-nums ring-1 ${progressTone(category.passedCount, category.totalCount)}`}
+            >
+              {category.passedCount}/{category.totalCount}
             </span>
           </div>
-          <p className="mt-1 text-[11px] leading-snug text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
             {category.description}
           </p>
         </div>
         {expanded ? (
-          <ChevronUp className="h-4 w-4 shrink-0 text-zinc-400" />
+          <ChevronUp className="mt-1 h-5 w-5 shrink-0 text-zinc-500" />
         ) : (
-          <ChevronDown className="h-4 w-4 shrink-0 text-zinc-400" />
+          <ChevronDown className="mt-1 h-5 w-5 shrink-0 text-zinc-500" />
         )}
       </button>
 
       {expanded ? (
-        <div className="pb-4">
+        <div className="border-t border-zinc-100 px-4 pb-4 pt-3 dark:border-zinc-800">
           {failed.length === 0 ? (
-            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              ✓ {allDoneLabel}
+            <p className="flex items-center gap-2.5 rounded-lg bg-emerald-50 px-3.5 py-3 text-sm font-semibold text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              {allDoneLabel}
             </p>
           ) : (
             <ul className="space-y-3">
@@ -79,31 +92,31 @@ function CategoryBlock({
                 return (
                   <li key={check.id}>
                     {showGroupHeader ? (
-                      <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-zinc-400">
+                      <p className="mb-2 mt-1 text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                         {check.group}
                       </p>
                     ) : null}
                     <button
                       type="button"
                       onClick={() => onFix(check.id, check.scrollTarget)}
-                      className="w-full rounded-xl border border-amber-100 bg-amber-50/80 px-3 py-2.5 text-left transition hover:bg-amber-100 dark:border-amber-900/40 dark:bg-amber-950/30 dark:hover:bg-amber-950/50"
+                      className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-3.5 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-blue-600 dark:hover:bg-zinc-800/90"
                     >
-                      <div className="flex items-start gap-2">
-                        <Circle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
+                      <div className="flex items-start gap-3">
+                        <Circle className="mt-0.5 h-4 w-4 shrink-0 stroke-[2.5] text-rose-500 dark:text-rose-400" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                          <p className="text-sm font-bold leading-snug text-zinc-950 dark:text-zinc-50">
                             {check.label}
                             {check.optional ? (
-                              <span className="ml-1.5 text-[10px] font-medium text-zinc-400">
+                              <span className="ml-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
                                 ({optionalLabel})
                               </span>
                             ) : null}
                           </p>
-                          <p className="mt-0.5 text-[11px] leading-snug text-zinc-600 dark:text-zinc-400">
+                          <p className="mt-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
                             {check.tip}
                           </p>
-                          <span className="mt-1 inline-block text-[10px] font-bold text-amber-700 dark:text-amber-400">
-                            → {tapLabel}
+                          <span className="mt-2.5 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
+                            {tapLabel} →
                           </span>
                         </div>
                       </div>
@@ -115,23 +128,23 @@ function CategoryBlock({
           )}
 
           {category.checks.some((c) => c.passed) ? (
-            <ul className="mt-3 space-y-1 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+            <ul className="mt-4 space-y-2 rounded-lg border border-emerald-100 bg-emerald-50/80 px-3.5 py-3 dark:border-emerald-900/50 dark:bg-emerald-950/30">
               {category.checks
                 .filter((c) => c.passed)
                 .map((check) => (
                   <li
                     key={check.id}
-                    className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400"
+                    className="flex items-start gap-2 text-sm font-medium text-emerald-900 dark:text-emerald-200"
                   >
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                    {check.label}
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span>{check.label}</span>
                   </li>
                 ))}
             </ul>
           ) : null}
         </div>
       ) : null}
-    </div>
+    </section>
   );
 }
 
@@ -155,10 +168,10 @@ export function CvTipsDrawer({ open, onClose, onFixCheck }: Props) {
 
   const ringColor =
     result.score >= 80
-      ? "#65a30d"
+      ? "#15803d"
       : result.score >= 50
-        ? "#d97706"
-        : "#e11d48";
+        ? "#b45309"
+        : "#be123c";
 
   const handleFix = (checkId: string, scrollTarget: string) => {
     onClose();
@@ -176,77 +189,79 @@ export function CvTipsDrawer({ open, onClose, onFixCheck }: Props) {
       <button
         type="button"
         aria-label="Tutup"
-        className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-[2px]"
+        className="fixed inset-0 z-[60] bg-zinc-900/30 backdrop-blur-[2px]"
         onClick={onClose}
       />
 
       <aside
-        className="fixed inset-y-0 right-0 z-[70] flex w-full max-w-[min(100vw,400px)] flex-col bg-white shadow-2xl dark:bg-zinc-900"
+        className="fixed inset-y-0 right-0 z-[70] flex w-full max-w-[min(100vw,420px)] flex-col border-l border-zinc-200 bg-zinc-100 shadow-2xl dark:border-zinc-700 dark:bg-zinc-950"
         role="dialog"
         aria-modal="true"
         aria-labelledby="cv-tips-title"
       >
-        <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
+        <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
           <h2
             id="cv-tips-title"
-            className="text-base font-black text-zinc-900 dark:text-white"
+            className="text-lg font-black tracking-tight text-zinc-950 dark:text-white"
           >
             {t.assistantTitle}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            className="rounded-lg p-1.5 text-zinc-600 transition hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
             aria-label="Tutup"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5">
-          <div className="flex items-center gap-4 border-b border-zinc-100 py-5 dark:border-zinc-800">
-            <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
-              <svg className="h-20 w-20 -rotate-90" viewBox="0 0 36 36">
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.5"
-                  fill="none"
-                  className="stroke-zinc-200 dark:stroke-zinc-700"
-                  strokeWidth="3"
-                />
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.5"
-                  fill="none"
-                  stroke={ringColor}
-                  strokeWidth="3"
-                  strokeDasharray={`${result.score} 100`}
-                  strokeLinecap="round"
-                />
-              </svg>
-              <span
-                className="absolute text-xl font-black"
-                style={{ color: ringColor }}
-              >
-                {result.score}%
-              </span>
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-black text-zinc-900 dark:text-white">
-                {t.goodJob(result.displayName)}
-              </p>
-              <p className="mt-0.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
-                {t.scoreLine(result.score)}
-              </p>
-              <p className="mt-2 text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
-                {t.intro}
-              </p>
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          <div className="mb-4 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+            <div className="flex items-start gap-4">
+              <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
+                <svg className="h-20 w-20 -rotate-90" viewBox="0 0 36 36">
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15.5"
+                    fill="none"
+                    className="stroke-zinc-200 dark:stroke-zinc-700"
+                    strokeWidth="3"
+                  />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15.5"
+                    fill="none"
+                    stroke={ringColor}
+                    strokeWidth="3"
+                    strokeDasharray={`${result.score} 100`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span
+                  className="absolute text-2xl font-black tabular-nums"
+                  style={{ color: ringColor }}
+                >
+                  {result.score}%
+                </span>
+              </div>
+              <div className="min-w-0 pt-1">
+                <p className="text-base font-black leading-snug text-zinc-950 dark:text-white">
+                  {t.goodJob(result.displayName)}
+                </p>
+                <p className="mt-1.5 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                  {t.scoreLine(result.score)}
+                </p>
+                <p className="mt-2.5 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                  {t.intro}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div>
+          <div className="space-y-3">
             {result.categories.map((category) => (
               <CategoryBlock
                 key={category.id}
@@ -267,7 +282,7 @@ export function CvTipsDrawer({ open, onClose, onFixCheck }: Props) {
           </div>
         </div>
 
-        <div className="border-t border-zinc-200 px-5 py-3 text-center text-[10px] text-zinc-400 dark:border-zinc-800">
+        <div className="border-t border-zinc-200 bg-white px-5 py-4 text-center text-sm font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
           {t.checklistFooter(result.totalPassed, result.totalChecks)}
         </div>
       </aside>

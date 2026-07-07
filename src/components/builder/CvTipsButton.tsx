@@ -8,9 +8,10 @@ import { calculateCvAssistant, getAssistantCopy } from "@/lib/cv-assistant";
 
 type Props = {
   onClick: () => void;
+  className?: string;
 };
 
-export function CvTipsFab({ onClick }: Props) {
+export function CvTipsButton({ onClick, className = "" }: Props) {
   const { data, config } = useResume();
   const { uiLocale } = useTheme();
   const t = getAssistantCopy(uiLocale);
@@ -22,9 +23,12 @@ export function CvTipsFab({ onClick }: Props) {
     [data, uiLocale, config.cvProfile, config.showPhoto],
   );
 
-  const badgeColor =
+  const tone =
+    "border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700";
+
+  const badgeTone =
     score >= 80
-      ? "bg-emerald-500"
+      ? "bg-emerald-600"
       : score >= 50
         ? "bg-amber-500"
         : "bg-rose-500";
@@ -33,20 +37,18 @@ export function CvTipsFab({ onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="fixed right-0 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-1 rounded-l-2xl border border-r-0 border-amber-200/80 bg-gradient-to-b from-amber-50 to-white px-2 py-3 shadow-lg shadow-amber-100/50 transition hover:from-amber-100 hover:shadow-xl dark:border-amber-900/50 dark:from-amber-950/80 dark:to-zinc-900 dark:shadow-black/30"
+      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold shadow-sm transition ${tone} ${className}`}
       aria-label={t.assistantTitle}
     >
-      <span className="relative">
-        <Lightbulb className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+      <span className="relative flex items-center">
+        <Lightbulb className="h-4 w-4" />
         <span
-          className={`absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full px-0.5 text-[8px] font-black text-white ${badgeColor}`}
+          className={`ml-1.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-black text-white ${badgeTone}`}
         >
           {score}
         </span>
       </span>
-      <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300">
-        {t.tipsLabel}
-      </span>
+      <span className="uppercase tracking-wide">{t.tipsLabel}</span>
     </button>
   );
 }
