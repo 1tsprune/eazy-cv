@@ -10,8 +10,9 @@ import {
   type ReactNode,
 } from "react";
 import { createId, defaultResumeState } from "@/lib/default-data";
-import { getSampleResumeState } from "@/lib/sample-data";
-import type { CvProfile } from "@/lib/types";
+import { isResumeDataEmpty } from "@/lib/resume-empty";
+import { getSampleForTemplate, getSampleResumeState } from "@/lib/sample-data";
+import type { CvProfile, ModernTemplate } from "@/lib/types";
 import {
   clearStorage,
   exportToJson,
@@ -76,6 +77,7 @@ interface ResumeContextValue {
   saveJson: () => void;
   loadJson: (file: File) => Promise<void>;
   loadSample: (profile?: CvProfile) => void;
+  loadSampleWithTemplate: (template: ModernTemplate) => void;
   importLinkedIn: (data: ResumeData) => void;
   addCustomSection: () => void;
   updateCustomSection: (id: string, section: Partial<CustomSection>) => void;
@@ -96,7 +98,28 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = loadFromStorage();
-    if (saved) setState(saved);
+    if (saved && !isResumeDataEmpty(saved.data)) {
+      setState(saved);
+    } else if (saved) {
+      const cfg = saved.config;
+      setState(
+        getSampleForTemplate(
+          cfg.exportMode === "modern" ? cfg.template : "elegant",
+          {
+            exportMode: cfg.exportMode,
+            colorTheme: cfg.colorTheme,
+            cvProfile: cfg.cvProfile,
+            language: cfg.language,
+            fontFamily: cfg.fontFamily,
+            fontSize: cfg.fontSize,
+            fontBold: cfg.fontBold,
+            sectionOrder: cfg.sectionOrder,
+          },
+        ),
+      );
+    } else {
+      setState(getSampleForTemplate("elegant"));
+    }
     setIsLoaded(true);
   }, []);
 
@@ -522,7 +545,27 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadSample = useCallback((profile?: CvProfile) => {
-    setState(getSampleResumeState(profile ?? "professional"));
+    setState((s) =>
+      getSampleResumeState(profile ?? "professional", {
+        template: s.config.template,
+        colorTheme: s.config.colorTheme,
+        exportMode: s.config.exportMode,
+        language: s.config.language,
+        cvProfile: profile ?? s.config.cvProfile,
+      }),
+    );
+  }, []);
+
+  const loadSampleWithTemplate = useCallback((template: ModernTemplate) => {
+    setState((s) =>
+      getSampleForTemplate(template, {
+        colorTheme: s.config.colorTheme,
+        language: s.config.language,
+        fontFamily: s.config.fontFamily,
+        fontSize: s.config.fontSize,
+        fontBold: s.config.fontBold,
+      }),
+    );
   }, []);
 
   const importLinkedIn = useCallback((data: ResumeData) => {
@@ -634,6 +677,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
       saveJson,
       loadJson,
       loadSample,
+      loadSampleWithTemplate,
       importLinkedIn,
       addCustomSection,
       updateCustomSection,
@@ -680,6 +724,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
       saveJson,
       loadJson,
       loadSample,
+      loadSampleWithTemplate,
       importLinkedIn,
       addCustomSection,
       updateCustomSection,

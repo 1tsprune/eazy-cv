@@ -71,6 +71,8 @@ const dict = {
     previewWysiwyg: "Preview sama dengan PDF",
     templateAtsHint:
       "Mode ATS tidak pakai template visual. Klik Modern atau pilih template di bawah.",
+    sampleDataBanner:
+      "Ini data contoh supaya kamu lihat bentuk CV-nya. Ganti semua dengan info kamu sendiri.",
     scoreTitle: "Skor ATS",
     atsTipsTitle: "Yang perlu dilengkapi",
     dataBackupHint: "Backup CV kamu ke file JSON. Bisa dimuat lagi kapan saja.",
@@ -228,6 +230,8 @@ const dict = {
     previewWysiwyg: "Preview matches PDF download",
     templateAtsHint:
       "ATS mode has no visual templates. Switch to Modern or pick a template below.",
+    sampleDataBanner:
+      "This is sample data so you can see how the CV looks. Replace everything with your own info.",
     scoreTitle: "ATS Score",
     atsTipsTitle: "What to complete",
     dataBackupHint: "Back up your CV as a JSON file. Load it back anytime.",

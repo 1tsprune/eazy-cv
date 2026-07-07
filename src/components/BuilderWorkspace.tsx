@@ -9,6 +9,7 @@ import { CoverLetterForm } from "@/components/builder/CoverLetterForm";
 import { CoverLetterPreview } from "@/components/builder/CoverLetterPreview";
 import { QuickActions } from "@/components/builder/QuickActions";
 import { PreviewDesk } from "@/components/builder/PreviewDesk";
+import { SampleDataBanner } from "@/components/builder/SampleDataBanner";
 import { TemplatePicker } from "@/components/builder/TemplatePicker";
 import { WelcomePanel } from "@/components/builder/WelcomePanel";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
@@ -98,6 +99,7 @@ export function BuilderWorkspace() {
             <CoverLetterForm />
           ) : (
             <>
+              <SampleDataBanner />
               <WelcomePanel />
               <TemplatePicker />
               <SectionOrderPanel />
@@ -162,6 +164,7 @@ export function BuilderWorkspace() {
               <CoverLetterForm />
             ) : (
               <>
+                <SampleDataBanner />
                 <WelcomePanel />
                 <TemplatePicker />
                 <SectionOrderPanel />

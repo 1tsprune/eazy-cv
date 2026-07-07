@@ -4,6 +4,7 @@ import { LayoutTemplate } from "lucide-react";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { themeColors } from "@/lib/colors";
+import { isResumeDataEmpty, isSampleResumeData } from "@/lib/resume-empty";
 import { getUiDict } from "@/lib/ui-i18n";
 import type { ModernTemplate } from "@/lib/types";
 
@@ -67,13 +68,18 @@ function TemplateThumb({
 }
 
 export function TemplatePicker() {
-  const { config, updateConfig } = useResume();
+  const { data, config, updateConfig, loadSampleWithTemplate } = useResume();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const isAts = config.exportMode === "ats";
+  const empty = isResumeDataEmpty(data);
 
   const pick = (id: ModernTemplate) => {
-    updateConfig({ exportMode: "modern", template: id });
+    if (empty || isSampleResumeData(data)) {
+      loadSampleWithTemplate(id);
+    } else {
+      updateConfig({ exportMode: "modern", template: id });
+    }
   };
 
   return (
@@ -88,7 +94,10 @@ export function TemplatePicker() {
         {isAts ? (
           <button
             type="button"
-            onClick={() => updateConfig({ exportMode: "modern" })}
+            onClick={() => {
+              if (empty) loadSampleWithTemplate("elegant");
+              else updateConfig({ exportMode: "modern" });
+            }}
             className="rounded-lg bg-slate-700 px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-slate-800"
           >
             {t.exportModern}

@@ -2,7 +2,14 @@ import { getRecommendedSectionOrder } from "./cv-profile";
 import { createId } from "./default-data";
 import { defaultCoverLetter } from "./cover-letter";
 import { DEFAULT_TYPOGRAPHY } from "./typography";
-import type { CvProfile, ResumeState } from "./types";
+import type { CvProfile, ModernTemplate, ResumeConfig, ResumeState } from "./types";
+
+/** Best dummy profile per template layout */
+export function getProfileForTemplate(template: ModernTemplate): CvProfile {
+  if (template === "academic") return "student";
+  if (template === "compact" || template === "creative") return "internship";
+  return "professional";
+}
 
 function baseConfig(profile: CvProfile): ResumeState["config"] {
   return {
@@ -385,8 +392,28 @@ const samples: Record<CvProfile, ResumeState> = {
   student: sampleStudentState,
 };
 
-export function getSampleResumeState(profile: CvProfile = "professional"): ResumeState {
-  return structuredClone(samples[profile]);
+export function getSampleResumeState(
+  profile: CvProfile = "professional",
+  configOverrides?: Partial<ResumeConfig>,
+): ResumeState {
+  const base = structuredClone(samples[profile]);
+  if (!configOverrides) return base;
+  return {
+    ...base,
+    config: { ...base.config, ...configOverrides },
+  };
+}
+
+export function getSampleForTemplate(
+  template: ModernTemplate,
+  overrides?: Partial<ResumeConfig>,
+): ResumeState {
+  const profile = getProfileForTemplate(template);
+  return getSampleResumeState(profile, {
+    exportMode: "modern",
+    template,
+    ...overrides,
+  });
 }
 
 /** @deprecated use getSampleResumeState */
