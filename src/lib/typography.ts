@@ -8,7 +8,6 @@ export const CV_FONT_FAMILIES: {
   { id: "helvetica", label: "Helvetica" },
   { id: "times", label: "Times New Roman" },
   { id: "calibri", label: "Calibri" },
-  { id: "georgia", label: "Georgia" },
 ];
 
 export const CV_FONT_SIZES: { id: CvFontSize }[] = [
@@ -22,6 +21,7 @@ const LEGACY_FONT_MAP: Record<string, CvFontFamily> = {
   inter: "arial",
   serif: "times",
   mono: "helvetica",
+  georgia: "times",
 };
 
 export function normalizeFontFamily(value?: string): CvFontFamily {
@@ -29,8 +29,7 @@ export function normalizeFontFamily(value?: string): CvFontFamily {
     value === "arial" ||
     value === "helvetica" ||
     value === "times" ||
-    value === "calibri" ||
-    value === "georgia"
+    value === "calibri"
   ) {
     return value;
   }
@@ -43,7 +42,6 @@ const PREVIEW_FONTS: Record<CvFontFamily, string> = {
   helvetica: "Helvetica, Arial, sans-serif",
   times: "'Times New Roman', Times, serif",
   calibri: "Calibri, 'Segoe UI', Arial, sans-serif",
-  georgia: "Georgia, 'Times New Roman', Times, serif",
 };
 
 const SIZE_SCALE = {
@@ -61,7 +59,6 @@ const PDF_FONTS: Record<
   helvetica: { regular: "Helvetica", bold: "Helvetica-Bold" },
   times: { regular: "Times-Roman", bold: "Times-Bold" },
   calibri: { regular: "Helvetica", bold: "Helvetica-Bold" },
-  georgia: { regular: "Times-Roman", bold: "Times-Bold" },
 };
 
 const PDF_SIZE = {

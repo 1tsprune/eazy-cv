@@ -26,8 +26,7 @@ export type CvFontFamily =
   | "arial"
   | "helvetica"
   | "times"
-  | "calibri"
-  | "georgia";
+  | "calibri";
 export type CvFontSize = "sm" | "md" | "lg";
 
 export interface PersonalInfo {
