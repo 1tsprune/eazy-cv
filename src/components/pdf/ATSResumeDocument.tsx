@@ -10,6 +10,7 @@ import { getLanguageLevelLabel } from "@/lib/language-levels";
 import { formatAtsPeriodLine, getAtsPdfLayout } from "@/lib/pdf-ats-layout";
 import { t, tAts } from "@/lib/i18n";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
+import { cvContactItems, PdfContactInline } from "./pdf-contact";
 import { PdfCustomSections } from "./pdf-blocks";
 
 interface Props {
@@ -53,14 +54,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
   const language = config.language;
   const { personal } = data;
 
-  const contact = [
-    personal.phone,
-    personal.email,
-    personal.website,
-    personal.linkedin,
-    personal.github,
-    personal.location,
-  ].filter(Boolean);
+  const contact = cvContactItems(personal);
 
   const sectionBlocks: Record<SectionKey, ReactNode> = {
     experience:
@@ -285,9 +279,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
           {personal.title ? (
             <Text style={styles.headline}>{personal.title}</Text>
           ) : null}
-          {contact.length > 0 ? (
-            <Text style={styles.contact}>{contact.join(" · ")}</Text>
-          ) : null}
+          <PdfContactInline items={contact} style={styles.contact} />
         </View>
 
         {personal.summary ? (

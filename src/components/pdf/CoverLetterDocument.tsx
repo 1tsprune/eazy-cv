@@ -12,6 +12,7 @@ import {
   splitLetterParagraphs,
 } from "@/lib/cover-letter-layout";
 import { getPdfSheetTokens } from "@/lib/typography";
+import { PdfContactItem } from "./pdf-contact";
 import type { CoverLetterData, Language, PersonalInfo, ResumeConfig } from "@/lib/types";
 
 interface Props {
@@ -109,9 +110,7 @@ export default function CoverLetterDocument({
             <Text style={styles.senderTitle}>{personal.title}</Text>
           ) : null}
           {contact.map((line) => (
-            <Text key={line} style={styles.senderLine}>
-              {line}
-            </Text>
+            <PdfContactItem key={line} value={line} style={styles.senderLine} />
           ))}
         </View>
 

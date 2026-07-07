@@ -16,6 +16,11 @@ import {
   PdfEducation,
   PdfOrganizations,
 } from "./pdf-blocks";
+import {
+  modernContactItems,
+  PdfContactInline,
+  PdfContactItem,
+} from "./pdf-contact";
 import { PdfPhoto } from "./pdf-photo";
 
 interface Props {
@@ -24,15 +29,12 @@ interface Props {
 }
 
 function ContactLine({ data }: { data: ResumeData }) {
-  const items = [
-    data.personal.email,
-    data.personal.phone,
-    data.personal.location,
-    data.personal.linkedin,
-    data.personal.github,
-    data.personal.website,
-  ].filter(Boolean);
-  return <Text>{items.join("  ·  ")}</Text>;
+  return (
+    <PdfContactInline
+      items={modernContactItems(data.personal)}
+      separator="  ·  "
+    />
+  );
 }
 
 function ProfessionalTemplate({ data, config }: Props) {
@@ -65,9 +67,24 @@ function ProfessionalTemplate({ data, config }: Props) {
           <Text style={styles.sidebarName}>{personal.fullName || "Your Name"}</Text>
           {personal.title && <Text style={styles.sidebarTitle}>{personal.title}</Text>}
           <Text style={styles.sidebarLabel}>Contact</Text>
-          {personal.email && <Text style={styles.sidebarText}>{personal.email}</Text>}
-          {personal.phone && <Text style={styles.sidebarText}>{personal.phone}</Text>}
-          {personal.location && <Text style={styles.sidebarText}>{personal.location}</Text>}
+          {personal.email && (
+            <PdfContactItem value={personal.email} style={styles.sidebarText} />
+          )}
+          {personal.phone && (
+            <PdfContactItem value={personal.phone} style={styles.sidebarText} />
+          )}
+          {personal.linkedin && (
+            <PdfContactItem value={personal.linkedin} style={styles.sidebarText} />
+          )}
+          {personal.github && (
+            <PdfContactItem value={personal.github} style={styles.sidebarText} />
+          )}
+          {personal.website && (
+            <PdfContactItem value={personal.website} style={styles.sidebarText} />
+          )}
+          {personal.location && (
+            <PdfContactItem value={personal.location} style={styles.sidebarText} />
+          )}
           {data.technicalSkills.length > 0 && (
             <>
               <Text style={styles.sidebarLabel}>{t(lang, "technicalSkills")}</Text>
