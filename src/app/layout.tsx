@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
-import { APP, SITE_URL } from "@/lib/config";
+import { APP, SITE_URL, SOCIAL } from "@/lib/config";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -8,11 +8,14 @@ const outfit = Outfit({
   variable: "--font-outfit",
 });
 
+const siteTitle = `${APP.name} — Bikin CV Gratis, No Ribet`;
+const siteDescription =
+  "Bikin CV + preview langsung + cek skor ATS. Gratis tanpa login. Data cuma di browser kamu.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: `${APP.name} — Bikin CV Gratis, No Ribet`,
-  description:
-    "Bikin CV + preview langsung + cek skor ATS. Gratis tanpa login. Data cuma di browser kamu.",
+  title: siteTitle,
+  description: siteDescription,
   icons: {
     icon: [
       { url: "/brand/logo-icon.svg", type: "image/svg+xml" },
@@ -21,10 +24,17 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   openGraph: {
-    title: `${APP.name} — Bikin CV Gratis, No Ribet`,
-    description:
-      "Bikin CV + preview langsung + cek skor ATS. Gratis tanpa login. Data cuma di browser kamu.",
+    title: siteTitle,
+    description: siteDescription,
     images: [{ url: "/brand/og-icon.png", width: 512, height: 512, alt: APP.name }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    images: ["/brand/og-icon.png"],
+    site: SOCIAL.twitter.handle,
+    creator: SOCIAL.twitter.handle,
   },
 };
 
