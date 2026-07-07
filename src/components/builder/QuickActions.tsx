@@ -19,6 +19,9 @@ const SAMPLE_PROFILES: CvProfile[] = [
   "student",
 ];
 
+const actionBtnClass =
+  "inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1.5 text-[11px] font-bold shadow-sm transition sm:gap-1.5 sm:px-4 sm:py-2 sm:text-xs";
+
 export function QuickActions({ showCover = false, onToggleCover }: Props) {
   const { loadSample } = useResume();
   const { uiLocale } = useTheme();
@@ -27,19 +30,20 @@ export function QuickActions({ showCover = false, onToggleCover }: Props) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex shrink-0 flex-nowrap items-center gap-1.5 sm:gap-2">
       {!showCover && (
-        <div className="relative" ref={menuRef}>
+        <div className="relative shrink-0" ref={menuRef}>
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
             title={t.exampleCvHint}
-            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-4 py-2 text-xs font-bold text-zinc-700 shadow-sm transition hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+            className={`${actionBtnClass} border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700`}
           >
-            <Wand2 className="h-3.5 w-3.5 text-slate-600" />
-            {t.exampleCv}
+            <Wand2 className="h-3.5 w-3.5 shrink-0 text-slate-600" />
+            <span className="sm:hidden">{t.exampleCvShort}</span>
+            <span className="hidden sm:inline">{t.exampleCv}</span>
             <ChevronDown
-              className={`h-3.5 w-3.5 transition ${menuOpen ? "rotate-180" : ""}`}
+              className={`h-3.5 w-3.5 shrink-0 transition ${menuOpen ? "rotate-180" : ""}`}
             />
           </button>
           {menuOpen && (
@@ -65,23 +69,24 @@ export function QuickActions({ showCover = false, onToggleCover }: Props) {
         <button
           type="button"
           onClick={onToggleCover}
-          className={`items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-bold shadow-sm transition ${
+          className={`${actionBtnClass} ${
             showCover ? "hidden md:inline-flex" : "inline-flex"
           } ${
             showCover
               ? "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
-              : "border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+              : "border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
           }`}
         >
           {showCover ? (
             <>
-              <ArrowLeft className="h-3.5 w-3.5" />
+              <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
               {t.backToCv}
             </>
           ) : (
             <>
-              <Mail className="h-3.5 w-3.5" />
-              {t.openCoverLetter}
+              <Mail className="h-3.5 w-3.5 shrink-0" />
+              <span className="sm:hidden">{t.openCoverLetterShort}</span>
+              <span className="hidden sm:inline">{t.openCoverLetter}</span>
             </>
           )}
         </button>

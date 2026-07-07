@@ -69,7 +69,7 @@ export function BuilderWorkspace() {
   const showMobileCoverPreview = showCover;
 
   const actionBar = (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-4">
       <QuickActions
         showCover={showCover}
         onToggleCover={() => setShowCover((v) => !v)}

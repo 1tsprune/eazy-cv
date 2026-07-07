@@ -25,6 +25,7 @@ const dict = {
     tabScore: "Skor",
     tabCoverLetter: "Surat",
     openCoverLetter: "Surat Lamaran",
+    openCoverLetterShort: "Surat",
     backToCv: "Kembali",
     coverLetterTitle: "Surat Lamaran",
     coverLetterHint:
@@ -104,6 +105,7 @@ const dict = {
     dragHint: "Drag ⋮⋮ untuk ubah urutan",
     sectionOrder: "Urutan section CV",
     exampleCv: "Contoh CV",
+    exampleCvShort: "Contoh",
     importLinkedIn: "Import dari LinkedIn",
     importLinkedInHint:
       "Bukan login LinkedIn. Copy teks profil kamu atau upload file ZIP export LinkedIn. Semua diproses di browser — data tidak dikirim ke server.",
@@ -208,6 +210,7 @@ const dict = {
     tabScore: "Score",
     tabCoverLetter: "Letter",
     openCoverLetter: "Cover Letter",
+    openCoverLetterShort: "Letter",
     backToCv: "Back",
     coverLetterTitle: "Cover Letter",
     coverLetterHint:
@@ -286,6 +289,7 @@ const dict = {
     dragHint: "Drag ⋮⋮ to reorder",
     sectionOrder: "CV section order",
     exampleCv: "Sample CV",
+    exampleCvShort: "Sample",
     importLinkedIn: "Import from LinkedIn",
     importLinkedInHint:
       "Not a LinkedIn login. Paste your profile text or upload a LinkedIn data export ZIP. Everything runs in your browser — nothing is sent to a server.",
