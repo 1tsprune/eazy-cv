@@ -9,7 +9,6 @@ import {
   Layers,
   Users,
   Plus,
-  Trash2,
   User,
 } from "lucide-react";
 import { useResume } from "@/context/ResumeContext";
@@ -22,6 +21,8 @@ import { getLanguageLevelOptions } from "@/lib/language-levels";
 import { Textarea } from "@/components/ui/Textarea";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { TagInput } from "@/components/ui/TagInput";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { SortableItemHeader } from "@/components/ui/SortableItemHeader";
 import { SortableList } from "@/components/ui/SortableList";
 import { PhotoUpload } from "@/components/ui/PhotoUpload";
 import { normalizeSkillGroups } from "@/lib/skill-groups";
@@ -175,18 +176,11 @@ export function ResumeForm() {
           hint={t.dragItemsHint}
           renderItem={(exp, idx) => (
             <div className={ITEM_CARD}>
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs font-medium text-zinc-400">
-                  #{idx + 1}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeExperience(exp.id)}
-                  className="text-zinc-400 hover:text-rose-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <SortableItemHeader
+                index={idx}
+                onDelete={() => removeExperience(exp.id)}
+                deleteLabel={t.deleteItem}
+              />
               <div className="grid gap-3 sm:grid-cols-2">
                 <Input
                   label={t.position}
@@ -272,17 +266,13 @@ export function ResumeForm() {
           keyExtractor={(edu) => edu.id}
           onReorder={reorderEducations}
           hint={t.dragItemsHint}
-          renderItem={(edu) => (
+          renderItem={(edu, idx) => (
             <div className={ITEM_CARD}>
-              <div className="mb-3 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => removeEducation(edu.id)}
-                  className="text-zinc-400 hover:text-rose-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <SortableItemHeader
+                index={idx}
+                onDelete={() => removeEducation(edu.id)}
+                deleteLabel={t.deleteItem}
+              />
               <div className="grid gap-3 sm:grid-cols-2">
                 <Input
                   label={t.institution}
@@ -359,18 +349,11 @@ export function ResumeForm() {
           hint={t.dragItemsHint}
           renderItem={(org, idx) => (
             <div className={ITEM_CARD}>
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs font-medium text-zinc-400">
-                  #{idx + 1}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeOrganization(org.id)}
-                  className="text-zinc-400 hover:text-rose-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <SortableItemHeader
+                index={idx}
+                onDelete={() => removeOrganization(org.id)}
+                deleteLabel={t.deleteItem}
+              />
               <div className="grid gap-3 sm:grid-cols-2">
                 <Input
                   label={t.orgName}
@@ -462,18 +445,11 @@ export function ResumeForm() {
           hint={t.dragItemsHint}
           renderItem={(group, idx) => (
             <div className={ITEM_CARD}>
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs font-medium text-zinc-400">
-                  #{idx + 1}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeSkillGroup(group.id)}
-                  className="text-zinc-400 hover:text-rose-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <SortableItemHeader
+                index={idx}
+                onDelete={() => removeSkillGroup(group.id)}
+                deleteLabel={t.deleteItem}
+              />
               <div className="space-y-3">
                 <Input
                   label={t.skillGroupName}
@@ -516,17 +492,13 @@ export function ResumeForm() {
           keyExtractor={(proj) => proj.id}
           onReorder={reorderProjects}
           hint={t.dragItemsHint}
-          renderItem={(proj) => (
+          renderItem={(proj, idx) => (
             <div className={ITEM_CARD}>
-              <div className="mb-3 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => removeProject(proj.id)}
-                  className="text-zinc-400 hover:text-rose-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <SortableItemHeader
+                index={idx}
+                onDelete={() => removeProject(proj.id)}
+                deleteLabel={t.deleteItem}
+              />
               <div className="grid gap-3">
                 <Input
                   label={t.projectName}
@@ -578,17 +550,13 @@ export function ResumeForm() {
           keyExtractor={(cert) => cert.id}
           onReorder={reorderCertifications}
           hint={t.dragItemsHint}
-          renderItem={(cert) => (
+          renderItem={(cert, idx) => (
             <div className={ITEM_CARD}>
-              <div className="mb-3 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => removeCertification(cert.id)}
-                  className="text-zinc-400 hover:text-rose-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <SortableItemHeader
+                index={idx}
+                onDelete={() => removeCertification(cert.id)}
+                deleteLabel={t.deleteItem}
+              />
               <div className="grid gap-3 sm:grid-cols-2">
                 <Input
                   label={t.certName}
@@ -638,32 +606,32 @@ export function ResumeForm() {
           onReorder={reorderLanguages}
           hint={t.dragItemsHint}
           renderItem={(lang) => (
-            <div className={`${ITEM_CARD} flex items-end gap-2`}>
-              <div className="grid flex-1 grid-cols-2 gap-2">
-                <Input
-                  label={t.languageName}
-                  value={lang.name}
-                  onChange={(e) =>
-                    updateLanguage(lang.id, { name: e.target.value })
-                  }
-                />
-                <Select
-                  label={t.languageLevel}
-                  value={lang.level}
-                  onChange={(e) =>
-                    updateLanguage(lang.id, { level: e.target.value })
-                  }
-                  placeholder={t.selectLanguageLevel}
-                  options={getLanguageLevelOptions(uiLocale)}
+            <div className={ITEM_CARD}>
+              <div className="flex items-start gap-2">
+                <div className="grid min-w-0 flex-1 grid-cols-2 gap-2">
+                  <Input
+                    label={t.languageName}
+                    value={lang.name}
+                    onChange={(e) =>
+                      updateLanguage(lang.id, { name: e.target.value })
+                    }
+                  />
+                  <Select
+                    label={t.languageLevel}
+                    value={lang.level}
+                    onChange={(e) =>
+                      updateLanguage(lang.id, { level: e.target.value })
+                    }
+                    placeholder={t.selectLanguageLevel}
+                    options={getLanguageLevelOptions(uiLocale)}
+                  />
+                </div>
+                <DeleteButton
+                  onClick={() => removeLanguage(lang.id)}
+                  label={t.deleteItem}
+                  className="mt-6"
                 />
               </div>
-              <button
-                type="button"
-                onClick={() => removeLanguage(lang.id)}
-                className="mb-2 text-zinc-400 hover:text-rose-500"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
             </div>
           )}
         />
@@ -687,30 +655,28 @@ export function ResumeForm() {
           keyExtractor={(section) => section.id}
           onReorder={reorderCustomSections}
           hint={t.dragItemsHint}
-          renderItem={(section) => (
+          renderItem={(section, idx) => (
             <div className={ITEM_CARD}>
-              <div className="mb-3 flex items-center justify-between">
-                <label className="flex items-center gap-2 text-xs text-zinc-500">
-                  <input
-                    type="checkbox"
-                    checked={section.showInAts}
-                    onChange={(e) =>
-                      updateCustomSection(section.id, {
-                        showInAts: e.target.checked,
-                      })
-                    }
-                    className="rounded"
-                  />
-                  {t.showInAts}
-                </label>
-                <button
-                  type="button"
-                  onClick={() => removeCustomSection(section.id)}
-                  className="text-zinc-400 hover:text-rose-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <SortableItemHeader
+                index={idx}
+                onDelete={() => removeCustomSection(section.id)}
+                deleteLabel={t.deleteItem}
+                leading={
+                  <label className="flex items-center gap-2 text-xs text-zinc-500">
+                    <input
+                      type="checkbox"
+                      checked={section.showInAts}
+                      onChange={(e) =>
+                        updateCustomSection(section.id, {
+                          showInAts: e.target.checked,
+                        })
+                      }
+                      className="rounded"
+                    />
+                    {t.showInAts}
+                  </label>
+                }
+              />
               <Input
                 label={t.sectionTitle}
                 value={section.title}

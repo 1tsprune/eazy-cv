@@ -70,9 +70,10 @@ export function TagInput({
             <button
               type="button"
               onClick={() => onChange(tags.filter((_, i) => i !== index))}
-              className="opacity-50 hover:opacity-100"
+              aria-label={`Hapus ${tag}`}
+              className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-indigo-500 transition hover:bg-indigo-100 hover:text-indigo-800 active:scale-95 dark:text-indigo-300 dark:hover:bg-indigo-900 dark:hover:text-indigo-100"
             >
-              <X className="h-3 w-3" />
+              <X className="h-3.5 w-3.5" strokeWidth={2.5} />
             </button>
           </span>
         ))}

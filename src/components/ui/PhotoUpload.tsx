@@ -91,7 +91,7 @@ export function PhotoUpload({
                 onClick={onRemove}
                 className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-[10px] font-bold text-zinc-600 hover:bg-zinc-100 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-700"
               >
-                <Trash2 className="h-3 w-3" />
+                <Trash2 className="h-4 w-4" />
                 {t.photoRemove}
               </button>
             )}

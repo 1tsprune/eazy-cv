@@ -44,14 +44,17 @@ export function SortableList<T>({
           onDragOver={(e) => e.preventDefault()}
           onDrop={() => handleDrop(index)}
           onDragEnd={() => setDragIndex(null)}
-          className={`relative transition ${
+          className={`flex items-start gap-1.5 transition ${
             dragIndex === index ? "opacity-50" : ""
           }`}
         >
-          <div className="absolute left-1 top-3 z-10 cursor-grab active:cursor-grabbing">
-            <GripVertical className="h-4 w-4 text-zinc-300 dark:text-zinc-600" />
+          <div
+            className="mt-3 flex h-9 w-7 shrink-0 cursor-grab items-center justify-center active:cursor-grabbing"
+            aria-hidden
+          >
+            <GripVertical className="h-[18px] w-[18px] text-zinc-300 dark:text-zinc-600" />
           </div>
-          <div className="pl-6">{renderItem(item, index)}</div>
+          <div className="min-w-0 flex-1">{renderItem(item, index)}</div>
         </div>
       ))}
     </div>
