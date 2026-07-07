@@ -43,9 +43,15 @@ export function ResumePdfProvider({ children }: { children: ReactNode }) {
     [data, config],
   );
 
-  const [pdfState] = usePDF({ document });
+  const [pdfState, updatePdf] = usePDF({ document });
   const stateRef = useRef(pdfState);
   stateRef.current = pdfState;
+
+  // usePDF only renders the initial document; regenerate the blob whenever the
+  // document changes (template/data edit) so the download matches the preview.
+  useEffect(() => {
+    updatePdf(document);
+  }, [document, updatePdf]);
 
   const waitForBlob = useCallback(async (): Promise<Blob> => {
     for (let i = 0; i < 400; i++) {

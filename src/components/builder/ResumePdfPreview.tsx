@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Loader2, Minus, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useResume } from "@/context/ResumeContext";
 import { useResumePdf } from "@/context/ResumePdfContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -16,9 +16,6 @@ const PDFViewer = dynamic(
   { ssr: false },
 );
 
-const ZOOM_MIN = 0.5;
-const ZOOM_MAX = 2.5;
-const ZOOM_STEP = 0.25;
 const DOWNLOAD_SECONDS = 10;
 const A4_RATIO = 297 / 210;
 
@@ -37,14 +34,13 @@ export function ResumePdfPreview({
   const t = getUiDict(uiLocale);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(360);
-  const [zoom, setZoom] = useState(1);
   const [downloading, setDownloading] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(DOWNLOAD_SECONDS);
   const [progress, setProgress] = useState(0);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const hint = wysiwygHint ?? t.previewWysiwyg;
-  const viewerWidth = Math.round(containerWidth * zoom);
+  const viewerWidth = Math.round(containerWidth);
   const viewerHeight = Math.round(viewerWidth * A4_RATIO);
 
   useEffect(() => {
@@ -111,36 +107,7 @@ export function ResumePdfPreview({
     <PreviewPaper showBadge wysiwygHint={hint}>
       <div className="overflow-hidden rounded-lg bg-white text-zinc-900">
         {showToolbar ? (
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-3 py-2">
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() =>
-                  setZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP))
-                }
-                className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 text-sm font-bold hover:bg-zinc-50"
-                aria-label="Zoom out"
-              >
-                <Minus className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setZoom(1)}
-                className="min-w-[3rem] rounded-md border border-zinc-200 px-2 py-1 text-[11px] font-semibold hover:bg-zinc-50"
-              >
-                {Math.round(zoom * 100)}%
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP))
-                }
-                className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 text-sm font-bold hover:bg-zinc-50"
-                aria-label="Zoom in"
-              >
-                <Plus className="h-3.5 w-3.5" />
-              </button>
-            </div>
+          <div className="flex items-center justify-end gap-2 border-b border-zinc-200 px-3 py-2">
             <button
               type="button"
               onClick={handleDownload}
