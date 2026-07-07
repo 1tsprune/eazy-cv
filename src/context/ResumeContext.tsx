@@ -78,6 +78,7 @@ interface ResumeContextValue {
   loadJson: (file: File) => Promise<void>;
   loadSample: (profile?: CvProfile) => void;
   loadSampleWithTemplate: (template: ModernTemplate) => void;
+  loadSampleAts: () => void;
   importLinkedIn: (data: ResumeData) => void;
   addCustomSection: () => void;
   updateCustomSection: (id: string, section: Partial<CustomSection>) => void;
@@ -568,6 +569,27 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const loadSampleAts = useCallback(() => {
+    setState((s) => {
+      const profile =
+        s.config.cvProfile === "student"
+          ? "student"
+          : s.config.cvProfile === "internship"
+            ? "internship"
+            : "professional";
+      return getSampleResumeState(profile, {
+        exportMode: "ats",
+        colorTheme: s.config.colorTheme,
+        language: s.config.language,
+        fontFamily: s.config.fontFamily,
+        fontSize: s.config.fontSize,
+        fontBold: s.config.fontBold,
+        cvProfile: s.config.cvProfile,
+        template: s.config.template,
+      });
+    });
+  }, []);
+
   const importLinkedIn = useCallback((data: ResumeData) => {
     setState((s) => ({ ...s, data }));
   }, []);
@@ -678,6 +700,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
       loadJson,
       loadSample,
       loadSampleWithTemplate,
+      loadSampleAts,
       importLinkedIn,
       addCustomSection,
       updateCustomSection,
@@ -725,6 +748,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
       loadJson,
       loadSample,
       loadSampleWithTemplate,
+      loadSampleAts,
       importLinkedIn,
       addCustomSection,
       updateCustomSection,

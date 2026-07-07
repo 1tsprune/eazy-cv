@@ -24,7 +24,7 @@ import {
   CV_FONT_FAMILIES,
   CV_FONT_SIZES,
 } from "@/lib/typography";
-import type { ColorTheme, CvFontFamily, CvFontSize, ExportMode, ModernTemplate } from "@/lib/types";
+import type { ColorTheme, CvFontFamily, CvFontSize } from "@/lib/types";
 
 const FONT_SIZE_LABEL_KEYS = {
   sm: "fontSizeSmall",
@@ -37,16 +37,6 @@ const PDFDownload = dynamic(
   () => import("@/components/builder/PDFDownload").then((m) => m.PDFDownload),
   { ssr: false },
 );
-
-const templates: { id: ModernTemplate; label: string }[] = [
-  { id: "elegant", label: "Elegant" },
-  { id: "minimal", label: "Minimal" },
-  { id: "professional", label: "Professional" },
-  { id: "executive", label: "Executive" },
-  { id: "creative", label: "Creative" },
-  { id: "compact", label: "Compact" },
-  { id: "academic", label: "Academic" },
-];
 
 const themes: ColorTheme[] = [
   "indigo",
@@ -246,52 +236,16 @@ export function AppHeader() {
 
             {styleMenuOpen && (
               <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,320px)] rounded-2xl border border-zinc-200 bg-white p-4 shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                  Mode export
-                </p>
-                <div className="flex gap-2">
-                  {(["modern", "ats"] as ExportMode[]).map((mode) => (
-                    <button
-                      key={mode}
-                      type="button"
-                      onClick={() => updateConfig({ exportMode: mode })}
-                      className={`flex-1 rounded-xl py-2 text-xs font-bold ${
-                        config.exportMode === mode
-                          ? "bg-slate-700 text-white"
-                          : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-                      }`}
-                    >
-                      {mode === "modern" ? t.exportModern : t.exportAts}
-                    </button>
-                  ))}
-                </div>
-
-                {config.exportMode === "modern" && (
+                {config.exportMode === "ats" ? (
+                  <p className="mb-3 rounded-xl bg-zinc-100 px-3 py-2.5 text-[11px] leading-relaxed text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                    {t.atsStyleMenuHint}
+                  </p>
+                ) : (
                   <>
-                    <p className="mb-2 mt-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                      {t.template}
-                    </p>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {templates.map((tpl) => (
-                        <button
-                          key={tpl.id}
-                          type="button"
-                          onClick={() => updateConfig({ template: tpl.id })}
-                          className={`rounded-lg px-2 py-2 text-left text-[11px] font-semibold ${
-                            config.template === tpl.id
-                              ? "bg-slate-700 text-white"
-                              : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                          }`}
-                        >
-                          {tpl.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    <p className="mb-2 mt-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                       {t.color}
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="mb-1 flex flex-wrap gap-2">
                       {themes.map((c) => (
                         <button
                           key={c}
@@ -308,8 +262,8 @@ export function AppHeader() {
                       ))}
                     </div>
 
-                    {data.personal.photo && (
-                      <label className="mt-4 flex cursor-pointer items-center gap-2 rounded-xl border border-zinc-200 px-3 py-2.5 text-[11px] font-semibold text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
+                    {data.personal.photo ? (
+                      <label className="mb-3 flex cursor-pointer items-center gap-2 rounded-xl border border-zinc-200 px-3 py-2.5 text-[11px] font-semibold text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
                         <input
                           type="checkbox"
                           checked={config.showPhoto}
@@ -320,11 +274,11 @@ export function AppHeader() {
                         />
                         {t.showPhotoInCv}
                       </label>
-                    )}
+                    ) : null}
                   </>
                 )}
 
-                <p className="mb-2 mt-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                   {t.fontFamily}
                 </p>
                 <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">

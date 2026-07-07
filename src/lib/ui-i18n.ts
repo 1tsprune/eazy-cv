@@ -47,6 +47,9 @@ const dict = {
     exportModern: "Modern",
     exportAts: "ATS",
     template: "Template",
+    cvStyle: "Gaya CV",
+    atsStyleMenuHint:
+      "Mode ATS: format plain, aman mesin rekrutmen. Atur font di bawah. Pilih gaya lain di panel Gaya CV.",
     color: "Warna",
     fontFamily: "Font",
     fontSize: "Ukuran",
@@ -69,8 +72,6 @@ const dict = {
       "Gak masuk database, gak ke server. Semua tersimpan lokal di perangkat kamu.",
     previewTitle: "Preview CV",
     previewWysiwyg: "Preview sama dengan PDF",
-    templateAtsHint:
-      "Mode ATS tidak pakai template visual. Klik Modern atau pilih template di bawah.",
     sampleDataBanner:
       "Ini data contoh supaya kamu lihat bentuk CV-nya. Ganti semua dengan info kamu sendiri.",
     igStoryTemplate: "Template IG Story",
@@ -208,6 +209,9 @@ const dict = {
     exportModern: "Modern",
     exportAts: "ATS",
     template: "Template",
+    cvStyle: "CV style",
+    atsStyleMenuHint:
+      "ATS mode: plain layout for applicant tracking systems. Set fonts below. Pick another style in the CV style panel.",
     color: "Color",
     fontFamily: "Font",
     fontSize: "Size",
@@ -230,8 +234,6 @@ const dict = {
       "No database, no server. Everything is stored locally on your device.",
     previewTitle: "CV Preview",
     previewWysiwyg: "Preview matches PDF download",
-    templateAtsHint:
-      "ATS mode has no visual templates. Switch to Modern or pick a template below.",
     sampleDataBanner:
       "This is sample data so you can see how the CV looks. Replace everything with your own info.",
     igStoryTemplate: "Instagram Story templates",
