@@ -23,7 +23,7 @@ export function BuilderWorkspace() {
   const t = getUiDict(uiLocale);
   const [tab, setTab] = useState<Tab>("form");
   const [showCover, setShowCover] = useState(false);
-  const [zoom, setZoom] = useState(0.75);
+  const [zoom, setZoom] = useState(0.85);
   const [coverZoom, setCoverZoom] = useState(0.8);
 
   if (!isLoaded) {
@@ -144,12 +144,18 @@ export function BuilderWorkspace() {
                     </span>
                   </div>
                 </div>
-                <div className="overflow-auto rounded-2xl border border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-700">
+                <div className="overflow-auto rounded-2xl border border-zinc-200 bg-[#e8eaed] p-6 dark:border-zinc-700 dark:bg-zinc-800/80">
                   <div
-                    className="origin-top transition-transform"
-                    style={{ transform: `scale(${zoom})` }}
+                    className="mx-auto origin-top transition-transform"
+                    style={{ transform: `scale(${zoom})`, width: "fit-content" }}
                   >
-                    <ResumePreview data={data} config={config} />
+                    <ResumePreview
+                      data={data}
+                      config={config}
+                      wysiwygHint={
+                        config.exportMode === "ats" ? t.previewWysiwyg : undefined
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -186,12 +192,18 @@ export function BuilderWorkspace() {
               </h2>
               <PreviewControls zoom={zoom} onZoomChange={setZoom} />
             </div>
-            <div className="overflow-auto rounded-2xl border border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-700">
+            <div className="overflow-auto rounded-2xl border border-zinc-200 bg-[#e8eaed] p-4 dark:border-zinc-700 dark:bg-zinc-800/80">
               <div
-                className="origin-top transition-transform"
-                style={{ transform: `scale(${zoom})` }}
+                className="mx-auto origin-top transition-transform"
+                style={{ transform: `scale(${zoom})`, width: "fit-content" }}
               >
-                <ResumePreview data={data} config={config} />
+                <ResumePreview
+                  data={data}
+                  config={config}
+                  wysiwygHint={
+                    config.exportMode === "ats" ? t.previewWysiwyg : undefined
+                  }
+                />
               </div>
             </div>
           </div>

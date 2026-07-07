@@ -68,6 +68,7 @@ const dict = {
     privacyDesc:
       "Gak masuk database, gak ke server. Semua tersimpan lokal di perangkat kamu.",
     previewTitle: "Preview CV",
+    previewWysiwyg: "Preview sama dengan PDF",
     scoreTitle: "Skor ATS",
     atsTipsTitle: "Yang perlu dilengkapi",
     dataBackupHint: "Backup CV kamu ke file JSON. Bisa dimuat lagi kapan saja.",
@@ -222,6 +223,7 @@ const dict = {
     privacyDesc:
       "No database, no server. Everything is stored locally on your device.",
     previewTitle: "CV Preview",
+    previewWysiwyg: "Preview matches PDF download",
     scoreTitle: "ATS Score",
     atsTipsTitle: "What to complete",
     dataBackupHint: "Back up your CV as a JSON file. Load it back anytime.",

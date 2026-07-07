@@ -5,30 +5,44 @@ import { themeColors } from "@/lib/colors";
 import { PROSE_JUSTIFY } from "@/lib/document-layout";
 import { t, tAts } from "@/lib/i18n";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
-import { formatAtsPeriodLine } from "@/lib/pdf-ats-layout";
 import {
+  formatAtsPeriodLine,
+  getAtsPreviewMetrics,
+  splitAtsProseLines,
+  type AtsPreviewMetrics,
+} from "@/lib/pdf-ats-layout";
+import {
+  chunkSkillLines,
   hasSkillContent,
   normalizeSkillGroups,
 } from "@/lib/skill-groups";
 import { getPreviewTypography } from "@/lib/typography";
 import { shouldShowPhoto } from "@/lib/photo-display";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
+import { PreviewContactInline } from "./PreviewContactInline";
+import { PreviewPaper } from "./PreviewPaper";
 
 interface Props {
   data: ResumeData;
   config: ResumeConfig;
+  wysiwygHint?: string;
 }
 
 function ContactRow({
   items,
   className = "",
   style,
+  linked = false,
 }: {
   items: string[];
   className?: string;
   style?: React.CSSProperties;
+  linked?: boolean;
 }) {
   if (!items.length) return null;
+  if (linked) {
+    return <PreviewContactInline items={items} className={className} style={style} />;
+  }
   return (
     <p className={className} style={style}>
       {items.join(" · ")}
@@ -36,10 +50,11 @@ function ContactRow({
   );
 }
 
-export function ResumePreview({ data, config }: Props) {
+export function ResumePreview({ data, config, wysiwygHint }: Props) {
   const colors = themeColors[config.colorTheme];
   const lang = config.language;
   const isAts = config.exportMode === "ats";
+  const ats = isAts ? getAtsPreviewMetrics(config) : null;
   const showPhoto = shouldShowPhoto(config, data);
   const photo = data.personal.photo;
 
@@ -62,17 +77,15 @@ export function ResumePreview({ data, config }: Props) {
   const ty = getPreviewTypography(config);
   const docStyle = {
     minHeight: "297mm",
-    fontFamily: ty.fontFamily,
-    fontSize: ty.sizes.base,
-    lineHeight: ty.lineHeight,
+    fontFamily: ats?.fontFamily ?? ty.fontFamily,
+    fontSize: ats?.page.fontSize ?? ty.sizes.base,
+    lineHeight: ats?.page.lineHeight ?? ty.lineHeight,
     fontWeight: ty.fontWeight,
+    color: ats?.page.color,
   } as const;
 
-  return (
-    <div
-      className="mx-auto w-full max-w-[210mm] origin-top bg-white text-zinc-900 shadow-2xl"
-      style={docStyle}
-    >
+  const pageBody = (
+    <>
       {config.template === "executive" && !isAts ? (
         <div>
           <header
@@ -103,7 +116,7 @@ export function ResumePreview({ data, config }: Props) {
             />
           </header>
           <div className="p-8">
-            <PreviewSections data={data} config={config} colors={colors} ty={ty} />
+            <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
           </div>
         </div>
       ) : config.template === "creative" && !isAts ? (
@@ -136,7 +149,7 @@ export function ResumePreview({ data, config }: Props) {
             </div>
           </header>
           <div className="p-8">
-            <PreviewSections data={data} config={config} colors={colors} ty={ty} />
+            <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
           </div>
         </div>
       ) : config.template === "compact" && !isAts ? (
@@ -167,7 +180,7 @@ export function ResumePreview({ data, config }: Props) {
             className="mt-1 border-b border-zinc-200 pb-2 text-zinc-400"
             style={{ fontSize: ty.sizes.xs }}
           />
-          <PreviewSections data={data} config={config} colors={colors} ty={ty} />
+          <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
         </div>
       ) : config.template === "academic" && !isAts ? (
         <div className="p-10">
@@ -191,7 +204,7 @@ export function ResumePreview({ data, config }: Props) {
               style={{ fontSize: ty.sizes.xs }}
             />
           </header>
-          <PreviewSections data={data} config={config} colors={colors} ty={ty} />
+          <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
         </div>
       ) : config.template === "professional" && !isAts ? (
         <div className="flex min-h-[297mm]">
@@ -241,54 +254,107 @@ export function ResumePreview({ data, config }: Props) {
             )}
           </aside>
           <main className="flex-1 p-7">
-            <PreviewSections data={data} config={config} colors={colors} ty={ty} />
+            <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
           </main>
         </div>
       ) : (
-        <div className={isAts ? "px-14 py-10" : "p-8"}>
+        <div
+          className={isAts ? undefined : "p-8"}
+          style={
+            isAts && ats
+              ? {
+                  paddingTop: ats.page.paddingTop,
+                  paddingBottom: ats.page.paddingBottom,
+                  paddingLeft: ats.page.paddingHorizontal,
+                  paddingRight: ats.page.paddingHorizontal,
+                }
+              : undefined
+          }
+        >
           <header
-            className={isAts ? "mb-2" : "mb-6 pb-4"}
+            className={isAts ? undefined : "mb-6 pb-4"}
             style={
               isAts
-                ? undefined
+                ? { marginBottom: 2 }
                 : { borderBottom: `2px solid ${colors.primary}` }
             }
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <h1
-                  style={{
-                    color: isAts ? "#111" : colors.primary,
-                    fontSize: isAts ? ty.sizes.xl : ty.sizes.xl,
-                    fontWeight: ty.headingWeight,
-                    letterSpacing: isAts ? "-0.02em" : undefined,
-                  }}
+                  style={
+                    isAts && ats
+                      ? {
+                          color: ats.name.color,
+                          fontSize: ats.name.fontSize,
+                          fontWeight: ats.headingWeight,
+                          marginBottom: ats.name.marginBottom,
+                        }
+                      : {
+                          color: colors.primary,
+                          fontSize: ty.sizes.xl,
+                          fontWeight: ty.headingWeight,
+                        }
+                  }
                 >
                   {data.personal.fullName || "Nama Kamu"}
                 </h1>
                 {data.personal.title && (
                   <p
-                    className={isAts ? "mt-0.5 text-zinc-600" : "mt-1 text-zinc-500"}
-                    style={{ fontSize: isAts ? ty.sizes.md : ty.sizes.sm }}
+                    style={
+                      isAts && ats
+                        ? {
+                            fontSize: ats.headline.fontSize,
+                            color: ats.headline.color,
+                            marginBottom: ats.headline.marginBottom,
+                          }
+                        : {
+                            marginTop: 4,
+                            fontSize: ty.sizes.sm,
+                            color: "#71717a",
+                          }
+                    }
                   >
                     {data.personal.title}
                   </p>
                 )}
                 <ContactRow
                   items={contact}
-                  className={isAts ? "mt-1.5 text-zinc-500" : "mt-2 text-zinc-400"}
-                  style={{ fontSize: ty.sizes.xs }}
+                  linked={isAts}
+                  className={isAts ? undefined : "mt-2 text-zinc-400"}
+                  style={
+                    isAts && ats
+                      ? {
+                          marginTop: ats.headline.marginBottom,
+                          fontSize: ats.contact.fontSize,
+                          color: ats.contact.color,
+                          lineHeight: ats.contact.lineHeight,
+                        }
+                      : { fontSize: ty.sizes.xs }
+                  }
                 />
               </div>
-              {showPhoto && (
+              {showPhoto && !isAts && (
                 <PreviewPhoto src={photo} size={76} className="shrink-0" />
               )}
             </div>
           </header>
-          <PreviewSections data={data} config={config} colors={colors} ty={ty} />
+          <PreviewSections
+            data={data}
+            config={config}
+            colors={colors}
+            ty={ty}
+            ats={ats}
+          />
         </div>
       )}
-    </div>
+    </>
+  );
+
+  return (
+    <PreviewPaper showBadge={isAts} wysiwygHint={isAts ? wysiwygHint : undefined}>
+      <div style={docStyle}>{pageBody}</div>
+    </PreviewPaper>
   );
 }
 
@@ -297,11 +363,13 @@ function PreviewSections({
   config,
   colors,
   ty,
+  ats,
 }: {
   data: ResumeData;
   config: ResumeConfig;
   colors: { primary: string; light: string };
   ty: ReturnType<typeof getPreviewTypography>;
+  ats: AtsPreviewMetrics | null;
 }) {
   const lang = config.language;
   const isAts = config.exportMode === "ats";
@@ -316,20 +384,66 @@ function PreviewSections({
     <h2
       className={
         isAts
-          ? "mb-1.5 mt-3 uppercase tracking-[0.14em]"
+          ? "uppercase"
           : "mb-2 mt-4 uppercase tracking-widest"
       }
-      style={{
-        fontSize: ty.sizes.sm,
-        fontWeight: ty.headingWeight,
-        color: isAts ? "#111" : colors.primary,
-        borderBottom: isAts ? "1px solid #ccc" : undefined,
-        paddingBottom: isAts ? 2 : undefined,
-      }}
+      style={
+        isAts && ats
+          ? {
+              fontSize: ats.sectionTitle.fontSize,
+              fontWeight: ats.headingWeight,
+              color: ats.sectionTitle.color,
+              letterSpacing: ats.sectionTitle.letterSpacing,
+              marginTop: ats.sectionTitle.marginTop,
+              marginBottom: ats.sectionTitle.marginBottom,
+              paddingBottom: ats.sectionTitle.paddingBottom,
+              borderBottom: "1px solid #cccccc",
+            }
+          : {
+              fontSize: ty.sizes.sm,
+              fontWeight: ty.headingWeight,
+              color: colors.primary,
+            }
+      }
     >
       {children}
     </h2>
   );
+
+  const bodyText = (extra?: React.CSSProperties) =>
+    isAts && ats
+      ? {
+          fontSize: ats.paragraph.fontSize,
+          lineHeight: ats.paragraph.lineHeight,
+          color: ats.paragraph.color,
+          marginBottom: ats.paragraph.marginBottom,
+          ...extra,
+        }
+      : { fontSize: ty.sizes.sm, ...extra };
+
+  const titleText = () =>
+    isAts && ats
+      ? {
+          fontSize: ats.itemTitle.fontSize,
+          fontWeight: ats.headingWeight,
+          lineHeight: ats.itemTitle.lineHeight,
+          color: ats.itemTitle.color,
+          marginBottom: ats.itemTitle.marginBottom,
+        }
+      : { fontSize: ty.sizes.md, fontWeight: ty.headingWeight };
+
+  const metaText = () =>
+    isAts && ats
+      ? {
+          fontSize: ats.itemMeta.fontSize,
+          color: ats.itemMeta.color,
+          lineHeight: ats.itemMeta.lineHeight,
+          marginBottom: ats.itemMeta.marginBottom,
+        }
+      : { fontSize: ty.sizes.xs, color: "#a1a1aa" };
+
+  const entryGap = () =>
+    isAts && ats ? { marginBottom: ats.entry.marginBottom } : { marginBottom: 12 };
 
   const sectionBlocks: Record<SectionKey, React.ReactNode> = {
     experience:
@@ -337,15 +451,12 @@ function PreviewSections({
         <>
           <SectionTitle>{sectionLabel("experience")}</SectionTitle>
           {data.experiences.map((exp) => (
-            <div key={exp.id} className="mb-3">
-              <p
-                className="font-semibold"
-                style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}
-              >
+            <div key={exp.id} style={entryGap()}>
+              <p className={isAts ? undefined : "font-semibold"} style={titleText()}>
                 {exp.position}
                 {exp.company && `${sep}${exp.company}`}
               </p>
-              <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
+              <p style={metaText()}>
                 {isAts
                   ? formatAtsPeriodLine(
                       exp.startDate,
@@ -364,8 +475,8 @@ function PreviewSections({
               </p>
               {exp.description && (
                 <p
-                  className={`mt-1 text-zinc-600 ${PROSE_JUSTIFY}`}
-                  style={{ fontSize: ty.sizes.sm }}
+                  className={isAts ? PROSE_JUSTIFY : `mt-1 text-zinc-600 ${PROSE_JUSTIFY}`}
+                  style={bodyText()}
                 >
                   {exp.description}
                 </p>
@@ -373,8 +484,8 @@ function PreviewSections({
               {exp.highlights.map((h, i) => (
                 <p
                   key={i}
-                  className={`text-zinc-600 ${isAts ? "" : "ml-3"}`}
-                  style={{ fontSize: ty.sizes.sm }}
+                  className={isAts ? PROSE_JUSTIFY : `text-zinc-600 ml-3`}
+                  style={bodyText()}
                 >
                   {isAts ? h : `• ${h}`}
                 </p>
@@ -389,13 +500,13 @@ function PreviewSections({
         <>
           <SectionTitle>{sectionLabel("education")}</SectionTitle>
           {data.educations.map((edu) => (
-            <div key={edu.id} className="mb-2">
-              <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
+            <div key={edu.id} style={entryGap()}>
+              <p style={titleText()}>
                 {isAts
                   ? [edu.degree, edu.institution].filter(Boolean).join(" · ")
                   : `${edu.degree}${edu.field ? ` — ${edu.field}` : ""}`}
               </p>
-              <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
+              <p style={metaText()}>
                 {isAts
                   ? [
                       edu.startDate && edu.endDate
@@ -416,6 +527,13 @@ function PreviewSections({
                       .filter(Boolean)
                       .join(" · ")}
               </p>
+              {isAts && edu.description
+                ? splitAtsProseLines(edu.description).map((line, i) => (
+                    <p key={i} className={PROSE_JUSTIFY} style={bodyText()}>
+                      {line}
+                    </p>
+                  ))
+                : null}
             </div>
           ))}
         </>
@@ -426,12 +544,12 @@ function PreviewSections({
         <>
           <SectionTitle>{sectionLabel("organizations")}</SectionTitle>
           {data.organizations.map((org) => (
-            <div key={org.id} className="mb-3">
-              <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
+            <div key={org.id} style={entryGap()}>
+              <p style={titleText()}>
                 {org.role}
                 {org.name && `${sep}${org.name}`}
               </p>
-              <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
+              <p style={metaText()}>
                 {isAts
                   ? formatAtsPeriodLine(
                       org.startDate,
@@ -451,8 +569,8 @@ function PreviewSections({
               {org.highlights.map((h, i) => (
                 <p
                   key={i}
-                  className={`text-zinc-600 ${isAts ? "" : "ml-3"}`}
-                  style={{ fontSize: ty.sizes.sm }}
+                  className={isAts ? undefined : "text-zinc-600 ml-3"}
+                  style={bodyText()}
                 >
                   {isAts ? h : `• ${h}`}
                 </p>
@@ -470,21 +588,33 @@ function PreviewSections({
             {normalizeSkillGroups(data)
               .filter((g) => g.skills.length > 0)
               .map((group) => (
-                <div key={group.id} className="mb-2">
+                <div key={group.id}>
                   {group.name ? (
                     <p
-                      className="font-semibold text-zinc-700"
                       style={{
-                        fontSize: ty.sizes.sm,
-                        fontWeight: ty.headingWeight,
+                        fontSize: ats?.skillGroup.fontSize ?? ty.sizes.sm,
+                        fontWeight: ats?.headingWeight ?? ty.headingWeight,
+                        marginTop: ats?.skillGroup.marginTop,
+                        marginBottom: ats?.skillGroup.marginBottom,
+                        color: "#222222",
                       }}
                     >
                       {group.name}
                     </p>
                   ) : null}
-                  <p className="text-zinc-600" style={{ fontSize: ty.sizes.sm }}>
-                    {group.skills.join(" · ")}
-                  </p>
+                  {chunkSkillLines(group.skills).map((line, i) => (
+                    <p
+                      key={i}
+                      style={{
+                        fontSize: ats?.skillsLine.fontSize ?? ty.sizes.sm,
+                        lineHeight: ats?.skillsLine.lineHeight,
+                        marginBottom: ats?.skillsLine.marginBottom,
+                        color: "#222222",
+                      }}
+                    >
+                      {line}
+                    </p>
+                  ))}
                 </div>
               ))}
           </>
@@ -558,16 +688,60 @@ function PreviewSections({
       data.certifications.length > 0 ? (
         <>
           <SectionTitle>{t(lang, "certifications")}</SectionTitle>
-          {data.certifications.map((cert) => (
-            <div key={cert.id} className="mb-2">
-              <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
-                {cert.name}
-              </p>
-              <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
-                {[cert.issuer, cert.date].filter(Boolean).join(" · ")}
-              </p>
+          {isAts && data.certifications.length >= 4 ? (
+            <div
+              style={{
+                display: ats?.certRow.display,
+                justifyContent: ats?.certRow.justifyContent,
+              }}
+            >
+              {[0, 1].map((col) => (
+                <div
+                  key={col}
+                  style={{ width: ats?.certCol.width }}
+                >
+                  {data.certifications
+                    .slice(
+                      col === 0
+                        ? 0
+                        : Math.ceil(data.certifications.length / 2),
+                      col === 0
+                        ? Math.ceil(data.certifications.length / 2)
+                        : undefined,
+                    )
+                    .map((cert) => (
+                      <p
+                        key={cert.id}
+                        style={bodyText({ marginBottom: ats?.certItem.marginBottom })}
+                      >
+                        {cert.name}
+                        {cert.issuer ? ` — ${cert.issuer}` : ""}
+                        {cert.date ? ` · ${cert.date}` : ""}
+                      </p>
+                    ))}
+                </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            data.certifications.map((cert) => (
+              <div key={cert.id} style={entryGap()}>
+                {isAts ? (
+                  <p style={bodyText({ marginBottom: ats?.certItem.marginBottom })}>
+                    {cert.name}
+                    {cert.issuer ? ` — ${cert.issuer}` : ""}
+                    {cert.date ? ` · ${cert.date}` : ""}
+                  </p>
+                ) : (
+                  <>
+                    <p style={titleText()}>{cert.name}</p>
+                    <p style={metaText()}>
+                      {[cert.issuer, cert.date].filter(Boolean).join(" · ")}
+                    </p>
+                  </>
+                )}
+              </div>
+            ))
+          )}
         </>
       ) : null,
 
@@ -575,19 +749,35 @@ function PreviewSections({
       data.languages.length > 0 ? (
         <>
           <SectionTitle>{t(lang, "languages")}</SectionTitle>
-          <div className="flex flex-wrap gap-2">
-            {data.languages.map((l) => (
-              <span
-                key={l.id}
-                className="text-zinc-600"
-                style={{ fontSize: ty.sizes.sm }}
-              >
-                {l.name}
-                {l.level &&
-                  ` (${getLanguageLevelLabel(l.level, lang)})`}
-              </span>
-            ))}
-          </div>
+          {isAts ? (
+            <p
+              style={{
+                fontSize: ats?.skillsLine.fontSize ?? ty.sizes.sm,
+                lineHeight: ats?.skillsLine.lineHeight,
+                color: "#222222",
+              }}
+            >
+              {data.languages
+                .map(
+                  (l) =>
+                    `${l.name}${l.level ? ` (${getLanguageLevelLabel(l.level, lang)})` : ""}`,
+                )
+                .join(" · ")}
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {data.languages.map((l) => (
+                <span
+                  key={l.id}
+                  className="text-zinc-600"
+                  style={{ fontSize: ty.sizes.sm }}
+                >
+                  {l.name}
+                  {l.level && ` (${getLanguageLevelLabel(l.level, lang)})`}
+                </span>
+              ))}
+            </div>
+          )}
         </>
       ) : null,
 
@@ -603,8 +793,17 @@ function PreviewSections({
               {section.items.map((item, i) => (
                 <p
                   key={i}
-                  className="ml-3 text-zinc-600"
-                  style={{ fontSize: ty.sizes.sm }}
+                  style={
+                    isAts && ats
+                      ? {
+                          fontSize: ats.bullet.fontSize,
+                          marginLeft: ats.bullet.marginLeft,
+                          marginBottom: ats.bullet.marginBottom,
+                          lineHeight: ats.bullet.lineHeight,
+                          color: ats.bullet.color,
+                        }
+                      : { fontSize: ty.sizes.sm, marginLeft: 12, color: "#52525b" }
+                  }
                 >
                   • {item}
                 </p>
@@ -621,8 +820,17 @@ function PreviewSections({
         <>
           {!isAts && <SectionTitle>{t(lang, "summary")}</SectionTitle>}
           <p
-            className={`text-zinc-600 ${PROSE_JUSTIFY}`}
-            style={{ fontSize: ty.sizes.sm, marginBottom: isAts ? 10 : undefined }}
+            className={PROSE_JUSTIFY}
+            style={
+              isAts && ats
+                ? {
+                    fontSize: ats.summary.fontSize,
+                    lineHeight: ats.summary.lineHeight,
+                    color: ats.summary.color,
+                    marginBottom: ats.summary.marginBottom,
+                  }
+                : { fontSize: ty.sizes.sm, color: "#52525b" }
+            }
           >
             {data.personal.summary}
           </p>

@@ -7,7 +7,11 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
-import { formatAtsPeriodLine, getAtsPdfLayout } from "@/lib/pdf-ats-layout";
+import {
+  formatAtsPeriodLine,
+  getAtsPdfLayout,
+  splitAtsProseLines,
+} from "@/lib/pdf-ats-layout";
 import {
   chunkSkillLines,
   hasSkillContent,
@@ -21,13 +25,6 @@ import { PdfCustomSections } from "./pdf-blocks";
 interface Props {
   data: ResumeData;
   config: ResumeConfig;
-}
-
-function splitLines(text: string): string[] {
-  return text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
 }
 
 function SectionHeading({
@@ -113,7 +110,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
                   .filter(Boolean)
                   .join(" · ")}
               </Text>
-              {splitLines(edu.description).map((line, i) => (
+              {splitAtsProseLines(edu.description).map((line, i) => (
                 <Text key={i} style={styles.paragraph}>
                   {line}
                 </Text>
