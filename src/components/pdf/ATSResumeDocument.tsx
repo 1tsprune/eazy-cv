@@ -6,8 +6,8 @@ import {
   View,
   StyleSheet,
 } from "@react-pdf/renderer";
+import { formatAtsPeriodLine, getAtsPdfLayout } from "@/lib/pdf-ats-layout";
 import { t, tAts } from "@/lib/i18n";
-import { getPdfSheetTokens } from "@/lib/typography";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
 import { PdfCustomSections } from "./pdf-blocks";
 
@@ -23,121 +23,26 @@ function splitLines(text: string): string[] {
     .filter(Boolean);
 }
 
+function SectionHeading({
+  title,
+  style,
+}: {
+  title: string;
+  style: ReturnType<typeof getAtsPdfLayout>["sheet"];
+}) {
+  return (
+    <Text style={style.sectionTitle} minPresenceAhead={24}>
+      {title}
+    </Text>
+  );
+}
+
 export default function ATSResumeDocument({ data, config }: Props) {
-  const tk = getPdfSheetTokens(config);
+  const { sheet: layout } = getAtsPdfLayout(config);
+  const styles = StyleSheet.create(layout);
   const language = config.language;
-
-  const styles = StyleSheet.create({
-    page: {
-      padding: 44,
-      fontFamily: tk.fontFamily,
-      fontSize: tk.base,
-      lineHeight: tk.lh,
-      color: "#111",
-    },
-    header: {
-      marginBottom: 12,
-      paddingBottom: 10,
-      borderBottomWidth: 1,
-      borderBottomColor: "#ccc",
-    },
-    name: {
-      fontSize: tk.xl,
-      fontFamily: tk.headingFamily,
-      marginBottom: 2,
-    },
-    title: {
-      fontSize: tk.md,
-      fontFamily: tk.bodyFamily,
-      color: "#444",
-      marginBottom: 6,
-    },
-    contact: {
-      fontSize: tk.xs,
-      fontFamily: tk.bodyFamily,
-      color: "#555",
-      lineHeight: tk.lh + 0.15,
-    },
-    summary: {
-      fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
-      lineHeight: tk.lh + 0.1,
-      color: "#333",
-      textAlign: "justify",
-      marginBottom: 4,
-    },
-    sectionTitle: {
-      fontSize: tk.sm,
-      fontFamily: tk.headingFamily,
-      textTransform: "uppercase",
-      letterSpacing: 1.2,
-      borderBottomWidth: 1,
-      borderBottomColor: "#ddd",
-      paddingBottom: 3,
-      marginTop: 12,
-      marginBottom: 6,
-      color: "#222",
-    },
-    skillGroupTitle: {
-      fontFamily: tk.headingFamily,
-      fontSize: tk.sm,
-      marginTop: 4,
-      marginBottom: 2,
-      color: "#333",
-    },
-    itemTitle: {
-      fontFamily: tk.headingFamily,
-      fontSize: tk.md,
-      marginBottom: 1,
-    },
-    itemSub: {
-      fontFamily: tk.bodyFamily,
-      fontSize: tk.xs,
-      color: "#555",
-      marginBottom: 3,
-    },
-    body: {
-      fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
-      lineHeight: tk.lh,
-      color: "#333",
-    },
-    bodyJustify: {
-      fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
-      lineHeight: tk.lh + 0.05,
-      color: "#333",
-      textAlign: "justify",
-    },
-    bullet: {
-      fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
-      marginLeft: 10,
-      marginBottom: 2,
-      lineHeight: tk.lh,
-      color: "#333",
-    },
-    skillsLine: {
-      fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
-      lineHeight: tk.lh + 0.1,
-      color: "#333",
-      marginBottom: 4,
-    },
-    certCol: {
-      width: "48%",
-    },
-    certRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      gap: 12,
-    },
-    block: {
-      marginBottom: 8,
-    },
-  });
-
   const { personal } = data;
+
   const contact = [
     personal.phone,
     personal.email,
@@ -150,25 +55,28 @@ export default function ATSResumeDocument({ data, config }: Props) {
   const sectionBlocks: Record<SectionKey, ReactNode> = {
     experience:
       data.experiences.length > 0 ? (
-        <View>
-          <Text style={styles.sectionTitle}>{tAts(language, "experience")}</Text>
+        <>
+          <SectionHeading
+            title={tAts(language, "experience")}
+            style={layout}
+          />
           {data.experiences.map((exp) => (
-            <View key={exp.id} style={styles.block}>
+            <View key={exp.id} style={styles.entry}>
               <Text style={styles.itemTitle}>
                 {exp.position}
                 {exp.company ? ` · ${exp.company}` : ""}
               </Text>
-              <Text style={styles.itemSub}>
-                {[
+              <Text style={styles.itemMeta}>
+                {formatAtsPeriodLine(
                   exp.startDate,
-                  exp.endDate || (exp.current ? t(language, "present") : ""),
+                  exp.endDate,
+                  exp.current,
                   exp.location,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
+                  language,
+                )}
               </Text>
               {exp.description ? (
-                <Text style={[styles.bodyJustify, { marginBottom: 2 }]}>
+                <Text style={[styles.paragraph, { textAlign: "justify" }]}>
                   {exp.description}
                 </Text>
               ) : null}
@@ -179,20 +87,23 @@ export default function ATSResumeDocument({ data, config }: Props) {
               ))}
             </View>
           ))}
-        </View>
+        </>
       ) : null,
 
     education:
       data.educations.length > 0 ? (
-        <View>
-          <Text style={styles.sectionTitle}>{t(language, "education")}</Text>
+        <>
+          <SectionHeading
+            title={t(language, "education")}
+            style={layout}
+          />
           {data.educations.map((edu) => (
-            <View key={edu.id} style={{ marginBottom: 6 }}>
+            <View key={edu.id} style={styles.entry}>
               <Text style={styles.itemTitle}>
                 {edu.degree}
                 {edu.institution ? ` · ${edu.institution}` : ""}
               </Text>
-              <Text style={styles.itemSub}>
+              <Text style={styles.itemMeta}>
                 {[
                   edu.startDate && edu.endDate
                     ? `${edu.startDate} — ${edu.endDate}`
@@ -209,29 +120,30 @@ export default function ATSResumeDocument({ data, config }: Props) {
               ))}
             </View>
           ))}
-        </View>
+        </>
       ) : null,
 
     organizations:
       data.organizations.length > 0 ? (
-        <View>
-          <Text style={styles.sectionTitle}>
-            {tAts(language, "organizations")}
-          </Text>
+        <>
+          <SectionHeading
+            title={tAts(language, "organizations")}
+            style={layout}
+          />
           {data.organizations.map((org) => (
-            <View key={org.id} style={styles.block}>
+            <View key={org.id} style={styles.entry}>
               <Text style={styles.itemTitle}>
                 {org.role}
                 {org.name ? ` · ${org.name}` : ""}
               </Text>
-              <Text style={styles.itemSub}>
-                {[
+              <Text style={styles.itemMeta}>
+                {formatAtsPeriodLine(
                   org.startDate,
-                  org.endDate || (org.current ? t(language, "present") : ""),
+                  org.endDate,
+                  org.current,
                   org.location,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
+                  language,
+                )}
               </Text>
               {org.highlights.map((h, i) => (
                 <Text key={i} style={styles.bullet}>
@@ -240,15 +152,16 @@ export default function ATSResumeDocument({ data, config }: Props) {
               ))}
             </View>
           ))}
-        </View>
+        </>
       ) : null,
 
     skills:
       data.technicalSkills.length > 0 || data.softSkills.length > 0 ? (
-        <View>
-          <Text style={styles.sectionTitle}>
-            {tAts(language, "technicalSkills")}
-          </Text>
+        <>
+          <SectionHeading
+            title={tAts(language, "technicalSkills")}
+            style={layout}
+          />
           {data.technicalSkills.length > 0 ? (
             <Text style={styles.skillsLine}>
               {data.technicalSkills.join(" · ")}
@@ -256,34 +169,33 @@ export default function ATSResumeDocument({ data, config }: Props) {
           ) : null}
           {data.softSkills.length > 0 ? (
             <>
-              <Text style={styles.skillGroupTitle}>
-                {t(language, "softSkills")}
-              </Text>
+              <Text style={styles.skillGroup}>{t(language, "softSkills")}</Text>
               <Text style={styles.skillsLine}>
                 {data.softSkills.join(" · ")}
               </Text>
             </>
           ) : null}
-        </View>
+        </>
       ) : null,
 
     projects: null,
 
     certifications:
       data.certifications.length > 0 ? (
-        <View>
-          <Text style={styles.sectionTitle}>
-            {t(language, "certifications")}
-          </Text>
+        <>
+          <SectionHeading
+            title={t(language, "certifications")}
+            style={layout}
+          />
           {data.certifications.length >= 4 ? (
             <View style={styles.certRow}>
               <View style={styles.certCol}>
                 {data.certifications
-                  .filter((_, i) => i % 2 === 0)
+                  .slice(0, Math.ceil(data.certifications.length / 2))
                   .map((cert) => (
                     <Text
                       key={cert.id}
-                      style={[styles.body, { marginBottom: 4 }]}
+                      style={[styles.paragraph, { marginBottom: 4 }]}
                     >
                       {cert.name}
                       {cert.issuer ? ` — ${cert.issuer}` : ""}
@@ -293,11 +205,11 @@ export default function ATSResumeDocument({ data, config }: Props) {
               </View>
               <View style={styles.certCol}>
                 {data.certifications
-                  .filter((_, i) => i % 2 === 1)
+                  .slice(Math.ceil(data.certifications.length / 2))
                   .map((cert) => (
                     <Text
                       key={cert.id}
-                      style={[styles.body, { marginBottom: 4 }]}
+                      style={[styles.paragraph, { marginBottom: 4 }]}
                     >
                       {cert.name}
                       {cert.issuer ? ` — ${cert.issuer}` : ""}
@@ -308,32 +220,41 @@ export default function ATSResumeDocument({ data, config }: Props) {
             </View>
           ) : (
             data.certifications.map((cert) => (
-              <Text key={cert.id} style={[styles.body, { marginBottom: 4 }]}>
+              <Text
+                key={cert.id}
+                style={[styles.paragraph, { marginBottom: 4 }]}
+              >
                 {cert.name}
                 {cert.issuer ? ` — ${cert.issuer}` : ""}
                 {cert.date ? ` · ${cert.date}` : ""}
               </Text>
             ))
           )}
-        </View>
+        </>
       ) : null,
 
     languages:
       data.languages.length > 0 ? (
-        <View>
-          <Text style={styles.sectionTitle}>{t(language, "languages")}</Text>
+        <>
+          <SectionHeading
+            title={t(language, "languages")}
+            style={layout}
+          />
           <Text style={styles.skillsLine}>
             {data.languages
               .map((l) => `${l.name}${l.level ? ` (${l.level})` : ""}`)
               .join(" · ")}
           </Text>
-        </View>
+        </>
       ) : null,
 
     custom: data.customSections.some((s) => s.showInAts && s.title) ? (
       <PdfCustomSections
         sections={data.customSections}
-        styles={{ sectionTitle: styles.sectionTitle, bullet: styles.bullet }}
+        styles={{
+          sectionTitle: styles.sectionTitle,
+          bullet: styles.bullet,
+        }}
         atsOnly
       />
     ) : null,
@@ -342,12 +263,12 @@ export default function ATSResumeDocument({ data, config }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
-        <View style={styles.header}>
+        <View style={{ marginBottom: 2 }}>
           <Text style={styles.name}>
             {personal.fullName || "Your Name"}
           </Text>
           {personal.title ? (
-            <Text style={styles.title}>{personal.title}</Text>
+            <Text style={styles.headline}>{personal.title}</Text>
           ) : null}
           {contact.length > 0 ? (
             <Text style={styles.contact}>{contact.join(" · ")}</Text>
@@ -360,7 +281,8 @@ export default function ATSResumeDocument({ data, config }: Props) {
 
         {config.sectionOrder.map((key) => {
           const block = sectionBlocks[key];
-          return block ? <View key={key}>{block}</View> : null;
+          if (!block) return null;
+          return <View key={key}>{block}</View>;
         })}
       </Page>
     </Document>

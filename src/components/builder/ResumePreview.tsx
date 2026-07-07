@@ -4,6 +4,7 @@ import { PreviewPhoto } from "@/components/builder/PreviewPhoto";
 import { themeColors } from "@/lib/colors";
 import { PROSE_JUSTIFY } from "@/lib/document-layout";
 import { t, tAts } from "@/lib/i18n";
+import { formatAtsPeriodLine } from "@/lib/pdf-ats-layout";
 import { getPreviewTypography } from "@/lib/typography";
 import { shouldShowPhoto } from "@/lib/photo-display";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
@@ -239,34 +240,38 @@ export function ResumePreview({ data, config }: Props) {
           </main>
         </div>
       ) : (
-        <div className="p-8">
+        <div className={isAts ? "px-14 py-10" : "p-8"}>
           <header
-            className="mb-6 pb-4"
-            style={{
-              borderBottom: isAts
-                ? "1px solid #ccc"
-                : `2px solid ${colors.primary}`,
-            }}
+            className={isAts ? "mb-2" : "mb-6 pb-4"}
+            style={
+              isAts
+                ? undefined
+                : { borderBottom: `2px solid ${colors.primary}` }
+            }
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <h1
                   style={{
                     color: isAts ? "#111" : colors.primary,
-                    fontSize: ty.sizes.xl,
+                    fontSize: isAts ? ty.sizes.lg : ty.sizes.xl,
                     fontWeight: ty.headingWeight,
+                    letterSpacing: isAts ? "-0.02em" : undefined,
                   }}
                 >
                   {data.personal.fullName || "Nama Kamu"}
                 </h1>
                 {data.personal.title && (
-                  <p className="mt-1 text-zinc-500" style={{ fontSize: ty.sizes.sm }}>
+                  <p
+                    className={isAts ? "mt-0.5 text-zinc-600" : "mt-1 text-zinc-500"}
+                    style={{ fontSize: isAts ? ty.sizes.md : ty.sizes.sm }}
+                  >
                     {data.personal.title}
                   </p>
                 )}
                 <ContactRow
                   items={contact}
-                  className="mt-2 text-zinc-400"
+                  className={isAts ? "mt-1.5 text-zinc-500" : "mt-2 text-zinc-400"}
                   style={{ fontSize: ty.sizes.xs }}
                 />
               </div>
@@ -302,13 +307,17 @@ function PreviewSections({
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h2
-      className="mb-2 mt-4 uppercase tracking-widest"
+      className={
+        isAts
+          ? "mb-1.5 mt-3 uppercase tracking-[0.14em]"
+          : "mb-2 mt-4 uppercase tracking-widest"
+      }
       style={{
         fontSize: ty.sizes.sm,
         fontWeight: ty.headingWeight,
-        color: isAts ? "#333" : colors.primary,
-        borderBottom: isAts ? "1px solid #ddd" : undefined,
-        paddingBottom: isAts ? 4 : undefined,
+        color: isAts ? "#111" : colors.primary,
+        borderBottom: isAts ? "1px solid #ccc" : undefined,
+        paddingBottom: isAts ? 2 : undefined,
       }}
     >
       {children}
@@ -330,13 +339,21 @@ function PreviewSections({
                 {exp.company && `${sep}${exp.company}`}
               </p>
               <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
-                {[
-                  exp.startDate,
-                  exp.endDate || (exp.current ? t(lang, "present") : ""),
-                  exp.location,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
+                {isAts
+                  ? formatAtsPeriodLine(
+                      exp.startDate,
+                      exp.endDate,
+                      exp.current,
+                      exp.location,
+                      lang,
+                    )
+                  : [
+                      exp.startDate,
+                      exp.endDate || (exp.current ? t(lang, "present") : ""),
+                      exp.location,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
               </p>
               {exp.description && (
                 <p
@@ -408,13 +425,21 @@ function PreviewSections({
                 {org.name && `${sep}${org.name}`}
               </p>
               <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
-                {[
-                  org.startDate,
-                  org.endDate || (org.current ? t(lang, "present") : ""),
-                  org.location,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
+                {isAts
+                  ? formatAtsPeriodLine(
+                      org.startDate,
+                      org.endDate,
+                      org.current,
+                      org.location,
+                      lang,
+                    )
+                  : [
+                      org.startDate,
+                      org.endDate || (org.current ? t(lang, "present") : ""),
+                      org.location,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
               </p>
               {org.highlights.map((h, i) => (
                 <p
@@ -588,7 +613,7 @@ function PreviewSections({
           {!isAts && <SectionTitle>{t(lang, "summary")}</SectionTitle>}
           <p
             className={`text-zinc-600 ${PROSE_JUSTIFY}`}
-            style={{ fontSize: ty.sizes.sm, marginBottom: isAts ? 8 : undefined }}
+            style={{ fontSize: ty.sizes.sm, marginBottom: isAts ? 10 : undefined }}
           >
             {data.personal.summary}
           </p>
