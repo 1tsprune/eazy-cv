@@ -2,7 +2,10 @@ import type { ReactNode } from "react";
 import { Text, View, type Styles } from "@react-pdf/renderer";
 import { t } from "@/lib/i18n";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
-import { formatAtsPeriodLine } from "@/lib/pdf-ats-layout";
+import {
+  formatAtsEducationMeta,
+  formatAtsPeriodLine,
+} from "@/lib/pdf-ats-layout";
 import {
   hasSkillContent,
   normalizeSkillGroups,
@@ -14,11 +17,7 @@ import type {
   ResumeData,
   SectionKey,
 } from "@/lib/types";
-import {
-  PdfCustomSections,
-  PdfEducation,
-  PdfOrganizations,
-} from "./pdf-blocks";
+import { PdfCustomSections } from "./pdf-blocks";
 import {
   MODERN_ENTRY_ROW_STYLES,
   ModernPdfEntryHeader,
@@ -51,6 +50,188 @@ function periodLine(
   return formatAtsPeriodLine(start, end, current, location, lang);
 }
 
+function formatEduPeriod(start: string, end: string): string {
+  if (start && end) return `${start} – ${end}`;
+  return start || end || "";
+}
+
+function entryRowStyles(styles: ModernPdfStyles) {
+  return {
+    expHeader: MODERN_ENTRY_ROW_STYLES.expHeader,
+    expHeaderLeft: MODERN_ENTRY_ROW_STYLES.expHeaderLeft,
+    itemTitle: styles.itemTitle,
+    itemTitleSub: {
+      ...MODERN_ENTRY_ROW_STYLES.itemTitleSub,
+      fontSize: styles.itemSub?.fontSize ?? 10,
+    },
+    itemMetaRight: MODERN_ENTRY_ROW_STYLES.itemMetaRight,
+  };
+}
+
+function PdfEducation({
+  educations,
+  lang,
+  styles,
+  variant = "default",
+  layout = "row",
+}: {
+  educations: ResumeData["educations"];
+  lang: Language;
+  styles: ModernPdfStyles;
+  variant?: "default" | "compact" | "academic";
+  layout?: "row" | "stack";
+}) {
+  if (!educations.length) return null;
+
+  if (variant === "compact") {
+    return (
+      <>
+        <Text style={styles.sectionTitle}>{t(lang, "education")}</Text>
+        {educations.map((edu) => (
+          <View key={edu.id} style={{ marginBottom: 4 }}>
+            <Text style={styles.itemTitle}>
+              {edu.degree} — {edu.institution}
+            </Text>
+            {formatEduPeriod(edu.startDate, edu.endDate) ? (
+              <Text style={styles.itemSub}>
+                {formatEduPeriod(edu.startDate, edu.endDate)}
+              </Text>
+            ) : null}
+          </View>
+        ))}
+      </>
+    );
+  }
+
+  if (variant === "academic") {
+    return (
+      <>
+        <Text style={styles.sectionTitle}>{t(lang, "education")}</Text>
+        {educations.map((edu) => (
+          <View key={edu.id} style={{ marginBottom: 6 }}>
+            <Text style={styles.itemTitle}>{edu.institution}</Text>
+            <Text style={styles.itemSub}>
+              {[
+                edu.degree,
+                edu.field,
+                formatEduPeriod(edu.startDate, edu.endDate),
+                edu.gpa ? `${t(lang, "gpa")}: ${edu.gpa}` : "",
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </Text>
+          </View>
+        ))}
+      </>
+    );
+  }
+
+  const rowStyles = entryRowStyles(styles);
+
+  return (
+    <>
+      <Text style={styles.sectionTitle}>{t(lang, "education")}</Text>
+      {educations.map((edu) => (
+        <View key={edu.id} style={{ marginBottom: 6 }}>
+          {layout === "row" ? (
+            <ModernPdfEntryHeader
+              primary={
+                edu.field ? `${edu.degree} — ${edu.field}` : edu.degree
+              }
+              secondary={edu.institution}
+              period={formatAtsEducationMeta(
+                edu.startDate,
+                edu.endDate,
+                edu.gpa,
+                lang,
+              )}
+              styles={rowStyles}
+            />
+          ) : (
+            <>
+              <Text style={styles.itemTitle}>
+                {edu.degree}
+                {edu.field ? ` — ${edu.field}` : ""}
+              </Text>
+              <Text style={styles.itemSub}>
+                {[
+                  edu.institution,
+                  edu.location,
+                  formatEduPeriod(edu.startDate, edu.endDate),
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+                {edu.gpa ? ` · ${t(lang, "gpa")}: ${edu.gpa}` : ""}
+              </Text>
+            </>
+          )}
+        </View>
+      ))}
+    </>
+  );
+}
+
+function PdfOrganizations({
+  organizations,
+  lang,
+  styles,
+  layout = "row",
+}: {
+  organizations: ResumeData["organizations"];
+  lang: Language;
+  styles: ModernPdfStyles;
+  layout?: "row" | "stack";
+}) {
+  if (!organizations.length) return null;
+
+  const rowStyles = entryRowStyles(styles);
+
+  return (
+    <>
+      <Text style={styles.sectionTitle}>{t(lang, "organizations")}</Text>
+      {organizations.map((org) => (
+        <View key={org.id} style={{ marginBottom: 8 }}>
+          {layout === "row" ? (
+            <ModernPdfEntryHeader
+              primary={org.role}
+              secondary={org.name}
+              period={formatAtsPeriodLine(
+                org.startDate,
+                org.endDate,
+                org.current,
+                org.location,
+                lang,
+              )}
+              styles={rowStyles}
+            />
+          ) : (
+            <>
+              <Text style={styles.itemTitle}>
+                {org.role}
+                {org.name ? ` — ${org.name}` : ""}
+              </Text>
+              <Text style={styles.itemSub}>
+                {[
+                  org.startDate,
+                  org.endDate || (org.current ? t(lang, "present") : ""),
+                  org.location,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </Text>
+            </>
+          )}
+          {org.highlights.map((h, i) => (
+            <Text key={i} style={styles.bullet}>
+              • {h}
+            </Text>
+          ))}
+        </View>
+      ))}
+    </>
+  );
+}
+
 function PdfExperience({
   data,
   lang,
@@ -68,16 +249,7 @@ function PdfExperience({
 }) {
   if (!data.experiences.length) return null;
 
-  const rowStyles = {
-    expHeader: MODERN_ENTRY_ROW_STYLES.expHeader,
-    expHeaderLeft: MODERN_ENTRY_ROW_STYLES.expHeaderLeft,
-    itemTitle: styles.itemTitle,
-    itemTitleSub: {
-      ...MODERN_ENTRY_ROW_STYLES.itemTitleSub,
-      fontSize: styles.itemSub?.fontSize ?? 10,
-    },
-    itemMetaRight: MODERN_ENTRY_ROW_STYLES.itemMetaRight,
-  };
+  const rowStyles = entryRowStyles(styles);
 
   return (
     <>
@@ -388,6 +560,7 @@ export function PdfModernBody({
         lang={lang}
         styles={styles}
         variant={educationVariant}
+        layout={experienceLayout}
       />
     ),
     organizations: skip.has("organizations") ? null : (
@@ -395,6 +568,7 @@ export function PdfModernBody({
         organizations={data.organizations}
         lang={lang}
         styles={styles}
+        layout={experienceLayout}
       />
     ),
     skills: skip.has("skills") ? null : (

@@ -1,6 +1,8 @@
 import { Text, View, type Styles } from "@react-pdf/renderer";
 import { ATS_BULLET_MARK } from "@/lib/pdf-ats-layout";
 
+const BULLET_MARK_COLOR = "#aaaaaa";
+
 type SheetStyles = {
   expHeader: Styles[keyof Styles];
   expHeaderLeft: Styles[keyof Styles];
@@ -45,16 +47,11 @@ export function AtsPdfBullet({
   bulletStyle: Styles[keyof Styles];
   markStyle?: Styles[keyof Styles];
 }) {
-  const markColor =
-    typeof bulletStyle === "object" &&
-    bulletStyle !== null &&
-    "markColor" in bulletStyle
-      ? (bulletStyle as { markColor?: string }).markColor
-      : "#aaaaaa";
-
   return (
     <Text style={bulletStyle}>
-      <Text style={{ color: markColor, fontSize: 7 }}>{ATS_BULLET_MARK} </Text>
+      <Text style={{ color: BULLET_MARK_COLOR, fontSize: 7 }}>
+        {ATS_BULLET_MARK}{" "}
+      </Text>
       {text}
     </Text>
   );

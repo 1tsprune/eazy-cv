@@ -20,6 +20,7 @@ import {
 } from "@/lib/skill-groups";
 import { t, tAts } from "@/lib/i18n";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
+import { sanitizePdfSheet } from "@/lib/pdf-sheet";
 import { cvContactItems, PdfContactInline } from "./pdf-contact";
 import { PdfCustomSections } from "./pdf-blocks";
 import { AtsPdfBullet, AtsPdfEntryHeader } from "./ats-pdf-blocks";
@@ -45,7 +46,8 @@ function SectionHeading({
 
 export default function ATSResumeDocument({ data, config }: Props) {
   const { sheet: layout } = getAtsPdfLayout(config);
-  const styles = StyleSheet.create(layout);
+  const styles = StyleSheet.create(sanitizePdfSheet(layout));
+  const contactLinkColor = layout.contact.linkColor as string;
   const language = config.language;
   const { personal } = data;
 
@@ -64,7 +66,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
             style={layout}
           />
           {data.experiences.map((exp) => (
-            <View key={exp.id} style={styles.entry} wrap={false}>
+            <View key={exp.id} style={styles.entry}>
               <AtsPdfEntryHeader
                 primary={exp.position}
                 secondary={exp.company}
@@ -155,7 +157,14 @@ export default function ATSResumeDocument({ data, config }: Props) {
           />
           <View style={styles.skillsGrid}>
             {[0, 1].map((col) => (
-              <View key={col} style={styles.skillsCol}>
+              <View
+                key={col}
+                style={
+                  col === 0
+                    ? { ...styles.skillsCol, paddingRight: 8 }
+                    : { ...styles.skillsCol, paddingLeft: 8 }
+                }
+              >
                 {skillGroups
                   .slice(
                     col === 0 ? 0 : skillsMid,
@@ -245,7 +254,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
           <PdfContactInline
             items={contact}
             style={styles.contact}
-            linkColor={layout.contact.linkColor as string}
+            linkColor={contactLinkColor}
           />
         </View>
 

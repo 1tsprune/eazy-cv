@@ -64,6 +64,10 @@ const dict = {
     darkMode: "Dark mode",
     lightMode: "Light mode",
     download: "Download PDF",
+    downloadIosHint: 'Di iPhone: tap Download → pilih "Simpan ke File".',
+    downloadIosUnsupported:
+      "Browser ini tidak mendukung simpan PDF. Buka di Safari lalu coba lagi.",
+    downloadFailed: "Gagal membuat PDF. Coba lagi.",
     save: "Simpan",
     load: "Muat",
     reset: "Reset",
@@ -227,6 +231,10 @@ const dict = {
     darkMode: "Dark mode",
     lightMode: "Light mode",
     download: "Download PDF",
+    downloadIosHint: 'On iPhone: tap Download → choose "Save to Files".',
+    downloadIosUnsupported:
+      "This browser cannot save PDFs. Open in Safari and try again.",
+    downloadFailed: "Failed to generate PDF. Try again.",
     save: "Save",
     load: "Load",
     reset: "Reset",
