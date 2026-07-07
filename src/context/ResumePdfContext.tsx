@@ -5,21 +5,20 @@ import {
   createContext,
   useCallback,
   useContext,
-  useDeferredValue,
+  useEffect,
   useMemo,
   useRef,
   type ReactNode,
 } from "react";
 import { buildResumePdfDocument } from "@/lib/build-resume-pdf-document";
 import { useResume } from "@/context/ResumeContext";
-import type { ResumeConfig, ResumeData } from "@/lib/types";
+import { ensurePdfSetup } from "@/lib/pdf-setup";
 
 type ResumePdfContextValue = {
   url: string | null;
   blob: Blob | null;
   loading: boolean;
   error: string | null;
-  isStale: boolean;
   waitForBlob: () => Promise<Blob>;
 };
 
@@ -31,14 +30,14 @@ function waitMs(ms: number): Promise<void> {
 
 export function ResumePdfProvider({ children }: { children: ReactNode }) {
   const { data, config } = useResume();
-  const deferredData = useDeferredValue(data);
-  const deferredConfig = useDeferredValue(config);
-  const isStale =
-    deferredData !== data || deferredConfig !== config;
+
+  useEffect(() => {
+    ensurePdfSetup();
+  }, []);
 
   const document = useMemo(
-    () => buildResumePdfDocument(deferredData, deferredConfig),
-    [deferredData, deferredConfig],
+    () => buildResumePdfDocument(data, config),
+    [data, config],
   );
 
   const [pdfState] = usePDF({ document });
@@ -48,7 +47,7 @@ export function ResumePdfProvider({ children }: { children: ReactNode }) {
   const waitForBlob = useCallback(async (): Promise<Blob> => {
     for (let i = 0; i < 400; i++) {
       const state = stateRef.current;
-      if (state.blob) return state.blob;
+      if (state.blob && !state.loading) return state.blob;
       if (state.error) throw new Error(state.error);
       await waitMs(50);
     }
@@ -61,7 +60,6 @@ export function ResumePdfProvider({ children }: { children: ReactNode }) {
       blob: pdfState.blob,
       loading: pdfState.loading,
       error: pdfState.error,
-      isStale,
       waitForBlob,
     }),
     [
@@ -69,7 +67,6 @@ export function ResumePdfProvider({ children }: { children: ReactNode }) {
       pdfState.blob,
       pdfState.loading,
       pdfState.error,
-      isStale,
       waitForBlob,
     ],
   );

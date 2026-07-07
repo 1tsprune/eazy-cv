@@ -9,11 +9,8 @@ function ptPx(value: number): number {
   return Math.round(value * PT_TO_PX * 10) / 10;
 }
 
-/** 12mm page margin — matches 1tsprune cv.html @page */
-export const ATS_PAGE_MARGIN_MM = 12;
-export const ATS_PAGE_MARGIN_PT = Math.round(
-  (ATS_PAGE_MARGIN_MM * 72) / 25.4,
-);
+/** EZCV ATS pageMargin = 36pt */
+export const ATS_PAGE_MARGIN_PT = 36;
 
 export const ATS_BULLET_MARK = "▸";
 
@@ -256,6 +253,7 @@ export function getAtsPdfLayout(config: ResumeConfig) {
       color: "#1a1a1a",
     },
     header: {
+      alignItems: "center" as const,
       marginBottom: 18,
       paddingBottom: 12,
       borderBottomWidth: 2,
@@ -266,12 +264,15 @@ export function getAtsPdfLayout(config: ResumeConfig) {
       fontFamily: tk.headingFamily,
       marginBottom: 2,
       color: "#1a1a1a",
+      textTransform: "uppercase" as const,
+      textAlign: "center" as const,
     },
     headline: {
       fontSize: 11,
       fontFamily: tk.bodyFamily,
       color: "#555555",
       marginBottom: 8,
+      textAlign: "center" as const,
     },
     contact: {
       fontSize: 10,
@@ -279,6 +280,7 @@ export function getAtsPdfLayout(config: ResumeConfig) {
       color: "#666666",
       linkColor: "#1a1a1a",
       lineHeight: 1.5,
+      textAlign: "center" as const,
     },
     summary: {
       fontFamily: tk.bodyFamily,

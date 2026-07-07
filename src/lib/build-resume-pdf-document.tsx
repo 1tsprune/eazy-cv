@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import type { DocumentProps } from "@react-pdf/renderer";
 import ATSResumeDocument from "@/components/pdf/ATSResumeDocument";
-import ModernResumeDocument from "@/components/pdf/ModernResumeDocument";
+import PDFResumeDocument from "@/components/pdf/PDFResumeDocument";
 import { prepareModernPdfData } from "@/lib/pdf-modern-data";
 import { sanitizeResumeData } from "@/lib/sanitize";
 import type { ResumeConfig, ResumeData } from "@/lib/types";
@@ -18,7 +18,7 @@ export function buildResumePdfDocument(
   }
 
   return (
-    <ModernResumeDocument
+    <PDFResumeDocument
       data={prepareModernPdfData(clean)}
       config={config}
     />

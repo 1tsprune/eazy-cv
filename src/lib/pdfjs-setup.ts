@@ -2,9 +2,9 @@ import { pdfjs } from "react-pdf";
 
 let ready = false;
 
-/** Configure pdf.js worker for react-pdf canvas preview (same blob as download). */
+/** Local worker — same blob preview as download, no CDN dependency. */
 export function ensurePdfJsWorker(): void {
   if (ready || typeof window === "undefined") return;
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
   ready = true;
 }

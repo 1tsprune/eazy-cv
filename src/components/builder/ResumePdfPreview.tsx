@@ -29,7 +29,6 @@ const DOWNLOAD_SECONDS = 10;
 
 interface Props {
   wysiwygHint?: string;
-  /** Show download + zoom toolbar (EZCV-style panel). */
   showToolbar?: boolean;
 }
 
@@ -38,7 +37,7 @@ export function ResumePdfPreview({
   showToolbar = true,
 }: Props) {
   const { data, config } = useResume();
-  const { url, blob, loading, error, isStale, waitForBlob } = useResumePdf();
+  const { url, blob, loading, error, waitForBlob } = useResumePdf();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,8 +50,8 @@ export function ResumePdfPreview({
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const hint = wysiwygHint ?? t.previewWysiwyg;
-  const file = blob ?? url ?? null;
   const pageWidth = Math.round(containerWidth * zoom);
+  const pdfReady = Boolean(blob && url && !loading && !error);
 
   useEffect(() => {
     ensurePdfJsWorker();
@@ -66,6 +65,10 @@ export function ResumePdfPreview({
     setContainerWidth(el.clientWidth || 360);
     return () => ro.disconnect();
   }, []);
+
+  useEffect(() => {
+    setNumPages(0);
+  }, [url]);
 
   const stopTicks = useCallback(() => {
     if (tickRef.current) {
@@ -101,8 +104,7 @@ export function ResumePdfPreview({
       ]);
       const base = data.personal.fullName?.trim() || "cv";
       const suffix = config.exportMode === "ats" ? "_ATS" : "_CV";
-      const filename = `${base}${suffix}.pdf`;
-      await deliverPdfBlob(pdfBlob, filename);
+      await deliverPdfBlob(pdfBlob, `${base}${suffix}.pdf`);
     } finally {
       stopTicks();
       setProgress(100);
@@ -181,8 +183,8 @@ export function ResumePdfPreview({
             />
           ) : null}
 
-          {(isStale || loading) && !error ? (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-white/85">
+          {loading && !error ? (
+            <div className="flex min-h-[420px] flex-col items-center justify-center gap-2">
               <Loader2 className="h-7 w-7 animate-spin text-slate-600" />
               <span className="text-xs text-zinc-500">{t.previewPdfLoading}</span>
             </div>
@@ -195,10 +197,11 @@ export function ResumePdfPreview({
             </div>
           ) : null}
 
-          {file && !error ? (
+          {pdfReady ? (
             <div className="flex justify-center p-3">
               <PdfDocument
-                file={file}
+                key={url}
+                file={blob}
                 onLoadSuccess={({ numPages: n }) => setNumPages(n)}
                 loading={
                   <div className="flex items-center gap-2 py-12 text-xs text-zinc-500">
@@ -212,16 +215,18 @@ export function ResumePdfPreview({
                   </p>
                 }
               >
-                {Array.from({ length: numPages }, (_, i) => (
-                  <div key={i} className="mb-3 shadow-md">
-                    <PdfPage
-                      pageNumber={i + 1}
-                      width={pageWidth}
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                    />
-                  </div>
-                ))}
+                {numPages > 0
+                  ? Array.from({ length: numPages }, (_, i) => (
+                      <div key={`${url}-${i}`} className="mb-3 shadow-md">
+                        <PdfPage
+                          pageNumber={i + 1}
+                          width={pageWidth}
+                          renderTextLayer={false}
+                          renderAnnotationLayer={false}
+                        />
+                      </div>
+                    ))
+                  : null}
               </PdfDocument>
             </div>
           ) : null}
