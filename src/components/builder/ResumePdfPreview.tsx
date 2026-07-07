@@ -7,17 +7,13 @@ import { useResume } from "@/context/ResumeContext";
 import { useResumePdf } from "@/context/ResumePdfContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
-import { PreviewPaper } from "./PreviewPaper";
 import { PdfDownloadOverlay } from "./PdfDownloadOverlay";
 import { deliverPdfBlob } from "@/lib/pdf-download";
 
-const PDFViewer = dynamic(
-  () => import("@react-pdf/renderer").then((m) => m.PDFViewer),
-  { ssr: false },
-);
+const PdfCanvasView = dynamic(() => import("./PdfCanvasView"), { ssr: false });
 
 const DOWNLOAD_SECONDS = 10;
-const A4_RATIO = 297 / 210;
+const PREVIEW_DEBOUNCE_MS = 300;
 
 interface Props {
   wysiwygHint?: string;
@@ -29,28 +25,41 @@ export function ResumePdfPreview({
   showToolbar = true,
 }: Props) {
   const { data, config } = useResume();
-  const { document, loading, error, waitForBlob } = useResumePdf();
+  const { blob, loading, error, waitForBlob } = useResumePdf();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(360);
+  const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(DOWNLOAD_SECONDS);
   const [progress, setProgress] = useState(0);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const hint = wysiwygHint ?? t.previewWysiwyg;
-  const viewerWidth = Math.round(containerWidth);
-  const viewerHeight = Math.round(viewerWidth * A4_RATIO);
+  // display width = container minus the p-3 padding (12px each side)
+  const displayWidth = Math.max(0, Math.round(containerWidth) - 24);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => setContainerWidth(el.clientWidth || 360));
+    const ro = new ResizeObserver(() =>
+      setContainerWidth(el.clientWidth || 360),
+    );
     ro.observe(el);
     setContainerWidth(el.clientWidth || 360);
     return () => ro.disconnect();
   }, []);
+
+  // Debounce the blob feeding the preview so rapid edits don't thrash pdf.js.
+  useEffect(() => {
+    if (!blob) return;
+    const id = window.setTimeout(
+      () => setPreviewBlob(blob),
+      previewBlob ? PREVIEW_DEBOUNCE_MS : 0,
+    );
+    return () => window.clearTimeout(id);
+  }, [blob, previewBlob]);
 
   const stopTicks = useCallback(() => {
     if (tickRef.current) {
@@ -103,9 +112,23 @@ export function ResumePdfPreview({
     waitForBlob,
   ]);
 
+  const showSpinner = !previewBlob && !error;
+
   return (
-    <PreviewPaper showBadge wysiwygHint={hint}>
-      <div className="overflow-hidden rounded-lg bg-white text-zinc-900">
+    <div className="relative w-full">
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1.5 rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-500 shadow-sm ring-1 ring-zinc-200/60 dark:bg-zinc-800/90 dark:text-zinc-400 dark:ring-zinc-700">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
+          A4
+        </span>
+        {hint ? (
+          <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-400 dark:ring-emerald-900/60">
+            {hint}
+          </span>
+        ) : null}
+      </div>
+
+      <div className="overflow-hidden rounded-lg bg-white text-zinc-900 shadow-lg ring-1 ring-black/5">
         {showToolbar ? (
           <div className="flex items-center justify-end gap-2 border-b border-zinc-200 px-3 py-2">
             <button
@@ -125,7 +148,7 @@ export function ResumePdfPreview({
 
         <div
           ref={containerRef}
-          className="relative min-h-[420px] overflow-auto bg-[#e8eaed]"
+          className="relative overflow-hidden bg-[#e8eaed] p-3"
         >
           {downloading ? (
             <PdfDownloadOverlay
@@ -136,10 +159,12 @@ export function ResumePdfPreview({
             />
           ) : null}
 
-          {loading && !error ? (
+          {showSpinner ? (
             <div className="flex min-h-[420px] flex-col items-center justify-center gap-2">
               <Loader2 className="h-7 w-7 animate-spin text-slate-600" />
-              <span className="text-xs text-zinc-500">{t.previewPdfLoading}</span>
+              <span className="text-xs text-zinc-500">
+                {t.previewPdfLoading}
+              </span>
             </div>
           ) : null}
 
@@ -150,19 +175,11 @@ export function ResumePdfPreview({
             </div>
           ) : null}
 
-          {!loading && !error ? (
-            <div className="flex justify-center p-3">
-              <PDFViewer
-                width={viewerWidth}
-                height={viewerHeight}
-                showToolbar={false}
-              >
-                {document}
-              </PDFViewer>
-            </div>
+          {previewBlob && !error ? (
+            <PdfCanvasView blob={previewBlob} width={displayWidth} />
           ) : null}
         </div>
       </div>
-    </PreviewPaper>
+    </div>
   );
 }
