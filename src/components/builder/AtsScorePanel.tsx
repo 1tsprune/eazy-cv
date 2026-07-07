@@ -9,7 +9,11 @@ import { getUiDict } from "@/lib/ui-i18n";
 import { SITE, whatsappUrl } from "@/lib/site";
 import { ScoreRing } from "./ScoreRing";
 
-export function AtsScorePanel() {
+type Props = {
+  onFixCheck?: (checkId: string) => void;
+};
+
+export function AtsScorePanel({ onFixCheck }: Props) {
   const { data, config } = useResume();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
@@ -74,11 +78,23 @@ export function AtsScorePanel() {
           </div>
           <ul className="mt-2 space-y-1.5">
             {failed.map((check) => (
-              <li
-                key={check.id}
-                className="text-[11px] leading-snug text-amber-900/90 dark:text-amber-200/90"
-              >
-                • {check.tip}
+              <li key={check.id}>
+                {onFixCheck ? (
+                  <button
+                    type="button"
+                    onClick={() => onFixCheck(check.id)}
+                    className="w-full rounded-lg px-1 py-1.5 text-left text-[11px] leading-snug text-amber-900/90 transition hover:bg-amber-100/80 dark:text-amber-200/90 dark:hover:bg-amber-900/30"
+                  >
+                    • {check.tip}
+                    <span className="mt-0.5 block text-[10px] font-bold text-amber-700 dark:text-amber-300">
+                      → {t.atsTapToFix}
+                    </span>
+                  </button>
+                ) : (
+                  <span className="text-[11px] leading-snug text-amber-900/90 dark:text-amber-200/90">
+                    • {check.tip}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
@@ -98,29 +114,47 @@ export function AtsScorePanel() {
       </div>
 
       <ul className="mt-4 space-y-2">
-        {checks.map((check) => (
-          <li key={check.id} className="flex items-start gap-2 text-xs">
-            {check.passed ? (
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-lime-500 dark:text-lime-400" />
-            ) : (
-              <Circle className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300 dark:text-zinc-600" />
-            )}
-            <span
-              className={
-                check.passed
-                  ? "text-zinc-700 dark:text-zinc-300"
-                  : "text-zinc-500 dark:text-zinc-400"
-              }
-            >
-              {check.label}
-              {!check.passed && (
-                <span className="block text-[10px] text-zinc-400 dark:text-zinc-500">
-                  → {check.tip}
-                </span>
+        {checks.map((check) => {
+          const row = (
+            <>
+              {check.passed ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-lime-500 dark:text-lime-400" />
+              ) : (
+                <Circle className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300 dark:text-zinc-600" />
               )}
-            </span>
-          </li>
-        ))}
+              <span
+                className={
+                  check.passed
+                    ? "text-zinc-700 dark:text-zinc-300"
+                    : "text-zinc-500 dark:text-zinc-400"
+                }
+              >
+                {check.label}
+                {!check.passed && (
+                  <span className="block text-[10px] text-zinc-400 dark:text-zinc-500">
+                    → {check.tip}
+                  </span>
+                )}
+              </span>
+            </>
+          );
+
+          return (
+            <li key={check.id}>
+              {!check.passed && onFixCheck ? (
+                <button
+                  type="button"
+                  onClick={() => onFixCheck(check.id)}
+                  className="flex w-full items-start gap-2 rounded-lg px-1 py-1 text-left text-xs transition hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
+                >
+                  {row}
+                </button>
+              ) : (
+                <div className="flex items-start gap-2 text-xs">{row}</div>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       {score < 80 && (

@@ -7,6 +7,7 @@ interface SectionCardProps {
   children: ReactNode;
   defaultOpen?: boolean;
   badge?: string;
+  sectionId?: string;
 }
 
 export function SectionCard({
@@ -15,11 +16,15 @@ export function SectionCard({
   children,
   defaultOpen = true,
   badge,
+  sectionId,
 }: SectionCardProps) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <section
+      id={sectionId}
+      className="scroll-mt-20 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+    >
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -45,7 +50,10 @@ export function SectionCard({
         />
       </button>
       {open && (
-        <div className="border-t border-zinc-100 px-4 py-3.5 dark:border-zinc-800 sm:px-5 sm:py-4">
+        <div
+          data-section-body
+          className="border-t border-zinc-100 px-4 py-3.5 dark:border-zinc-800 sm:px-5 sm:py-4"
+        >
           {children}
         </div>
       )}

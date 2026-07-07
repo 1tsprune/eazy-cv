@@ -100,6 +100,7 @@ export function ResumeForm() {
   return (
     <div className="space-y-4">
       <SectionCard
+        sectionId="cv-section-personal"
         title={t.personalInfo}
         icon={<User className="h-4 w-4" />}
       >
@@ -207,6 +208,7 @@ export function ResumeForm() {
       </SectionCard>
 
       <SectionCard
+        sectionId="cv-section-experience"
         title={experienceTitle}
         icon={<Briefcase className="h-4 w-4" />}
         badge={`${data.experiences.length}`}
@@ -301,6 +303,7 @@ export function ResumeForm() {
       </SectionCard>
 
       <SectionCard
+        sectionId="cv-section-education"
         title={t.education}
         icon={<GraduationCap className="h-4 w-4" />}
         badge={`${data.educations.length}`}
@@ -482,6 +485,7 @@ export function ResumeForm() {
       </SectionCard>
 
       <SectionCard
+        sectionId="cv-section-skills"
         title={t.skills}
         icon={<Code className="h-4 w-4" />}
         badge={`${normalizeSkillGroups(data).length}`}
@@ -530,6 +534,7 @@ export function ResumeForm() {
       </SectionCard>
 
       <SectionCard
+        sectionId="cv-section-projects"
         title={t.projects}
         icon={<Code className="h-4 w-4" />}
         badge={`${data.projects.length}`}

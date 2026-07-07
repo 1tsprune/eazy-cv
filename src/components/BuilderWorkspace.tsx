@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import dynamic from "next/dynamic";
 import { ArrowLeft } from "lucide-react";
+import {
+  getAtsScrollTarget,
+  scrollToCvSection,
+} from "@/lib/ats-scroll-targets";
 import {
   BuilderBottomNav,
   type BuilderTab,
@@ -22,12 +27,24 @@ import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
 
+const PDFDownload = dynamic(
+  () =>
+    import("@/components/builder/PDFDownload").then((m) => m.PDFDownload),
+  { ssr: false },
+);
+
 export function BuilderWorkspace() {
   const { data, config, coverLetter, isLoaded } = useResume();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const [tab, setTab] = useState<BuilderTab>("form");
   const [showCover, setShowCover] = useState(false);
+
+  const handleFixAtsCheck = useCallback((checkId: string) => {
+    const sectionId = getAtsScrollTarget(checkId);
+    setTab("form");
+    window.setTimeout(() => scrollToCvSection(sectionId), 120);
+  }, []);
 
   if (!isLoaded) {
     return (
@@ -130,7 +147,7 @@ export function BuilderWorkspace() {
                   />
                 </PreviewDesk>
               </div>
-              <AtsScorePanel />
+              <AtsScorePanel onFixCheck={handleFixAtsCheck} />
             </>
           )}
         </div>
@@ -177,6 +194,9 @@ export function BuilderWorkspace() {
                 }
               />
             </PreviewDesk>
+            <div className="mt-4">
+              <PDFDownload />
+            </div>
           </div>
         )}
 
@@ -198,7 +218,9 @@ export function BuilderWorkspace() {
           </div>
         )}
 
-        {showMobileScore && !showCover && <AtsScorePanel />}
+        {showMobileScore && !showCover && (
+          <AtsScorePanel onFixCheck={handleFixAtsCheck} />
+        )}
       </div>
 
       {!showCover ? (

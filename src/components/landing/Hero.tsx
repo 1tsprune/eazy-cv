@@ -23,7 +23,7 @@ export function Hero() {
         <div className="text-center lg:text-left">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-1.5 text-sm font-medium text-slate-700">
             <Sparkles className="h-4 w-4" />
-            CV Builder Terbaik — 100% Gratis
+            7 Template · Mode ATS · 100% Gratis
           </div>
 
           <h1 className="text-4xl font-extrabold leading-[1.08] tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
@@ -34,9 +34,9 @@ export function Hero() {
           </h1>
 
           <p className="mt-5 text-lg leading-relaxed text-zinc-500">
-            4 template modern, mode ATS, skor real-time, dan download PDF
-            instan — semua di browser, tanpa login. Lebih lengkap dari CV
-            builder manapun yang pernah ada.
+            7 template modern, mode ATS, skor real-time, dan download PDF
+            instan — semua di browser, tanpa login. Preview = hasil PDF,
+            data cuma di perangkat kamu.
           </p>
 
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">

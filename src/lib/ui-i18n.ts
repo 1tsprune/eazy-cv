@@ -78,6 +78,7 @@ const dict = {
 
     scoreTitle: "Skor ATS",
     atsTipsTitle: "Yang perlu dilengkapi",
+    atsTapToFix: "Ketuk untuk ke form",
     dataBackupHint: "Backup CV kamu ke file JSON. Bisa dimuat lagi kapan saja.",
     resetConfirm: "Reset CV? Semua data di form akan dihapus.",
     jsonInvalid: "File JSON tidak valid",
@@ -240,6 +241,7 @@ const dict = {
 
     scoreTitle: "ATS Score",
     atsTipsTitle: "What to complete",
+    atsTapToFix: "Tap to open form",
     dataBackupHint: "Back up your CV as a JSON file. Load it back anytime.",
     resetConfirm: "Reset CV? All form data will be cleared.",
     jsonInvalid: "Invalid JSON file",
