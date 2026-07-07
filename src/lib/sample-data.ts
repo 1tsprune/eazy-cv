@@ -110,8 +110,8 @@ export const sampleResumeState: ResumeState = {
       },
     ],
     languages: [
-      { id: createId(), name: "Indonesia", level: "Native" },
-      { id: createId(), name: "English", level: "Professional" },
+      { id: createId(), name: "Indonesia", level: "native" },
+      { id: createId(), name: "English", level: "professional" },
     ],
     customSections: [],
   },

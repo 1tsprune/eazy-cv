@@ -1,5 +1,6 @@
 import { APP } from "./config";
 import { defaultResumeState } from "./default-data";
+import { normalizeLanguageLevel } from "./language-levels";
 import { DEFAULT_TYPOGRAPHY, normalizeFontFamily } from "./typography";
 import { DEFAULT_SECTION_ORDER, type ResumeState, type SectionKey } from "./types";
 
@@ -22,6 +23,10 @@ function normalizeState(parsed: ResumeState): ResumeState {
       ...defaultResumeState.data,
       ...parsed.data,
       organizations: parsed.data?.organizations ?? [],
+      languages: (parsed.data?.languages ?? []).map((lang) => ({
+        ...lang,
+        level: normalizeLanguageLevel(lang.level ?? ""),
+      })),
     },
     config: {
       ...defaultResumeState.config,

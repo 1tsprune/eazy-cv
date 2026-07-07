@@ -128,6 +128,7 @@ const dict = {
     languages: "Bahasa",
     languageName: "Bahasa",
     languageLevel: "Level",
+    selectLanguageLevel: "Pilih level",
     addLanguage: "Tambah Bahasa",
     customSections: "Section Custom",
     customSectionsHint:
@@ -274,6 +275,7 @@ const dict = {
     languages: "Languages",
     languageName: "Language",
     languageLevel: "Level",
+    selectLanguageLevel: "Select level",
     addLanguage: "Add Language",
     customSections: "Custom Sections",
     customSectionsHint:

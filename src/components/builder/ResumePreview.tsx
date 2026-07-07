@@ -4,6 +4,7 @@ import { PreviewPhoto } from "@/components/builder/PreviewPhoto";
 import { themeColors } from "@/lib/colors";
 import { PROSE_JUSTIFY } from "@/lib/document-layout";
 import { t, tAts } from "@/lib/i18n";
+import { getLanguageLevelLabel } from "@/lib/language-levels";
 import { formatAtsPeriodLine } from "@/lib/pdf-ats-layout";
 import { getPreviewTypography } from "@/lib/typography";
 import { shouldShowPhoto } from "@/lib/photo-display";
@@ -575,7 +576,8 @@ function PreviewSections({
                 style={{ fontSize: ty.sizes.sm }}
               >
                 {l.name}
-                {l.level && ` (${l.level})`}
+                {l.level &&
+                  ` (${getLanguageLevelLabel(l.level, lang)})`}
               </span>
             ))}
           </div>

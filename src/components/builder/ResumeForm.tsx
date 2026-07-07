@@ -15,6 +15,8 @@ import {
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { getLanguageLevelOptions } from "@/lib/language-levels";
 import { Textarea } from "@/components/ui/Textarea";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { TagInput } from "@/components/ui/TagInput";
@@ -599,13 +601,14 @@ export function ResumeForm() {
                     updateLanguage(lang.id, { name: e.target.value })
                   }
                 />
-                <Input
+                <Select
                   label={t.languageLevel}
                   value={lang.level}
                   onChange={(e) =>
                     updateLanguage(lang.id, { level: e.target.value })
                   }
-                  placeholder="Fluent / Native"
+                  placeholder={t.selectLanguageLevel}
+                  options={getLanguageLevelOptions(uiLocale)}
                 />
               </div>
               <button

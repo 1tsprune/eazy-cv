@@ -346,7 +346,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
         ...s.data,
         languages: [
           ...s.data.languages,
-          { id: createId(), name: "", level: "" },
+          { id: createId(), name: "", level: "professional" },
         ],
       },
     }));

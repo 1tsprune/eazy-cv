@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
 } from "@react-pdf/renderer";
+import { getLanguageLevelLabel } from "@/lib/language-levels";
 import { formatAtsPeriodLine, getAtsPdfLayout } from "@/lib/pdf-ats-layout";
 import { t, tAts } from "@/lib/i18n";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
@@ -253,7 +254,10 @@ export default function ATSResumeDocument({ data, config }: Props) {
           />
           <Text style={styles.skillsLine}>
             {data.languages
-              .map((l) => `${l.name}${l.level ? ` (${l.level})` : ""}`)
+              .map(
+                (l) =>
+                  `${l.name}${l.level ? ` (${getLanguageLevelLabel(l.level, language)})` : ""}`,
+              )
               .join(" · ")}
           </Text>
         </>
