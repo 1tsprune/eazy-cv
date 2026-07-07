@@ -40,7 +40,10 @@ function toHttps(value: string): string {
   return `https://${value.replace(/^\/\//, "")}`;
 }
 
-export const PDF_LINK_STYLE = {
-  color: "#1155cc",
+/** Decoration only — link color inherits from parent (header, sidebar, contact row). */
+export const CONTACT_LINK_DECORATION = {
   textDecoration: "none",
 } as const;
+
+/** @deprecated alias — no longer forces blue */
+export const PDF_LINK_STYLE = CONTACT_LINK_DECORATION;

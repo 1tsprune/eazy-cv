@@ -1,5 +1,5 @@
 import { Link, Text, type Styles } from "@react-pdf/renderer";
-import { PDF_LINK_STYLE, resolveContactHref } from "@/lib/pdf-links";
+import { CONTACT_LINK_DECORATION, resolveContactHref } from "@/lib/pdf-links";
 import type { PersonalInfo } from "@/lib/types";
 
 type StyleProp = Styles[keyof Styles];
@@ -23,7 +23,7 @@ export function PdfContactInline({
           <Text key={`${item}-${index}`}>
             {index > 0 ? separator : ""}
             {href ? (
-              <Link src={href} style={PDF_LINK_STYLE}>
+              <Link src={href} style={CONTACT_LINK_DECORATION}>
                 {item}
               </Link>
             ) : (
@@ -48,7 +48,9 @@ export function PdfContactItem({
     return (
       <Link
         src={href}
-        style={style ? [style, PDF_LINK_STYLE] : PDF_LINK_STYLE}
+        style={
+          style ? [style, CONTACT_LINK_DECORATION] : CONTACT_LINK_DECORATION
+        }
       >
         {value}
       </Link>

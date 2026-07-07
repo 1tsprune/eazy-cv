@@ -32,21 +32,14 @@ function ContactRow({
   items,
   className = "",
   style,
-  linked = false,
 }: {
   items: string[];
   className?: string;
   style?: React.CSSProperties;
-  linked?: boolean;
 }) {
   if (!items.length) return null;
-  if (linked) {
-    return <PreviewContactInline items={items} className={className} style={style} />;
-  }
   return (
-    <p className={className} style={style}>
-      {items.join(" · ")}
-    </p>
+    <PreviewContactInline items={items} className={className} style={style} />
   );
 }
 
@@ -320,7 +313,6 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
                 )}
                 <ContactRow
                   items={contact}
-                  linked={isAts}
                   className={isAts ? undefined : "mt-2 text-zinc-400"}
                   style={
                     isAts && ats

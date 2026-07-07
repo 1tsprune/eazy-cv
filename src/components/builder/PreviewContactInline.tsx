@@ -1,6 +1,6 @@
 "use client";
 
-import { PDF_LINK_STYLE, resolveContactHref } from "@/lib/pdf-links";
+import { CONTACT_LINK_DECORATION, resolveContactHref } from "@/lib/pdf-links";
 
 interface Props {
   items: string[];
@@ -29,7 +29,10 @@ export function PreviewContactInline({
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: PDF_LINK_STYLE.color, textDecoration: "none" }}
+                style={{
+                  color: style?.color ?? "inherit",
+                  ...CONTACT_LINK_DECORATION,
+                }}
                 className="hover:underline"
               >
                 {item}
