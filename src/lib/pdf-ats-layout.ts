@@ -9,6 +9,14 @@ function ptPx(value: number): number {
   return Math.round(value * PT_TO_PX * 10) / 10;
 }
 
+/** 12mm page margin — matches 1tsprune cv.html @page */
+export const ATS_PAGE_MARGIN_MM = 12;
+export const ATS_PAGE_MARGIN_PT = Math.round(
+  (ATS_PAGE_MARGIN_MM * 72) / 25.4,
+);
+
+export const ATS_BULLET_MARK = "▸";
+
 export type AtsPreviewMetrics = {
   fontFamily: string;
   headingWeight: number;
@@ -20,9 +28,20 @@ export type AtsPreviewMetrics = {
     lineHeight: number;
     color: string;
   };
+  header: {
+    marginBottom: number;
+    paddingBottom: number;
+    borderBottomWidth: number;
+    borderBottomColor: string;
+  };
   name: { fontSize: number; marginBottom: number; color: string };
   headline: { fontSize: number; color: string; marginBottom: number };
-  contact: { fontSize: number; color: string; lineHeight: number };
+  contact: {
+    fontSize: number;
+    color: string;
+    lineHeight: number;
+    linkColor: string;
+  };
   summary: {
     fontSize: number;
     lineHeight: number;
@@ -36,17 +55,19 @@ export type AtsPreviewMetrics = {
     marginBottom: number;
     paddingBottom: number;
     color: string;
+    borderBottomColor: string;
   };
+  expHeader: { marginBottom: number };
   itemTitle: {
     fontSize: number;
     marginBottom: number;
     lineHeight: number;
     color: string;
   };
-  itemMeta: {
+  itemTitleSub: { fontSize: number; color: string };
+  itemMetaRight: {
     fontSize: number;
     color: string;
-    marginBottom: number;
     lineHeight: number;
   };
   paragraph: {
@@ -57,103 +78,125 @@ export type AtsPreviewMetrics = {
   };
   skillsLine: { fontSize: number; lineHeight: number; marginBottom: number };
   skillGroup: { fontSize: number; marginTop: number; marginBottom: number };
+  skillsGrid: { gap: number };
   bullet: {
     fontSize: number;
-    marginLeft: number;
+    paddingLeft: number;
     marginBottom: number;
     lineHeight: number;
     color: string;
+    markColor: string;
   };
-  certCol: { width: string };
-  certRow: { display: string; justifyContent: string };
   certItem: { marginBottom: number };
+  certDate: { fontSize: number; color: string };
   entry: { marginBottom: number };
 };
 
 /** Pixel metrics aligned with @react-pdf ATS output (WYSIWYG preview) */
 export function getAtsPreviewMetrics(config: ResumeConfig): AtsPreviewMetrics {
-  const { tk, sheet } = getAtsPdfLayout(config);
+  const { sheet } = getAtsPdfLayout(config);
   const previewFont = getPreviewTypography(config);
+  const m = ATS_PAGE_MARGIN_PT;
 
   return {
     fontFamily: previewFont.fontFamily,
     headingWeight: previewFont.headingWeight,
     page: {
-      paddingTop: ptPx(sheet.page.paddingTop as number),
-      paddingBottom: ptPx(sheet.page.paddingBottom as number),
-      paddingHorizontal: ptPx(sheet.page.paddingHorizontal as number),
-      fontSize: ptPx(tk.sm),
+      paddingTop: ptPx(m),
+      paddingBottom: ptPx(m),
+      paddingHorizontal: ptPx(m),
+      fontSize: ptPx(sheet.page.fontSize as number),
       lineHeight: sheet.page.lineHeight as number,
       color: sheet.page.color as string,
     },
+    header: {
+      marginBottom: ptPx(sheet.header.marginBottom as number),
+      paddingBottom: ptPx(sheet.header.paddingBottom as number),
+      borderBottomWidth: ptPx(sheet.header.borderBottomWidth as number),
+      borderBottomColor: sheet.header.borderBottomColor as string,
+    },
     name: {
-      fontSize: ptPx(tk.xl),
-      marginBottom: ptPx(2),
-      color: "#111111",
+      fontSize: ptPx(sheet.name.fontSize as number),
+      marginBottom: ptPx(sheet.name.marginBottom as number),
+      color: "#1a1a1a",
     },
     headline: {
-      fontSize: ptPx(tk.sm),
-      color: "#333333",
-      marginBottom: ptPx(6),
+      fontSize: ptPx(sheet.headline.fontSize as number),
+      color: sheet.headline.color as string,
+      marginBottom: ptPx(sheet.headline.marginBottom as number),
     },
     contact: {
-      fontSize: ptPx(tk.xs),
-      color: "#555555",
-      lineHeight: 1.5,
+      fontSize: ptPx(sheet.contact.fontSize as number),
+      color: sheet.contact.color as string,
+      lineHeight: sheet.contact.lineHeight as number,
+      linkColor: sheet.contact.linkColor as string,
     },
     summary: {
-      fontSize: ptPx(tk.sm),
-      lineHeight: 1.48,
-      color: "#222222",
-      marginBottom: ptPx(10),
+      fontSize: ptPx(sheet.summary.fontSize as number),
+      lineHeight: sheet.summary.lineHeight as number,
+      color: sheet.summary.color as string,
+      marginBottom: ptPx(sheet.summary.marginBottom as number),
     },
     sectionTitle: {
-      fontSize: ptPx(tk.sm),
-      letterSpacing: ptPx(1.4),
-      marginTop: ptPx(11),
-      marginBottom: ptPx(5),
-      paddingBottom: ptPx(2),
-      color: "#111111",
+      fontSize: ptPx(sheet.sectionTitle.fontSize as number),
+      letterSpacing: ptPx(sheet.sectionTitle.letterSpacing as number),
+      marginTop: ptPx(sheet.sectionTitle.marginTop as number),
+      marginBottom: ptPx(sheet.sectionTitle.marginBottom as number),
+      paddingBottom: ptPx(sheet.sectionTitle.paddingBottom as number),
+      color: sheet.sectionTitle.color as string,
+      borderBottomColor: sheet.sectionTitle.borderBottomColor as string,
+    },
+    expHeader: {
+      marginBottom: ptPx(sheet.expHeader.marginBottom as number),
     },
     itemTitle: {
-      fontSize: ptPx(tk.md),
-      marginBottom: ptPx(1),
-      lineHeight: 1.35,
-      color: "#111111",
+      fontSize: ptPx(sheet.itemTitle.fontSize as number),
+      marginBottom: 0,
+      lineHeight: sheet.itemTitle.lineHeight as number,
+      color: sheet.itemTitle.color as string,
     },
-    itemMeta: {
-      fontSize: ptPx(tk.xs),
-      color: "#555555",
-      marginBottom: ptPx(3),
-      lineHeight: 1.4,
+    itemTitleSub: {
+      fontSize: ptPx(sheet.itemTitleSub.fontSize as number),
+      color: sheet.itemTitleSub.color as string,
+    },
+    itemMetaRight: {
+      fontSize: ptPx(sheet.itemMetaRight.fontSize as number),
+      color: sheet.itemMetaRight.color as string,
+      lineHeight: sheet.itemMetaRight.lineHeight as number,
     },
     paragraph: {
-      fontSize: ptPx(tk.sm),
-      lineHeight: 1.45,
-      color: "#222222",
-      marginBottom: ptPx(2),
+      fontSize: ptPx(sheet.paragraph.fontSize as number),
+      lineHeight: sheet.paragraph.lineHeight as number,
+      color: sheet.paragraph.color as string,
+      marginBottom: ptPx(sheet.paragraph.marginBottom as number),
     },
     skillsLine: {
-      fontSize: ptPx(tk.sm),
-      lineHeight: 1.45,
-      marginBottom: ptPx(3),
+      fontSize: ptPx(sheet.skillsLine.fontSize as number),
+      lineHeight: sheet.skillsLine.lineHeight as number,
+      marginBottom: ptPx(sheet.skillsLine.marginBottom as number),
     },
     skillGroup: {
-      fontSize: ptPx(tk.sm),
-      marginTop: ptPx(3),
-      marginBottom: ptPx(2),
+      fontSize: ptPx(sheet.skillGroup.fontSize as number),
+      marginTop: ptPx(sheet.skillGroup.marginTop as number),
+      marginBottom: ptPx(sheet.skillGroup.marginBottom as number),
+    },
+    skillsGrid: {
+      gap: ptPx(sheet.skillsGrid.gap as number),
     },
     bullet: {
-      fontSize: ptPx(tk.sm),
-      marginLeft: ptPx(11),
-      marginBottom: ptPx(2),
-      lineHeight: 1.42,
-      color: "#222222",
+      fontSize: ptPx(sheet.bullet.fontSize as number),
+      paddingLeft: ptPx(sheet.bullet.paddingLeft as number),
+      marginBottom: ptPx(sheet.bullet.marginBottom as number),
+      lineHeight: sheet.bullet.lineHeight as number,
+      color: sheet.bullet.color as string,
+      markColor: sheet.bullet.markColor as string,
     },
-    certCol: { width: "47%" },
-    certRow: { display: "flex", justifyContent: "space-between" },
-    certItem: { marginBottom: ptPx(4) },
-    entry: { marginBottom: ptPx(7) },
+    certItem: { marginBottom: ptPx(sheet.certRow.marginBottom as number) },
+    certDate: {
+      fontSize: ptPx(sheet.certDate.fontSize as number),
+      color: sheet.certDate.color as string,
+    },
+    entry: { marginBottom: ptPx(sheet.entry.marginBottom as number) },
   };
 }
 
@@ -181,107 +224,171 @@ export function formatAtsPeriodLine(
   return [period, location].filter(Boolean).join(" · ");
 }
 
+/** Education / org meta on the right column */
+export function formatAtsEducationMeta(
+  start: string,
+  end: string,
+  gpa: string,
+  lang: Language,
+): string {
+  const period =
+    start && end ? `${start} — ${end}` : start || end || "";
+  const gpaLabel = gpa ? `${t(lang, "gpa")}: ${gpa}` : "";
+  return [period, gpaLabel].filter(Boolean).join(" · ");
+}
+
+/**
+ * Layout tuned to 1tsprune cv.html — 12mm margins, exp header row,
+ * ▸ bullets, 2-col skills, cert date right.
+ */
 export function getAtsPdfLayout(config: ResumeConfig) {
   const tk = getPdfSheetTokens(config);
+  const margin = ATS_PAGE_MARGIN_PT;
 
   const sheet = {
     page: {
-      paddingTop: 32,
-      paddingBottom: 32,
-      paddingHorizontal: 40,
+      paddingTop: margin,
+      paddingBottom: margin,
+      paddingHorizontal: margin,
       fontFamily: tk.fontFamily,
-      fontSize: tk.sm,
-      lineHeight: 1.42,
-      color: "#111111",
+      fontSize: 10,
+      lineHeight: 1.5,
+      color: "#1a1a1a",
+    },
+    header: {
+      marginBottom: 18,
+      paddingBottom: 12,
+      borderBottomWidth: 2,
+      borderBottomColor: "#1a1a1a",
     },
     name: {
-      fontSize: tk.xl,
+      fontSize: 22,
       fontFamily: tk.headingFamily,
       marginBottom: 2,
+      color: "#1a1a1a",
     },
     headline: {
-      fontSize: tk.sm,
-      fontFamily: tk.bodyFamily,
-      color: "#333333",
-      marginBottom: 6,
-    },
-    contact: {
-      fontSize: tk.xs,
+      fontSize: 11,
       fontFamily: tk.bodyFamily,
       color: "#555555",
+      marginBottom: 8,
+    },
+    contact: {
+      fontSize: 10,
+      fontFamily: tk.bodyFamily,
+      color: "#666666",
+      linkColor: "#1a1a1a",
       lineHeight: 1.5,
     },
     summary: {
       fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
-      lineHeight: 1.48,
-      color: "#222222",
+      fontSize: 10.5,
+      lineHeight: 1.55,
+      color: "#444444",
       textAlign: "justify" as const,
-      marginBottom: 10,
+      marginBottom: 21,
     },
     sectionTitle: {
-      fontSize: tk.sm,
+      fontSize: 10,
       fontFamily: tk.headingFamily,
       textTransform: "uppercase" as const,
-      letterSpacing: 1.4,
+      letterSpacing: 1.5,
       borderBottomWidth: 1,
-      borderBottomColor: "#cccccc",
-      paddingBottom: 2,
-      marginTop: 11,
-      marginBottom: 5,
-      color: "#111111",
+      borderBottomColor: "#e0e0e0",
+      paddingBottom: 4,
+      marginTop: 0,
+      marginBottom: 9,
+      color: "#555555",
+    },
+    expHeader: {
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
+      alignItems: "flex-start" as const,
+      marginBottom: 3,
+    },
+    expHeaderLeft: {
+      flex: 1,
+      paddingRight: 10,
     },
     itemTitle: {
       fontFamily: tk.headingFamily,
-      fontSize: tk.md,
-      marginBottom: 1,
-      lineHeight: 1.35,
-    },
-    itemMeta: {
-      fontFamily: tk.bodyFamily,
-      fontSize: tk.xs,
-      color: "#555555",
-      marginBottom: 3,
+      fontSize: 10,
       lineHeight: 1.4,
+      color: "#1a1a1a",
+    },
+    itemTitleSub: {
+      fontFamily: tk.bodyFamily,
+      fontSize: 10,
+      color: "#555555",
+    },
+    itemMetaRight: {
+      fontFamily: tk.bodyFamily,
+      fontSize: 9,
+      color: "#888888",
+      lineHeight: 1.4,
+      flexShrink: 0,
+      textAlign: "right" as const,
+      maxWidth: "42%",
     },
     paragraph: {
       fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
-      lineHeight: 1.45,
-      color: "#222222",
-      marginBottom: 2,
+      fontSize: 10,
+      lineHeight: 1.4,
+      color: "#444444",
+      marginBottom: 1,
+      textAlign: "justify" as const,
     },
     bullet: {
       fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
-      marginLeft: 11,
-      marginBottom: 2,
-      lineHeight: 1.42,
-      color: "#222222",
+      fontSize: 10,
+      paddingLeft: 11,
+      marginBottom: 1,
+      lineHeight: 1.4,
+      color: "#444444",
+      markColor: "#aaaaaa",
+    },
+    skillsGrid: {
+      flexDirection: "row" as const,
+      gap: 15,
+    },
+    skillsCol: {
+      flex: 1,
     },
     skillsLine: {
       fontFamily: tk.bodyFamily,
-      fontSize: tk.sm,
+      fontSize: 9.5,
       lineHeight: 1.45,
-      color: "#222222",
-      marginBottom: 3,
+      color: "#444444",
+      marginBottom: 0,
     },
     skillGroup: {
       fontFamily: tk.headingFamily,
-      fontSize: tk.sm,
-      marginTop: 3,
+      fontSize: 9.5,
+      marginTop: 0,
       marginBottom: 2,
-      color: "#222222",
+      color: "#1a1a1a",
     },
     entry: {
-      marginBottom: 7,
-    },
-    certCol: {
-      width: "47%",
+      marginBottom: 10,
     },
     certRow: {
       flexDirection: "row" as const,
       justifyContent: "space-between" as const,
+      alignItems: "baseline" as const,
+      marginBottom: 2,
+    },
+    certItem: {
+      flex: 1,
+      fontFamily: tk.bodyFamily,
+      fontSize: 9.5,
+      color: "#444444",
+      paddingRight: 10,
+    },
+    certDate: {
+      fontFamily: tk.bodyFamily,
+      fontSize: 9,
+      color: "#888888",
+      flexShrink: 0,
     },
   };
 

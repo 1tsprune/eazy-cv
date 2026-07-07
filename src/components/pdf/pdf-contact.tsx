@@ -4,16 +4,38 @@ import type { PersonalInfo } from "@/lib/types";
 
 type StyleProp = Styles[keyof Styles];
 
+function contactLinkPdfStyle(
+  parent?: StyleProp,
+  linkColor?: string,
+): StyleProp {
+  const color =
+    linkColor ??
+    (parent &&
+    typeof parent === "object" &&
+    !Array.isArray(parent) &&
+    "color" in parent &&
+    parent.color
+      ? (parent.color as string)
+      : undefined);
+  return color
+    ? { ...CONTACT_LINK_DECORATION, color }
+    : CONTACT_LINK_DECORATION;
+}
+
 export function PdfContactInline({
   items,
   style,
   separator = " · ",
+  linkColor,
 }: {
   items: string[];
   style?: StyleProp;
   separator?: string;
+  linkColor?: string;
 }) {
   if (!items.length) return null;
+
+  const linkStyle = contactLinkPdfStyle(style, linkColor);
 
   return (
     <Text style={style}>
@@ -23,7 +45,7 @@ export function PdfContactInline({
           <Text key={`${item}-${index}`}>
             {index > 0 ? separator : ""}
             {href ? (
-              <Link src={href} style={CONTACT_LINK_DECORATION}>
+              <Link src={href} style={linkStyle}>
                 {item}
               </Link>
             ) : (
@@ -39,19 +61,17 @@ export function PdfContactInline({
 export function PdfContactItem({
   value,
   style,
+  linkColor,
 }: {
   value: string;
   style?: StyleProp;
+  linkColor?: string;
 }) {
   const href = resolveContactHref(value);
   if (href) {
+    const linkStyle = contactLinkPdfStyle(style, linkColor);
     return (
-      <Link
-        src={href}
-        style={
-          style ? [style, CONTACT_LINK_DECORATION] : CONTACT_LINK_DECORATION
-        }
-      >
+      <Link src={href} style={style ? [style, linkStyle] : linkStyle}>
         {value}
       </Link>
     );

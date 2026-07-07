@@ -8,6 +8,7 @@ import {
 } from "@react-pdf/renderer";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
 import {
+  formatAtsEducationMeta,
   formatAtsPeriodLine,
   getAtsPdfLayout,
   splitAtsProseLines,
@@ -21,6 +22,7 @@ import { t, tAts } from "@/lib/i18n";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
 import { cvContactItems, PdfContactInline } from "./pdf-contact";
 import { PdfCustomSections } from "./pdf-blocks";
+import { AtsPdfBullet, AtsPdfEntryHeader } from "./ats-pdf-blocks";
 
 interface Props {
   data: ResumeData;
@@ -48,6 +50,10 @@ export default function ATSResumeDocument({ data, config }: Props) {
   const { personal } = data;
 
   const contact = cvContactItems(personal);
+  const skillGroups = normalizeSkillGroups(data).filter(
+    (g) => g.skills.length > 0,
+  );
+  const skillsMid = Math.ceil(skillGroups.length / 2);
 
   const sectionBlocks: Record<SectionKey, ReactNode> = {
     experience:
@@ -58,29 +64,24 @@ export default function ATSResumeDocument({ data, config }: Props) {
             style={layout}
           />
           {data.experiences.map((exp) => (
-            <View key={exp.id} style={styles.entry}>
-              <Text style={styles.itemTitle}>
-                {exp.position}
-                {exp.company ? ` · ${exp.company}` : ""}
-              </Text>
-              <Text style={styles.itemMeta}>
-                {formatAtsPeriodLine(
+            <View key={exp.id} style={styles.entry} wrap={false}>
+              <AtsPdfEntryHeader
+                primary={exp.position}
+                secondary={exp.company}
+                period={formatAtsPeriodLine(
                   exp.startDate,
                   exp.endDate,
                   exp.current,
                   exp.location,
                   language,
                 )}
-              </Text>
+                styles={styles}
+              />
               {exp.description ? (
-                <Text style={[styles.paragraph, { textAlign: "justify" }]}>
-                  {exp.description}
-                </Text>
+                <Text style={styles.paragraph}>{exp.description}</Text>
               ) : null}
               {exp.highlights.map((h, i) => (
-                <Text key={i} style={styles.paragraph}>
-                  {h}
-                </Text>
+                <AtsPdfBullet key={i} text={h} bulletStyle={styles.bullet} />
               ))}
             </View>
           ))}
@@ -96,20 +97,17 @@ export default function ATSResumeDocument({ data, config }: Props) {
           />
           {data.educations.map((edu) => (
             <View key={edu.id} style={styles.entry}>
-              <Text style={styles.itemTitle}>
-                {edu.degree}
-                {edu.institution ? ` · ${edu.institution}` : ""}
-              </Text>
-              <Text style={styles.itemMeta}>
-                {[
-                  edu.startDate && edu.endDate
-                    ? `${edu.startDate} — ${edu.endDate}`
-                    : edu.startDate || edu.endDate,
-                  edu.gpa ? `${t(language, "gpa")}: ${edu.gpa}` : "",
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </Text>
+              <AtsPdfEntryHeader
+                primary={edu.degree}
+                secondary={edu.institution}
+                period={formatAtsEducationMeta(
+                  edu.startDate,
+                  edu.endDate,
+                  edu.gpa,
+                  language,
+                )}
+                styles={styles}
+              />
               {splitAtsProseLines(edu.description).map((line, i) => (
                 <Text key={i} style={styles.paragraph}>
                   {line}
@@ -129,23 +127,20 @@ export default function ATSResumeDocument({ data, config }: Props) {
           />
           {data.organizations.map((org) => (
             <View key={org.id} style={styles.entry}>
-              <Text style={styles.itemTitle}>
-                {org.role}
-                {org.name ? ` · ${org.name}` : ""}
-              </Text>
-              <Text style={styles.itemMeta}>
-                {formatAtsPeriodLine(
+              <AtsPdfEntryHeader
+                primary={org.role}
+                secondary={org.name}
+                period={formatAtsPeriodLine(
                   org.startDate,
                   org.endDate,
                   org.current,
                   org.location,
                   language,
                 )}
-              </Text>
+                styles={styles}
+              />
               {org.highlights.map((h, i) => (
-                <Text key={i} style={styles.paragraph}>
-                  {h}
-                </Text>
+                <AtsPdfBullet key={i} text={h} bulletStyle={styles.bullet} />
               ))}
             </View>
           ))}
@@ -158,20 +153,29 @@ export default function ATSResumeDocument({ data, config }: Props) {
             title={tAts(language, "technicalSkills")}
             style={layout}
           />
-          {normalizeSkillGroups(data)
-            .filter((g) => g.skills.length > 0)
-            .map((group) => (
-              <View key={group.id}>
-                {group.name ? (
-                  <Text style={styles.skillGroup}>{group.name}</Text>
-                ) : null}
-                {chunkSkillLines(group.skills).map((line, i) => (
-                  <Text key={i} style={styles.skillsLine}>
-                    {line}
-                  </Text>
-                ))}
+          <View style={styles.skillsGrid}>
+            {[0, 1].map((col) => (
+              <View key={col} style={styles.skillsCol}>
+                {skillGroups
+                  .slice(
+                    col === 0 ? 0 : skillsMid,
+                    col === 0 ? skillsMid : undefined,
+                  )
+                  .map((group) => (
+                    <View key={group.id} style={{ marginBottom: 8 }}>
+                      {group.name ? (
+                        <Text style={styles.skillGroup}>{group.name}</Text>
+                      ) : null}
+                      {chunkSkillLines(group.skills).map((line, i) => (
+                        <Text key={i} style={styles.skillsLine}>
+                          {line}
+                        </Text>
+                      ))}
+                    </View>
+                  ))}
               </View>
             ))}
+          </View>
         </>
       ) : null,
 
@@ -184,49 +188,17 @@ export default function ATSResumeDocument({ data, config }: Props) {
             title={t(language, "certifications")}
             style={layout}
           />
-          {data.certifications.length >= 4 ? (
-            <View style={styles.certRow}>
-              <View style={styles.certCol}>
-                {data.certifications
-                  .slice(0, Math.ceil(data.certifications.length / 2))
-                  .map((cert) => (
-                    <Text
-                      key={cert.id}
-                      style={[styles.paragraph, { marginBottom: 4 }]}
-                    >
-                      {cert.name}
-                      {cert.issuer ? ` — ${cert.issuer}` : ""}
-                      {cert.date ? ` · ${cert.date}` : ""}
-                    </Text>
-                  ))}
-              </View>
-              <View style={styles.certCol}>
-                {data.certifications
-                  .slice(Math.ceil(data.certifications.length / 2))
-                  .map((cert) => (
-                    <Text
-                      key={cert.id}
-                      style={[styles.paragraph, { marginBottom: 4 }]}
-                    >
-                      {cert.name}
-                      {cert.issuer ? ` — ${cert.issuer}` : ""}
-                      {cert.date ? ` · ${cert.date}` : ""}
-                    </Text>
-                  ))}
-              </View>
-            </View>
-          ) : (
-            data.certifications.map((cert) => (
-              <Text
-                key={cert.id}
-                style={[styles.paragraph, { marginBottom: 4 }]}
-              >
+          {data.certifications.map((cert) => (
+            <View key={cert.id} style={styles.certRow}>
+              <Text style={styles.certItem}>
                 {cert.name}
                 {cert.issuer ? ` — ${cert.issuer}` : ""}
-                {cert.date ? ` · ${cert.date}` : ""}
               </Text>
-            ))
-          )}
+              {cert.date ? (
+                <Text style={styles.certDate}>{cert.date}</Text>
+              ) : null}
+            </View>
+          ))}
         </>
       ) : null,
 
@@ -263,25 +235,37 @@ export default function ATSResumeDocument({ data, config }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
-        <View style={{ marginBottom: 2 }}>
+        <View style={styles.header}>
           <Text style={styles.name}>
             {personal.fullName || "Your Name"}
           </Text>
           {personal.title ? (
             <Text style={styles.headline}>{personal.title}</Text>
           ) : null}
-          <PdfContactInline items={contact} style={styles.contact} />
+          <PdfContactInline
+            items={contact}
+            style={styles.contact}
+            linkColor={layout.contact.linkColor as string}
+          />
         </View>
 
         {personal.summary ? (
           <Text style={styles.summary}>{personal.summary}</Text>
         ) : null}
 
-        {config.sectionOrder.map((key) => {
-          const block = sectionBlocks[key];
-          if (!block) return null;
-          return <View key={key}>{block}</View>;
-        })}
+        {(() => {
+          let visible = 0;
+          return config.sectionOrder.map((key) => {
+            const block = sectionBlocks[key];
+            if (!block) return null;
+            const gap = visible++ > 0 ? { marginTop: 18 } : undefined;
+            return (
+              <View key={key} style={gap}>
+                {block}
+              </View>
+            );
+          });
+        })()}
       </Page>
     </Document>
   );

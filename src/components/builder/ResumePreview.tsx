@@ -6,6 +6,8 @@ import { PROSE_JUSTIFY } from "@/lib/document-layout";
 import { t, tAts } from "@/lib/i18n";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
 import {
+  ATS_BULLET_MARK,
+  formatAtsEducationMeta,
   formatAtsPeriodLine,
   getAtsPreviewMetrics,
   splitAtsProseLines,
@@ -32,14 +34,21 @@ function ContactRow({
   items,
   className = "",
   style,
+  linkColor,
 }: {
   items: string[];
   className?: string;
   style?: React.CSSProperties;
+  linkColor?: string;
 }) {
   if (!items.length) return null;
   return (
-    <PreviewContactInline items={items} className={className} style={style} />
+    <PreviewContactInline
+      items={items}
+      className={className}
+      style={style}
+      linkColor={linkColor}
+    />
   );
 }
 
@@ -267,8 +276,12 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
           <header
             className={isAts ? undefined : "mb-6 pb-4"}
             style={
-              isAts
-                ? { marginBottom: 2 }
+              isAts && ats
+                ? {
+                    marginBottom: ats.header.marginBottom,
+                    paddingBottom: ats.header.paddingBottom,
+                    borderBottom: `${ats.header.borderBottomWidth}px solid ${ats.header.borderBottomColor}`,
+                  }
                 : { borderBottom: `2px solid ${colors.primary}` }
             }
           >
@@ -317,13 +330,14 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
                   style={
                     isAts && ats
                       ? {
-                          marginTop: ats.headline.marginBottom,
+                          marginTop: 4,
                           fontSize: ats.contact.fontSize,
                           color: ats.contact.color,
                           lineHeight: ats.contact.lineHeight,
                         }
                       : { fontSize: ty.sizes.xs }
                   }
+                  linkColor={isAts && ats ? ats.contact.linkColor : undefined}
                 />
               </div>
               {showPhoto && !isAts && (
@@ -389,7 +403,7 @@ function PreviewSections({
               marginTop: ats.sectionTitle.marginTop,
               marginBottom: ats.sectionTitle.marginBottom,
               paddingBottom: ats.sectionTitle.paddingBottom,
-              borderBottom: "1px solid #cccccc",
+              borderBottom: `1px solid ${ats.sectionTitle.borderBottomColor}`,
             }
           : {
               fontSize: ty.sizes.sm,
@@ -424,18 +438,69 @@ function PreviewSections({
         }
       : { fontSize: ty.sizes.md, fontWeight: ty.headingWeight };
 
-  const metaText = () =>
-    isAts && ats
-      ? {
-          fontSize: ats.itemMeta.fontSize,
-          color: ats.itemMeta.color,
-          lineHeight: ats.itemMeta.lineHeight,
-          marginBottom: ats.itemMeta.marginBottom,
-        }
-      : { fontSize: ty.sizes.xs, color: "#a1a1aa" };
+  const metaText = () => ({ fontSize: ty.sizes.xs, color: "#a1a1aa" });
 
   const entryGap = () =>
     isAts && ats ? { marginBottom: ats.entry.marginBottom } : { marginBottom: 12 };
+
+  const AtsEntryHeader = ({
+    primary,
+    secondary,
+    period,
+  }: {
+    primary: string;
+    secondary?: string;
+    period: string;
+  }) => {
+    if (!ats) return null;
+    return (
+      <div
+        className="flex items-baseline justify-between gap-2"
+        style={{ marginBottom: ats.expHeader.marginBottom }}
+      >
+        <p className="min-w-0 flex-1" style={{ marginBottom: 0 }}>
+          <span style={{ ...titleText(), fontWeight: ats.headingWeight }}>
+            {primary}
+          </span>
+          {secondary ? (
+            <span style={ats.itemTitleSub}> · {secondary}</span>
+          ) : null}
+        </p>
+        {period ? (
+          <span
+            className="shrink-0 text-right"
+            style={{
+              fontSize: ats.itemMetaRight.fontSize,
+              color: ats.itemMetaRight.color,
+              lineHeight: ats.itemMetaRight.lineHeight,
+              maxWidth: "42%",
+            }}
+          >
+            {period}
+          </span>
+        ) : null}
+      </div>
+    );
+  };
+
+  const AtsBullet = ({ text }: { text: string }) => {
+    if (!ats) return <p style={bodyText()}>{text}</p>;
+    return (
+      <p
+        className={PROSE_JUSTIFY}
+        style={{
+          ...bodyText(),
+          paddingLeft: ats.bullet.paddingLeft,
+          marginBottom: ats.bullet.marginBottom,
+        }}
+      >
+        <span style={{ color: ats.bullet.markColor, fontSize: "0.65em" }}>
+          {ATS_BULLET_MARK}{" "}
+        </span>
+        {text}
+      </p>
+    );
+  };
 
   const sectionBlocks: Record<SectionKey, React.ReactNode> = {
     experience:
@@ -444,27 +509,35 @@ function PreviewSections({
           <SectionTitle>{sectionLabel("experience")}</SectionTitle>
           {data.experiences.map((exp) => (
             <div key={exp.id} style={entryGap()}>
-              <p className={isAts ? undefined : "font-semibold"} style={titleText()}>
-                {exp.position}
-                {exp.company && `${sep}${exp.company}`}
-              </p>
-              <p style={metaText()}>
-                {isAts
-                  ? formatAtsPeriodLine(
-                      exp.startDate,
-                      exp.endDate,
-                      exp.current,
-                      exp.location,
-                      lang,
-                    )
-                  : [
+              {isAts ? (
+                <AtsEntryHeader
+                  primary={exp.position}
+                  secondary={exp.company}
+                  period={formatAtsPeriodLine(
+                    exp.startDate,
+                    exp.endDate,
+                    exp.current,
+                    exp.location,
+                    lang,
+                  )}
+                />
+              ) : (
+                <>
+                  <p className="font-semibold" style={titleText()}>
+                    {exp.position}
+                    {exp.company && `${sep}${exp.company}`}
+                  </p>
+                  <p style={metaText()}>
+                    {[
                       exp.startDate,
                       exp.endDate || (exp.current ? t(lang, "present") : ""),
                       exp.location,
                     ]
                       .filter(Boolean)
                       .join(" · ")}
-              </p>
+                  </p>
+                </>
+              )}
               {exp.description && (
                 <p
                   className={isAts ? PROSE_JUSTIFY : `mt-1 text-zinc-600 ${PROSE_JUSTIFY}`}
@@ -473,15 +546,19 @@ function PreviewSections({
                   {exp.description}
                 </p>
               )}
-              {exp.highlights.map((h, i) => (
-                <p
-                  key={i}
-                  className={isAts ? PROSE_JUSTIFY : `text-zinc-600 ml-3`}
-                  style={bodyText()}
-                >
-                  {isAts ? h : `• ${h}`}
-                </p>
-              ))}
+              {exp.highlights.map((h, i) =>
+                isAts ? (
+                  <AtsBullet key={i} text={h} />
+                ) : (
+                  <p
+                    key={i}
+                    className={`text-zinc-600 ml-3 ${PROSE_JUSTIFY}`}
+                    style={bodyText()}
+                  >
+                    {`• ${h}`}
+                  </p>
+                ),
+              )}
             </div>
           ))}
         </>
@@ -493,22 +570,24 @@ function PreviewSections({
           <SectionTitle>{sectionLabel("education")}</SectionTitle>
           {data.educations.map((edu) => (
             <div key={edu.id} style={entryGap()}>
-              <p style={titleText()}>
-                {isAts
-                  ? [edu.degree, edu.institution].filter(Boolean).join(" · ")
-                  : `${edu.degree}${edu.field ? ` — ${edu.field}` : ""}`}
-              </p>
-              <p style={metaText()}>
-                {isAts
-                  ? [
-                      edu.startDate && edu.endDate
-                        ? `${edu.startDate} — ${edu.endDate}`
-                        : edu.startDate || edu.endDate,
-                      edu.gpa ? `${t(lang, "gpa")}: ${edu.gpa}` : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")
-                  : [
+              {isAts ? (
+                <AtsEntryHeader
+                  primary={edu.degree}
+                  secondary={edu.institution}
+                  period={formatAtsEducationMeta(
+                    edu.startDate,
+                    edu.endDate,
+                    edu.gpa,
+                    lang,
+                  )}
+                />
+              ) : (
+                <>
+                  <p style={titleText()}>
+                    {`${edu.degree}${edu.field ? ` — ${edu.field}` : ""}`}
+                  </p>
+                  <p style={metaText()}>
+                    {[
                       edu.institution,
                       edu.location,
                       edu.startDate && edu.endDate
@@ -518,7 +597,9 @@ function PreviewSections({
                     ]
                       .filter(Boolean)
                       .join(" · ")}
-              </p>
+                  </p>
+                </>
+              )}
               {isAts && edu.description
                 ? splitAtsProseLines(edu.description).map((line, i) => (
                     <p key={i} className={PROSE_JUSTIFY} style={bodyText()}>
@@ -537,36 +618,44 @@ function PreviewSections({
           <SectionTitle>{sectionLabel("organizations")}</SectionTitle>
           {data.organizations.map((org) => (
             <div key={org.id} style={entryGap()}>
-              <p style={titleText()}>
-                {org.role}
-                {org.name && `${sep}${org.name}`}
-              </p>
-              <p style={metaText()}>
-                {isAts
-                  ? formatAtsPeriodLine(
-                      org.startDate,
-                      org.endDate,
-                      org.current,
-                      org.location,
-                      lang,
-                    )
-                  : [
+              {isAts ? (
+                <AtsEntryHeader
+                  primary={org.role}
+                  secondary={org.name}
+                  period={formatAtsPeriodLine(
+                    org.startDate,
+                    org.endDate,
+                    org.current,
+                    org.location,
+                    lang,
+                  )}
+                />
+              ) : (
+                <>
+                  <p style={titleText()}>
+                    {org.role}
+                    {org.name && `${sep}${org.name}`}
+                  </p>
+                  <p style={metaText()}>
+                    {[
                       org.startDate,
                       org.endDate || (org.current ? t(lang, "present") : ""),
                       org.location,
                     ]
                       .filter(Boolean)
                       .join(" · ")}
-              </p>
-              {org.highlights.map((h, i) => (
-                <p
-                  key={i}
-                  className={isAts ? undefined : "text-zinc-600 ml-3"}
-                  style={bodyText()}
-                >
-                  {isAts ? h : `• ${h}`}
-                </p>
-              ))}
+                  </p>
+                </>
+              )}
+              {org.highlights.map((h, i) =>
+                isAts ? (
+                  <AtsBullet key={i} text={h} />
+                ) : (
+                  <p key={i} className="text-zinc-600 ml-3" style={bodyText()}>
+                    {`• ${h}`}
+                  </p>
+                ),
+              )}
             </div>
           ))}
         </>
@@ -577,38 +666,56 @@ function PreviewSections({
         isAts ? (
           <>
             <SectionTitle>{sectionLabel("technicalSkills")}</SectionTitle>
-            {normalizeSkillGroups(data)
-              .filter((g) => g.skills.length > 0)
-              .map((group) => (
-                <div key={group.id}>
-                  {group.name ? (
-                    <p
-                      style={{
-                        fontSize: ats?.skillGroup.fontSize ?? ty.sizes.sm,
-                        fontWeight: ats?.headingWeight ?? ty.headingWeight,
-                        marginTop: ats?.skillGroup.marginTop,
-                        marginBottom: ats?.skillGroup.marginBottom,
-                        color: "#222222",
-                      }}
-                    >
-                      {group.name}
-                    </p>
-                  ) : null}
-                  {chunkSkillLines(group.skills).map((line, i) => (
-                    <p
-                      key={i}
-                      style={{
-                        fontSize: ats?.skillsLine.fontSize ?? ty.sizes.sm,
-                        lineHeight: ats?.skillsLine.lineHeight,
-                        marginBottom: ats?.skillsLine.marginBottom,
-                        color: "#222222",
-                      }}
-                    >
-                      {line}
-                    </p>
+            {(() => {
+              const groups = normalizeSkillGroups(data).filter(
+                (g) => g.skills.length > 0,
+              );
+              const mid = Math.ceil(groups.length / 2);
+              return (
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2"
+                  style={{ gap: ats?.skillsGrid.gap ?? 14 }}
+                >
+                  {[0, 1].map((col) => (
+                    <div key={col}>
+                      {groups
+                        .slice(
+                          col === 0 ? 0 : mid,
+                          col === 0 ? mid : undefined,
+                        )
+                        .map((group) => (
+                          <div key={group.id} className="mb-2">
+                            {group.name ? (
+                              <p
+                                style={{
+                                  fontSize: ats?.skillGroup.fontSize,
+                                  fontWeight: ats?.headingWeight,
+                                  marginBottom: ats?.skillGroup.marginBottom,
+                                  color: "#1a1a1a",
+                                }}
+                              >
+                                {group.name}
+                              </p>
+                            ) : null}
+                            {chunkSkillLines(group.skills).map((line, i) => (
+                              <p
+                                key={i}
+                                style={{
+                                  fontSize: ats?.skillsLine.fontSize,
+                                  lineHeight: ats?.skillsLine.lineHeight,
+                                  color: "#444444",
+                                }}
+                              >
+                                {line}
+                              </p>
+                            ))}
+                          </div>
+                        ))}
+                    </div>
                   ))}
                 </div>
-              ))}
+              );
+            })()}
           </>
         ) : (
           <>
@@ -680,59 +787,37 @@ function PreviewSections({
       data.certifications.length > 0 ? (
         <>
           <SectionTitle>{t(lang, "certifications")}</SectionTitle>
-          {isAts && data.certifications.length >= 4 ? (
-            <div
-              style={{
-                display: ats?.certRow.display,
-                justifyContent: ats?.certRow.justifyContent,
-              }}
-            >
-              {[0, 1].map((col) => (
-                <div
-                  key={col}
-                  style={{ width: ats?.certCol.width }}
-                >
-                  {data.certifications
-                    .slice(
-                      col === 0
-                        ? 0
-                        : Math.ceil(data.certifications.length / 2),
-                      col === 0
-                        ? Math.ceil(data.certifications.length / 2)
-                        : undefined,
-                    )
-                    .map((cert) => (
-                      <p
-                        key={cert.id}
-                        style={bodyText({ marginBottom: ats?.certItem.marginBottom })}
-                      >
-                        {cert.name}
-                        {cert.issuer ? ` — ${cert.issuer}` : ""}
-                        {cert.date ? ` · ${cert.date}` : ""}
-                      </p>
-                    ))}
-                </div>
-              ))}
-            </div>
-          ) : (
-            data.certifications.map((cert) => (
-              <div key={cert.id} style={entryGap()}>
-                {isAts ? (
-                  <p style={bodyText({ marginBottom: ats?.certItem.marginBottom })}>
-                    {cert.name}
-                    {cert.issuer ? ` — ${cert.issuer}` : ""}
-                    {cert.date ? ` · ${cert.date}` : ""}
-                  </p>
-                ) : (
-                  <>
-                    <p style={titleText()}>{cert.name}</p>
-                    <p style={metaText()}>
-                      {[cert.issuer, cert.date].filter(Boolean).join(" · ")}
-                    </p>
-                  </>
-                )}
+          {data.certifications.map((cert) =>
+            isAts ? (
+              <div
+                key={cert.id}
+                className="flex items-baseline justify-between gap-3"
+                style={{ marginBottom: ats?.certItem.marginBottom }}
+              >
+                <span style={bodyText({ marginBottom: 0 })}>
+                  {cert.name}
+                  {cert.issuer ? ` — ${cert.issuer}` : ""}
+                </span>
+                {cert.date ? (
+                  <span
+                    className="shrink-0"
+                    style={{
+                      fontSize: ats?.certDate.fontSize,
+                      color: ats?.certDate.color,
+                    }}
+                  >
+                    {cert.date}
+                  </span>
+                ) : null}
               </div>
-            ))
+            ) : (
+              <div key={cert.id} style={entryGap()}>
+                <p style={titleText()}>{cert.name}</p>
+                <p style={metaText()}>
+                  {[cert.issuer, cert.date].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+            ),
           )}
         </>
       ) : null,
@@ -782,24 +867,22 @@ function PreviewSections({
           .map((section) => (
             <div key={section.id}>
               <SectionTitle>{section.title}</SectionTitle>
-              {section.items.map((item, i) => (
-                <p
-                  key={i}
-                  style={
-                    isAts && ats
-                      ? {
-                          fontSize: ats.bullet.fontSize,
-                          marginLeft: ats.bullet.marginLeft,
-                          marginBottom: ats.bullet.marginBottom,
-                          lineHeight: ats.bullet.lineHeight,
-                          color: ats.bullet.color,
-                        }
-                      : { fontSize: ty.sizes.sm, marginLeft: 12, color: "#52525b" }
-                  }
-                >
-                  • {item}
-                </p>
-              ))}
+              {section.items.map((item, i) =>
+                isAts ? (
+                  <AtsBullet key={i} text={item} />
+                ) : (
+                  <p
+                    key={i}
+                    style={{
+                      fontSize: ty.sizes.sm,
+                      marginLeft: 12,
+                      color: "#52525b",
+                    }}
+                  >
+                    • {item}
+                  </p>
+                ),
+              )}
             </div>
           ))}
       </>

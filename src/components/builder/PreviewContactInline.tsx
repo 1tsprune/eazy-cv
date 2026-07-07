@@ -7,6 +7,8 @@ interface Props {
   className?: string;
   style?: React.CSSProperties;
   separator?: string;
+  /** Override link color; defaults to parent text color */
+  linkColor?: string;
 }
 
 export function PreviewContactInline({
@@ -14,6 +16,7 @@ export function PreviewContactInline({
   className = "",
   style,
   separator = " · ",
+  linkColor,
 }: Props) {
   if (!items.length) return null;
 
@@ -30,10 +33,10 @@ export function PreviewContactInline({
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  color: style?.color ?? "inherit",
+                  color: linkColor ?? style?.color ?? "inherit",
                   ...CONTACT_LINK_DECORATION,
                 }}
-                className="hover:underline"
+                className="text-inherit visited:text-inherit hover:underline"
               >
                 {item}
               </a>
