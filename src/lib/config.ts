@@ -22,6 +22,8 @@ export const DONATION = {
 export const COINFEST_PROMO = {
   ticketUrl: "https://coinfest.asia/with/EkyJanuarta",
   endsAt: "2026-08-22T00:00:00+08:00",
+  /** Local asset — CSP img-src 'self' blocks hotlink from coinfest.asia */
+  logoUrl: "/brand/coinfest-asia.png",
 } as const;
 
 export function isCoinfestPromoActive(now = new Date()): boolean {

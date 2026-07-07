@@ -6,7 +6,7 @@ import { COINFEST_PROMO } from "@/lib/config";
 const TICKET_URL = COINFEST_PROMO.ticketUrl;
 const MAPS_URL =
   "https://www.google.com/maps/place/Coinfest+Asia/@-8.8481907,115.1570723,20.72z/data=!4m6!3m5!1s0x2dd245a7179276d1:0x7d89a71f7eb052ca!8m2!3d-8.8480625!4d115.1570625!16s%2Fg%2F11stxm5__m?entry=tts";
-const LOGO_URL = "https://coinfest.asia/logo%20navbar/logo%20navbar.png";
+const LOGO_URL = COINFEST_PROMO.logoUrl;
 
 type Props = {
   onClose: () => void;

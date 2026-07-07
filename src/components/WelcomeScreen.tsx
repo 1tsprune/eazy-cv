@@ -4,7 +4,7 @@ import { Shield, Sparkles, Zap } from "lucide-react";
 import { DevAvatar } from "@/components/DevAvatar";
 import { Logo } from "@/components/Logo";
 
-import { SOCIAL } from "@/lib/config";
+import { COINFEST_PROMO, isCoinfestPromoActive, SOCIAL } from "@/lib/config";
 import { getUiDict } from "@/lib/ui-i18n";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -102,6 +102,30 @@ export function WelcomeScreen({ onStart }: Props) {
             </div>
           ))}
         </div>
+
+        {isCoinfestPromoActive() ? (
+          <a
+            href={COINFEST_PROMO.ticketUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center gap-2.5 rounded-xl border border-amber-200/80 bg-amber-50/90 px-4 py-2.5 text-left shadow-sm transition hover:bg-amber-100/90 dark:border-amber-900/50 dark:bg-amber-950/30 dark:hover:bg-amber-950/50"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={COINFEST_PROMO.logoUrl}
+              alt="Coinfest Asia"
+              width={120}
+              height={32}
+              className="h-6 w-auto object-contain md:h-7"
+            />
+            <span className="text-[10px] font-semibold leading-snug text-amber-950 dark:text-amber-100 md:text-xs">
+              Prune hadir · 20–21 Agt 2026 · Bali
+              <span className="block font-bold text-amber-800 dark:text-amber-300">
+                tiket diskon →
+              </span>
+            </span>
+          </a>
+        ) : null}
 
         <button
           type="button"
