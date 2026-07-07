@@ -23,7 +23,7 @@ export function SectionCard({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition hover:bg-zinc-50 dark:hover:bg-zinc-800"
+        className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition hover:bg-zinc-50 sm:px-5 sm:py-4 dark:hover:bg-zinc-800"
       >
         <div className="flex items-center gap-3">
           {icon && (
@@ -45,7 +45,7 @@ export function SectionCard({
         />
       </button>
       {open && (
-        <div className="border-t border-zinc-100 px-5 py-4 dark:border-zinc-800">
+        <div className="border-t border-zinc-100 px-4 py-3.5 dark:border-zinc-800 sm:px-5 sm:py-4">
           {children}
         </div>
       )}

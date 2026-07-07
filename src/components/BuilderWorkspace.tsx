@@ -153,7 +153,7 @@ export function BuilderWorkspace() {
       </div>
 
       {/* ── Mobile: tab switching ── */}
-      <div className="mx-auto max-w-screen-2xl space-y-4 p-4 md:hidden">
+      <div className="mx-auto min-w-0 max-w-full space-y-4 overflow-x-hidden p-3 md:hidden sm:p-4">
         {showMobileLeft && (
           <div className="space-y-4">
             <QuickActions

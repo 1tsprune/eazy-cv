@@ -37,7 +37,9 @@ import type { CvProfile } from "@/lib/types";
 import { getUiDict } from "@/lib/ui-i18n";
 
 const ITEM_CARD =
-  "rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50";
+  "rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/50 sm:p-4";
+const DATE_RANGE_ROW =
+  "grid grid-cols-1 gap-2 sm:col-span-2 sm:grid-cols-2";
 const ADD_BTN =
   "flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 py-3 text-sm font-bold text-zinc-500 transition hover:border-slate-400 hover:text-slate-700 dark:border-zinc-600 dark:text-zinc-400 dark:hover:border-slate-500 dark:hover:text-slate-500";
 
@@ -245,7 +247,7 @@ export function ResumeForm() {
                     updateExperience(exp.id, { location: e.target.value })
                   }
                 />
-                <div className="grid grid-cols-2 gap-2">
+                <div className={DATE_RANGE_ROW}>
                   <MonthYearInput
                     label={t.startDate}
                     value={exp.startDate}
@@ -345,22 +347,24 @@ export function ResumeForm() {
                   }
                   placeholder="Bandung"
                 />
-                <MonthYearInput
-                  label={t.eduStartDate}
-                  value={edu.startDate}
-                  locale={config.language}
-                  onChange={(startDate) =>
-                    updateEducation(edu.id, { startDate })
-                  }
-                />
-                <MonthYearInput
-                  label={t.eduEndDate}
-                  value={edu.endDate}
-                  locale={config.language}
-                  onChange={(endDate) =>
-                    updateEducation(edu.id, { endDate })
-                  }
-                />
+                <div className={DATE_RANGE_ROW}>
+                  <MonthYearInput
+                    label={t.eduStartDate}
+                    value={edu.startDate}
+                    locale={config.language}
+                    onChange={(startDate) =>
+                      updateEducation(edu.id, { startDate })
+                    }
+                  />
+                  <MonthYearInput
+                    label={t.eduEndDate}
+                    value={edu.endDate}
+                    locale={config.language}
+                    onChange={(endDate) =>
+                      updateEducation(edu.id, { endDate })
+                    }
+                  />
+                </div>
                 <Input
                   label={t.gpa}
                   value={edu.gpa}
@@ -420,38 +424,40 @@ export function ResumeForm() {
                     updateOrganization(org.id, { location: e.target.value })
                   }
                 />
-                <MonthYearInput
-                  label={t.startDate}
-                  value={org.startDate}
-                  locale={config.language}
-                  onChange={(startDate) =>
-                    updateOrganization(org.id, { startDate })
-                  }
-                />
-                <MonthYearInput
-                  label={t.endDate}
-                  value={org.endDate}
-                  locale={config.language}
-                  onChange={(endDate) =>
-                    updateOrganization(org.id, { endDate })
-                  }
-                  disabled={org.current}
-                />
-                <label className="flex items-center gap-2 self-end pb-2 text-xs text-zinc-600 dark:text-zinc-300">
-                  <input
-                    type="checkbox"
-                    checked={org.current}
-                    onChange={(e) =>
-                      updateOrganization(org.id, {
-                        current: e.target.checked,
-                        endDate: e.target.checked ? "" : org.endDate,
-                      })
+                <div className={DATE_RANGE_ROW}>
+                  <MonthYearInput
+                    label={t.startDate}
+                    value={org.startDate}
+                    locale={config.language}
+                    onChange={(startDate) =>
+                      updateOrganization(org.id, { startDate })
                     }
-                    className="rounded border-zinc-300"
                   />
-                  {t.currentlyActive}
-                </label>
+                  <MonthYearInput
+                    label={t.endDate}
+                    value={org.endDate}
+                    locale={config.language}
+                    onChange={(endDate) =>
+                      updateOrganization(org.id, { endDate })
+                    }
+                    disabled={org.current}
+                  />
+                </div>
               </div>
+              <label className="mt-2 flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-300">
+                <input
+                  type="checkbox"
+                  checked={org.current}
+                  onChange={(e) =>
+                    updateOrganization(org.id, {
+                      current: e.target.checked,
+                      endDate: e.target.checked ? "" : org.endDate,
+                    })
+                  }
+                  className="rounded border-zinc-300"
+                />
+                {t.currentlyActive}
+              </label>
               <div className="mt-3">
                 <TagInput
                   label={t.highlights}
@@ -650,7 +656,7 @@ export function ResumeForm() {
           renderItem={(lang) => (
             <div className={ITEM_CARD}>
               <div className="flex items-start gap-2">
-                <div className="grid min-w-0 flex-1 grid-cols-2 gap-2">
+                <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
                   <Input
                     label={t.languageName}
                     value={lang.name}
