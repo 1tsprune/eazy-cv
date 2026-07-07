@@ -3,7 +3,7 @@
 import { Shield, Sparkles, Zap } from "lucide-react";
 import { DevAvatar } from "@/components/DevAvatar";
 import { Logo } from "@/components/Logo";
-import { TrakteerFab } from "@/components/TrakteerFab";
+
 import { SOCIAL } from "@/lib/config";
 import { getUiDict } from "@/lib/ui-i18n";
 import { useTheme } from "@/context/ThemeContext";
@@ -112,7 +112,6 @@ export function WelcomeScreen({ onStart }: Props) {
         </button>
       </div>
 
-      <TrakteerFab />
     </div>
   );
 }

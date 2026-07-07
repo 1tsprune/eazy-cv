@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { BuilderWorkspace } from "@/components/BuilderWorkspace";
 import { CoinfestPopup } from "@/components/CoinfestPopup";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
-import { TrakteerFab } from "@/components/TrakteerFab";
+
 import { ResumeProvider } from "@/context/ResumeContext";
 import { ResumePdfProvider } from "@/context/ResumePdfContext";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -28,7 +28,6 @@ function CVAppInner() {
           <ResumePdfProvider>
             <AppHeader />
             <BuilderWorkspace />
-            <TrakteerFab />
           </ResumePdfProvider>
         </div>
       )}

@@ -38,6 +38,7 @@ type BodyOptions = {
   experienceSep?: string;
   /** cv.html-style row: role left, dates right */
   experienceLayout?: "row" | "stack";
+  entryMargin?: number;
 };
 
 function periodLine(
@@ -239,6 +240,7 @@ function PdfExperience({
   styles,
   sep = " — ",
   layout = "row",
+  entryMargin = 10,
 }: {
   data: ResumeData;
   lang: Language;
@@ -246,6 +248,7 @@ function PdfExperience({
   styles: ModernPdfStyles;
   sep?: string;
   layout?: "row" | "stack";
+  entryMargin?: number;
 }) {
   if (!data.experiences.length) return null;
 
@@ -257,7 +260,7 @@ function PdfExperience({
         {t(lang, "experience", profile)}
       </Text>
       {data.experiences.map((exp) => (
-        <View key={exp.id} style={{ marginBottom: 10 }}>
+        <View key={exp.id} style={{ marginBottom: entryMargin }}>
           {layout === "row" ? (
             <ModernPdfEntryHeader
               primary={exp.position}
@@ -541,6 +544,7 @@ export function PdfModernBody({
   const skillDisplay = options.skillDisplay ?? "tags";
   const experienceSep = options.experienceSep ?? " — ";
   const experienceLayout = options.experienceLayout ?? "row";
+  const entryMargin = options.entryMargin ?? 10;
   const certLayout = experienceLayout;
 
   const blocks: Record<SectionKey, ReactNode> = {
@@ -552,6 +556,7 @@ export function PdfModernBody({
         styles={styles}
         sep={experienceSep}
         layout={experienceLayout}
+        entryMargin={entryMargin}
       />
     ),
     education: skip.has("education") ? null : (

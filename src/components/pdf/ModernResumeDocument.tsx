@@ -78,7 +78,7 @@ function baseStyles(
     tag: colors
       ? {
           backgroundColor: colors.light,
-          color: colors.text,
+          color: colors.primary,
           borderWidth: 1,
           borderColor: colors.border,
           paddingHorizontal: 6,
@@ -107,15 +107,23 @@ function ProfessionalTemplate({ data, config }: Props) {
       lineHeight: tk.lh,
       position: "relative",
     },
-    sidebar: {
+    /** Colored strip on every page — no text (fixed). */
+    sidebarBg: {
       position: "absolute",
       top: 0,
       left: 0,
       bottom: 0,
       width: PDF_SIDEBAR_WIDTH_PT,
       backgroundColor: colors.primary,
-      color: "#ffffff",
+    },
+    /** Name, contact, skills — page 1 only (not fixed). */
+    sidebarContent: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: PDF_SIDEBAR_WIDTH_PT,
       padding: MODERN_PAD_PT,
+      color: "#ffffff",
     },
     sidebarName: {
       fontSize: tk.lg,
@@ -155,7 +163,8 @@ function ProfessionalTemplate({ data, config }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
-        <View fixed style={styles.sidebar}>
+        <View fixed style={styles.sidebarBg} />
+        <View style={styles.sidebarContent}>
           {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
           <Text style={styles.sidebarName}>
             {personal.fullName || "Your Name"}
@@ -481,7 +490,7 @@ function CreativeTemplate({ data, config }: Props) {
     sectionTitle: styles.sectionTitle,
     tag: {
       backgroundColor: colors.light,
-      color: colors.text,
+      color: colors.primary,
       borderWidth: 1,
       borderColor: colors.border,
       paddingHorizontal: 8,
@@ -547,7 +556,7 @@ function CompactTemplate({ data, config }: Props) {
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
       fontFamily: tk.fontFamily,
       fontSize: tk.base,
-      lineHeight: tk.lh,
+      lineHeight: 1.35,
       color: "#1a1a1a",
     },
     name: {
@@ -555,33 +564,33 @@ function CompactTemplate({ data, config }: Props) {
       fontFamily: tk.headingFamily,
       color: colors.primary,
     },
-    title: { fontSize: tk.sm, color: "#555", marginBottom: 4 },
+    title: { fontSize: tk.sm, color: "#555", marginBottom: 2 },
     contact: {
       fontSize: tk.xs,
       color: "#777",
-      marginBottom: 10,
+      marginBottom: 6,
       borderBottomWidth: 1,
       borderBottomColor: "#ddd",
-      paddingBottom: 6,
+      paddingBottom: 4,
     },
     headerRow: {
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: 4,
+      marginBottom: 2,
     },
     photo: { width: 44, height: 44, borderRadius: 6, marginRight: 10 },
     sectionTitle: {
       fontSize: tk.xs,
       fontFamily: tk.headingFamily,
       color: colors.primary,
-      marginTop: 8,
-      marginBottom: 4,
+      marginTop: 5,
+      marginBottom: 2,
       textTransform: "uppercase",
       letterSpacing: 1,
     },
     itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.sm },
     itemSub: { fontSize: tk.xs, color: "#666" },
-    bullet: { fontSize: tk.xs, marginLeft: 8, marginBottom: 1 },
+    bullet: { fontSize: tk.xs, marginLeft: 8, marginBottom: 0 },
   });
 
   const compactBody: ModernPdfStyles = {
@@ -609,7 +618,9 @@ function CompactTemplate({ data, config }: Props) {
         {personal.summary ? (
           <>
             <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
-            <Text style={{ lineHeight: 1.45 }}>{personal.summary}</Text>
+            <Text style={{ lineHeight: 1.35, marginBottom: 4 }}>
+              {personal.summary}
+            </Text>
           </>
         ) : null}
         <PdfModernBody
@@ -621,6 +632,7 @@ function CompactTemplate({ data, config }: Props) {
             skillDisplay: "inline",
             experienceSep: " — ",
             experienceLayout: "row",
+            entryMargin: 4,
           }}
         />
       </Page>

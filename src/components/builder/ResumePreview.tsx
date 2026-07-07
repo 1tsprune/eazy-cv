@@ -750,7 +750,7 @@ function PreviewSections({
                       style={{
                         fontSize: ty.sizes.xs,
                         backgroundColor: colors.light,
-                        color: colors.text,
+                        color: colors.primary,
                         border: `1px solid ${colors.border}`,
                       }}
                     >
@@ -771,7 +771,7 @@ function PreviewSections({
                       style={{
                         fontSize: ty.sizes.xs,
                         backgroundColor: colors.light,
-                        color: colors.text,
+                        color: colors.primary,
                         border: `1px solid ${colors.border}`,
                       }}
                     >
