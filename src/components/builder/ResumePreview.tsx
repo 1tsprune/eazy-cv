@@ -3,7 +3,7 @@
 import { PreviewPhoto } from "@/components/builder/PreviewPhoto";
 import { themeColors } from "@/lib/colors";
 import { PROSE_JUSTIFY } from "@/lib/document-layout";
-import { t } from "@/lib/i18n";
+import { t, tAts } from "@/lib/i18n";
 import { getPreviewTypography } from "@/lib/typography";
 import { shouldShowPhoto } from "@/lib/photo-display";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
@@ -37,12 +37,21 @@ export function ResumePreview({ data, config }: Props) {
   const showPhoto = shouldShowPhoto(config, data);
   const photo = data.personal.photo;
 
-  const contact = [
-    data.personal.email,
-    data.personal.phone,
-    data.personal.location,
-    data.personal.linkedin,
-  ].filter(Boolean);
+  const contact = isAts
+    ? [
+        data.personal.phone,
+        data.personal.email,
+        data.personal.website,
+        data.personal.linkedin,
+        data.personal.github,
+        data.personal.location,
+      ].filter(Boolean)
+    : [
+        data.personal.email,
+        data.personal.phone,
+        data.personal.location,
+        data.personal.linkedin,
+      ].filter(Boolean);
 
   const ty = getPreviewTypography(config);
   const docStyle = {
@@ -287,6 +296,9 @@ function PreviewSections({
   const lang = config.language;
   const isAts = config.exportMode === "ats";
   const order = config.sectionOrder;
+  const sep = isAts ? " · " : " — ";
+  const sectionLabel = (key: Parameters<typeof t>[1]) =>
+    isAts ? tAts(lang, key) : t(lang, key);
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h2
@@ -307,7 +319,7 @@ function PreviewSections({
     experience:
       data.experiences.length > 0 ? (
         <>
-          <SectionTitle>{t(lang, "experience")}</SectionTitle>
+          <SectionTitle>{sectionLabel("experience")}</SectionTitle>
           {data.experiences.map((exp) => (
             <div key={exp.id} className="mb-3">
               <p
@@ -315,7 +327,7 @@ function PreviewSections({
                 style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}
               >
                 {exp.position}
-                {exp.company && ` — ${exp.company}`}
+                {exp.company && `${sep}${exp.company}`}
               </p>
               <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
                 {[
@@ -351,24 +363,34 @@ function PreviewSections({
     education:
       data.educations.length > 0 ? (
         <>
-          <SectionTitle>{t(lang, "education")}</SectionTitle>
+          <SectionTitle>{sectionLabel("education")}</SectionTitle>
           {data.educations.map((edu) => (
             <div key={edu.id} className="mb-2">
               <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
-                {edu.degree}
-                {edu.field && ` — ${edu.field}`}
+                {isAts
+                  ? [edu.degree, edu.institution].filter(Boolean).join(" · ")
+                  : `${edu.degree}${edu.field ? ` — ${edu.field}` : ""}`}
               </p>
               <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
-                {[
-                  edu.institution,
-                  edu.location,
-                  edu.startDate && edu.endDate
-                    ? `${edu.startDate} – ${edu.endDate}`
-                    : edu.startDate || edu.endDate,
-                  edu.gpa ? `${t(lang, "gpa")}: ${edu.gpa}` : "",
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
+                {isAts
+                  ? [
+                      edu.startDate && edu.endDate
+                        ? `${edu.startDate} — ${edu.endDate}`
+                        : edu.startDate || edu.endDate,
+                      edu.gpa ? `${t(lang, "gpa")}: ${edu.gpa}` : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")
+                  : [
+                      edu.institution,
+                      edu.location,
+                      edu.startDate && edu.endDate
+                        ? `${edu.startDate} – ${edu.endDate}`
+                        : edu.startDate || edu.endDate,
+                      edu.gpa ? `${t(lang, "gpa")}: ${edu.gpa}` : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
               </p>
             </div>
           ))}
@@ -378,12 +400,12 @@ function PreviewSections({
     organizations:
       data.organizations.length > 0 ? (
         <>
-          <SectionTitle>{t(lang, "organizations")}</SectionTitle>
+          <SectionTitle>{sectionLabel("organizations")}</SectionTitle>
           {data.organizations.map((org) => (
             <div key={org.id} className="mb-3">
               <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
                 {org.role}
-                {org.name && ` — ${org.name}`}
+                {org.name && `${sep}${org.name}`}
               </p>
               <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
                 {[
@@ -411,48 +433,72 @@ function PreviewSections({
     skills:
       (data.technicalSkills.length > 0 || data.softSkills.length > 0) &&
       config.template !== "professional" ? (
-        <>
-          {data.technicalSkills.length > 0 && (
-            <>
-              <SectionTitle>{t(lang, "technicalSkills")}</SectionTitle>
-              <div className="mb-2 flex flex-wrap gap-1.5">
-                {data.technicalSkills.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded px-2 py-0.5 font-medium"
-                    style={{
-                      fontSize: ty.sizes.xs,
-                      backgroundColor: isAts ? "#f4f4f5" : colors.light,
-                      color: isAts ? "#333" : colors.primary,
-                    }}
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </>
-          )}
-          {data.softSkills.length > 0 && (
-            <>
-              <SectionTitle>{t(lang, "softSkills")}</SectionTitle>
-              <div className="flex flex-wrap gap-1.5">
-                {data.softSkills.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded px-2 py-0.5 font-medium"
-                    style={{
-                      fontSize: ty.sizes.xs,
-                      backgroundColor: isAts ? "#f4f4f5" : colors.light,
-                      color: isAts ? "#333" : colors.primary,
-                    }}
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </>
-          )}
-        </>
+        isAts ? (
+          <>
+            <SectionTitle>{sectionLabel("technicalSkills")}</SectionTitle>
+            {data.technicalSkills.length > 0 && (
+              <p className="mb-2 text-zinc-600" style={{ fontSize: ty.sizes.sm }}>
+                {data.technicalSkills.join(" · ")}
+              </p>
+            )}
+            {data.softSkills.length > 0 && (
+              <>
+                <p
+                  className="font-semibold text-zinc-700"
+                  style={{ fontSize: ty.sizes.sm, fontWeight: ty.headingWeight }}
+                >
+                  {t(lang, "softSkills")}
+                </p>
+                <p className="text-zinc-600" style={{ fontSize: ty.sizes.sm }}>
+                  {data.softSkills.join(" · ")}
+                </p>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            {data.technicalSkills.length > 0 && (
+              <>
+                <SectionTitle>{t(lang, "technicalSkills")}</SectionTitle>
+                <div className="mb-2 flex flex-wrap gap-1.5">
+                  {data.technicalSkills.map((s) => (
+                    <span
+                      key={s}
+                      className="rounded px-2 py-0.5 font-medium"
+                      style={{
+                        fontSize: ty.sizes.xs,
+                        backgroundColor: colors.light,
+                        color: colors.primary,
+                      }}
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+            {data.softSkills.length > 0 && (
+              <>
+                <SectionTitle>{t(lang, "softSkills")}</SectionTitle>
+                <div className="flex flex-wrap gap-1.5">
+                  {data.softSkills.map((s) => (
+                    <span
+                      key={s}
+                      className="rounded px-2 py-0.5 font-medium"
+                      style={{
+                        fontSize: ty.sizes.xs,
+                        backgroundColor: colors.light,
+                        color: colors.primary,
+                      }}
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        )
       ) : null,
 
     projects:
@@ -539,10 +585,10 @@ function PreviewSections({
     <>
       {data.personal.summary && (
         <>
-          <SectionTitle>{t(lang, "summary")}</SectionTitle>
+          {!isAts && <SectionTitle>{t(lang, "summary")}</SectionTitle>}
           <p
             className={`text-zinc-600 ${PROSE_JUSTIFY}`}
-            style={{ fontSize: ty.sizes.sm }}
+            style={{ fontSize: ty.sizes.sm, marginBottom: isAts ? 8 : undefined }}
           >
             {data.personal.summary}
           </p>
