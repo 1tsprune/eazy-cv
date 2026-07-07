@@ -170,11 +170,11 @@ const copy: Record<Language, CopyBundle> = {
         checks: {
           minWords: {
             label: "Tetap ringkas",
-            tip: "Pastikan minimal 200 kata",
+            tip: "Tetap ringkas—pastikan minimal 200 kata",
           },
           maxWords: {
             label: "Mudah dibaca",
-            tip: "Jaga agar tetap dalam batas 500 kata",
+            tip: "Buat resume kamu mudah dibaca—jaga agar tetap dalam batas 500 kata",
           },
         },
       },
@@ -184,7 +184,7 @@ const copy: Record<Language, CopyBundle> = {
           "Pastikan setiap poin memberikan informasi yang kuat dan detail tentang pengalaman kamu",
         checks: {
           bulletLength: {
-            label: "Panjang bullet ideal",
+            label: "Panjang bullet",
             tip: "Ringkas setiap bullet point dalam 10–20 kata untuk menonjolkan pencapaian dan kontribusi kamu",
           },
           actionVerb: {
@@ -192,7 +192,7 @@ const copy: Record<Language, CopyBundle> = {
             tip: "Mulai setiap poin dengan kata kerja aksi yang kuat (misalnya: Created, Developed, Organized)",
           },
           actionImpact: {
-            label: "Kerangka action + impact",
+            label: "Action + impact",
             tip: "Gunakan kerangka action + impact untuk memberikan deskripsi detail tentang pencapaian kamu di setiap poin",
           },
         },
