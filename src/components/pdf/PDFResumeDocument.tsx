@@ -1,182 +1,272 @@
+import type { ReactNode } from "react";
 import {
   Document,
   Page,
   Text,
   View,
   StyleSheet,
+  Link,
 } from "@react-pdf/renderer";
-import { themeColors } from "@/lib/colors";
 import { t } from "@/lib/i18n";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
-import { PDF_A4_WIDTH_PT } from "@/lib/pdf-modern-layout";
-import { shouldShowPhoto } from "@/lib/photo-display";
-import { getPdfSheetTokens } from "@/lib/typography";
-import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
-import { modernContactItems, PdfContactInline } from "./pdf-contact";
-import { PdfPhoto } from "./pdf-photo";
+import { EZCV_MODERN, ezcvBullets, ezcvPeriod } from "@/lib/ezcv-pdf-layout";
 import {
-  PdfModernBody,
-  PdfSidebarSkills,
-  type ModernPdfStyles,
-} from "./pdf-modern-sections";
-
-/** EZCV PDFResume — centered header, 33% / 67% two-column body. */
-const PAGE_PAD = 30;
-const CONTENT_W = PDF_A4_WIDTH_PT - PAGE_PAD * 2;
-const LEFT_W = Math.round(CONTENT_W * 0.33);
-const RIGHT_W = CONTENT_W - LEFT_W;
-
-const LEFT_COLUMN_SECTIONS = new Set<SectionKey>([
-  "skills",
-  "languages",
-  "certifications",
-]);
+  hasSkillContent,
+  normalizeSkillGroups,
+} from "@/lib/skill-groups";
+import { shouldShowPhoto } from "@/lib/photo-display";
+import type { ResumeConfig, ResumeData } from "@/lib/types";
+import { PdfPhoto } from "./pdf-photo";
 
 interface Props {
   data: ResumeData;
   config: ResumeConfig;
 }
 
-export default function PDFResumeDocument({ data, config }: Props) {
-  const colors = themeColors[config.colorTheme];
-  const lang = config.language;
-  const { personal } = data;
-  const showPhoto = shouldShowPhoto(config, data);
-  const tk = getPdfSheetTokens(config);
+function Section({
+  title,
+  children,
+  styles,
+}: {
+  title: string;
+  children: ReactNode;
+  styles: ReturnType<typeof createStyles>;
+}) {
+  if (!children) return null;
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {children}
+    </View>
+  );
+}
 
-  const styles = StyleSheet.create({
+function createStyles() {
+  const c = EZCV_MODERN;
+  return StyleSheet.create({
     page: {
-      padding: PAGE_PAD,
-      fontFamily: tk.fontFamily,
-      fontSize: tk.base,
-      lineHeight: tk.lh,
-      color: "#1a1a1a",
+      paddingTop: c.pagePad,
+      paddingBottom: c.pagePad,
+      paddingHorizontal: c.pagePad,
+      fontFamily: "Helvetica",
+      fontSize: 10,
+      color: c.text,
+      lineHeight: 1.5,
     },
     header: {
       alignItems: "center",
-      marginBottom: 14,
-      paddingBottom: 12,
-      borderBottomWidth: 2,
-      borderBottomColor: colors.primary,
+      marginBottom: c.sectionGap,
     },
     photo: {
-      width: 76,
-      height: 76,
-      borderRadius: 38,
-      marginBottom: 8,
-      alignSelf: "center",
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      marginBottom: 6,
+      objectFit: "cover",
     },
     name: {
-      fontSize: tk.xl,
-      fontFamily: tk.headingFamily,
-      color: colors.primary,
+      fontSize: 18,
+      fontFamily: "Helvetica-Bold",
+      color: c.primary,
+      marginBottom: 2,
       textAlign: "center",
-      marginBottom: 3,
     },
     title: {
-      fontSize: tk.md,
-      color: "#555555",
-      textAlign: "center",
+      fontSize: 13,
+      fontFamily: "Helvetica",
+      color: c.muted,
       marginBottom: 6,
-    },
-    contact: {
-      fontSize: tk.xs,
-      color: "#666666",
       textAlign: "center",
-      lineHeight: 1.45,
     },
-    summary: {
-      fontSize: tk.sm,
-      lineHeight: 1.5,
-      color: "#444444",
-      textAlign: "justify",
-      marginBottom: 12,
+    contactLine: {
+      fontSize: 9,
+      color: c.text,
+      textAlign: "center",
+      marginBottom: 2,
+      lineHeight: 1.4,
     },
-    columns: {
+    contactLink: {
+      fontSize: 9,
+      color: c.text,
+      textDecoration: "none",
+    },
+    divider: {
+      borderBottomWidth: 1,
+      borderBottomColor: "#e0dcd7",
+      borderBottomStyle: "dashed",
+      marginVertical: 6,
+      opacity: 0.5,
+    },
+    twoColumn: {
       flexDirection: "row",
     },
-    leftCol: {
-      width: LEFT_W,
-      paddingRight: 14,
+    leftColumn: {
+      width: "33%",
+      paddingRight: c.columnGap / 2,
     },
-    rightCol: {
-      width: RIGHT_W,
+    rightColumn: {
+      width: "67%",
+      paddingLeft: c.columnGap / 2,
+    },
+    section: {
+      marginBottom: c.sectionGap,
     },
     sectionTitle: {
-      fontSize: tk.xs,
-      fontFamily: tk.headingFamily,
-      color: colors.primary,
-      textTransform: "uppercase",
-      letterSpacing: 1.2,
-      marginTop: 8,
-      marginBottom: 5,
+      fontSize: 12,
+      fontFamily: "Helvetica-Bold",
+      color: c.primary,
+      borderBottomWidth: 1.5,
+      borderBottomColor: c.border,
       paddingBottom: 3,
-      borderBottomWidth: 1,
-      borderBottomColor: "#e8e8e8",
+      marginBottom: 6,
     },
-    sidebarLabel: {
-      fontSize: tk.xs,
-      fontFamily: tk.headingFamily,
-      color: colors.primary,
-      textTransform: "uppercase",
-      letterSpacing: 1.2,
-      marginTop: 8,
-      marginBottom: 4,
-      paddingBottom: 3,
-      borderBottomWidth: 1,
-      borderBottomColor: "#e8e8e8",
+    content: {
+      fontSize: 10,
+      color: c.text,
+      lineHeight: 1.5,
     },
-    sidebarText: {
-      fontSize: tk.sm,
-      color: "#444444",
-      marginBottom: 2,
-      lineHeight: 1.35,
+    contentBold: {
+      fontSize: 10,
+      fontFamily: "Helvetica-Bold",
+      color: c.text,
     },
-    certRow: {
+    subContent: {
+      fontSize: 9,
+      color: c.text,
+      lineHeight: 1.4,
+    },
+    entryWrap: {
+      marginBottom: 6,
+    },
+    entryHeader: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 3,
+      alignItems: "center",
+      marginBottom: 2,
     },
-    certName: {
-      fontSize: tk.sm,
-      color: "#444444",
+    entryTitle: {
+      fontSize: 10,
+      fontFamily: "Helvetica-Bold",
+      color: c.text,
       flex: 1,
-      paddingRight: 6,
+      paddingRight: 8,
     },
-    certDate: {
-      fontSize: tk.xs,
-      color: "#888888",
+    entryDate: {
+      fontSize: 9,
+      color: c.muted,
+      textAlign: "right",
       flexShrink: 0,
     },
+    entrySubtitle: {
+      fontSize: 10,
+      color: c.muted,
+      marginBottom: 2,
+    },
+    entryDescription: {
+      fontSize: 10,
+      color: c.text,
+      lineHeight: 1.5,
+      marginBottom: 3,
+    },
+    bulletList: {
+      paddingLeft: 12,
+    },
+    bulletItem: {
+      flexDirection: "row",
+      marginBottom: 2,
+    },
+    bullet: {
+      width: 10,
+      fontSize: 10,
+      color: c.text,
+    },
+    bulletText: {
+      flex: 1,
+      fontSize: 10,
+      color: c.text,
+      lineHeight: 1.5,
+    },
   });
+}
 
-  const bodyStyles: ModernPdfStyles = {
-    sectionTitle: styles.sectionTitle,
-    itemTitle: {
-      fontFamily: tk.headingFamily,
-      fontSize: tk.md,
-      color: "#1a1a1a",
-    },
-    itemSub: { fontSize: tk.sm, color: "#666666" },
-    bullet: { fontSize: tk.sm, marginLeft: 8, marginBottom: 2, color: "#444444" },
-    tag: {
-      backgroundColor: colors.light,
-      color: colors.primary,
-      paddingHorizontal: 6,
-      paddingVertical: 2,
-      borderRadius: 3,
-      fontSize: tk.xs,
-      marginRight: 4,
-      marginBottom: 4,
-    },
-  };
+function ContactLines({
+  data,
+  styles,
+}: {
+  data: ResumeData;
+  styles: ReturnType<typeof createStyles>;
+}) {
+  const { personal } = data;
+  const line1 = [personal.phone, personal.email, personal.location].filter(
+    Boolean,
+  );
+  const line2 = [personal.linkedin, personal.github, personal.website].filter(
+    Boolean,
+  );
 
-  const mainOrder = config.sectionOrder.filter(
-    (key) => !LEFT_COLUMN_SECTIONS.has(key),
+  if (!line1.length && !line2.length) return null;
+
+  return (
+    <>
+      {line1.length > 0 ? (
+        <Text style={styles.contactLine}>{line1.join(" · ")}</Text>
+      ) : null}
+      {line2.length > 0 ? (
+        <Text style={styles.contactLine}>
+          {line2.map((item, i) => {
+            const href = item.includes("://")
+              ? item
+              : `https://${item.replace(/^\/+/, "")}`;
+            return (
+              <Text key={item}>
+                {i > 0 ? " · " : ""}
+                <Link src={href} style={styles.contactLink}>
+                  {item}
+                </Link>
+              </Text>
+            );
+          })}
+        </Text>
+      ) : null}
+    </>
+  );
+}
+
+function BulletList({
+  items,
+  styles,
+}: {
+  items: string[];
+  styles: ReturnType<typeof createStyles>;
+}) {
+  const bullets = ezcvBullets(items);
+  if (!bullets.length) return null;
+  return (
+    <View style={styles.bulletList}>
+      {bullets.map((item, i) => (
+        <View key={i} style={styles.bulletItem}>
+          <Text style={styles.bullet}>•</Text>
+          <Text style={styles.bulletText}>{item}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+export default function PDFResumeDocument({ data, config }: Props) {
+  const lang = config.language;
+  const { personal } = data;
+  const showPhoto = shouldShowPhoto(config, data);
+  const styles = createStyles();
+  const skillGroups = normalizeSkillGroups(data).filter(
+    (g) => g.skills.length > 0,
   );
 
   return (
-    <Document>
+    <Document
+      title={`${personal.fullName || "Resume"} - CV`}
+      author={personal.fullName || ""}
+    >
       <Page size="A4" style={styles.page} wrap>
         <View style={styles.header}>
           {showPhoto ? (
@@ -186,75 +276,176 @@ export default function PDFResumeDocument({ data, config }: Props) {
           {personal.title ? (
             <Text style={styles.title}>{personal.title}</Text>
           ) : null}
-          <PdfContactInline
-            items={modernContactItems(personal)}
-            style={styles.contact}
-            linkColor={colors.primary}
-          />
+          <ContactLines data={data} styles={styles} />
         </View>
 
-        {personal.summary ? (
-          <Text style={styles.summary}>{personal.summary}</Text>
-        ) : null}
+        <View style={styles.divider} />
 
-        <View style={styles.columns}>
-          <View style={styles.leftCol}>
-            {config.sectionOrder.includes("skills") ? (
-              <PdfSidebarSkills
-                data={data}
-                lang={lang}
-                textStyle={styles.sidebarText}
-                labelStyle={styles.sidebarLabel}
-              />
+        <View style={styles.twoColumn}>
+          <View style={styles.leftColumn}>
+            {personal.summary ? (
+              <Section title={t(lang, "summary")} styles={styles}>
+                <Text style={styles.content}>{personal.summary}</Text>
+              </Section>
             ) : null}
 
-            {config.sectionOrder.includes("languages") &&
-            data.languages.length > 0 ? (
-              <>
-                <Text style={styles.sidebarLabel}>{t(lang, "languages")}</Text>
-                {data.languages.map((l) => (
-                  <Text key={l.id} style={styles.sidebarText}>
-                    {l.name}
-                    {l.level
-                      ? ` — ${getLanguageLevelLabel(l.level, lang)}`
-                      : ""}
-                  </Text>
-                ))}
-              </>
-            ) : null}
-
-            {config.sectionOrder.includes("certifications") &&
-            data.certifications.length > 0 ? (
-              <>
-                <Text style={styles.sidebarLabel}>
-                  {t(lang, "certifications")}
-                </Text>
-                {data.certifications.map((cert) => (
-                  <View key={cert.id} style={styles.certRow}>
-                    <Text style={styles.certName}>
-                      {cert.name}
-                      {cert.issuer ? ` — ${cert.issuer}` : ""}
-                    </Text>
-                    {cert.date ? (
-                      <Text style={styles.certDate}>{cert.date}</Text>
-                    ) : null}
+            {data.educations.length > 0 ? (
+              <Section title={t(lang, "education")} styles={styles}>
+                {data.educations.map((edu) => (
+                  <View key={edu.id} style={styles.entryWrap}>
+                    <Text style={styles.contentBold}>{edu.degree}</Text>
+                    <Text style={styles.content}>{edu.institution}</Text>
+                    {(edu.startDate || edu.endDate) && (
+                      <Text style={styles.subContent}>
+                        {ezcvPeriod(
+                          edu.startDate,
+                          edu.endDate,
+                          false,
+                          lang,
+                        )}
+                      </Text>
+                    )}
                   </View>
                 ))}
+              </Section>
+            ) : null}
+
+            {hasSkillContent(data) ? (
+              <>
+                {data.technicalSkills.length > 0 ? (
+                  <Section
+                    title={t(lang, "technicalSkills")}
+                    styles={styles}
+                  >
+                    <Text style={styles.subContent}>
+                      {data.technicalSkills.join(", ")}
+                    </Text>
+                  </Section>
+                ) : null}
+                {data.softSkills.length > 0 ? (
+                  <Section title={t(lang, "softSkills")} styles={styles}>
+                    <Text style={styles.subContent}>
+                      {data.softSkills.join(", ")}
+                    </Text>
+                  </Section>
+                ) : null}
+                {data.technicalSkills.length === 0 &&
+                data.softSkills.length === 0
+                  ? skillGroups.map((group) => (
+                      <Section
+                        key={group.id}
+                        title={group.name || t(lang, "technicalSkills")}
+                        styles={styles}
+                      >
+                        <Text style={styles.subContent}>
+                          {group.skills.join(", ")}
+                        </Text>
+                      </Section>
+                    ))
+                  : null}
               </>
+            ) : null}
+
+            {data.languages.length > 0 ? (
+              <Section title={t(lang, "languages")} styles={styles}>
+                <Text style={styles.subContent}>
+                  {data.languages
+                    .map(
+                      (l) =>
+                        `${l.name}${l.level ? ` (${getLanguageLevelLabel(l.level, lang)})` : ""}`,
+                    )
+                    .join(", ")}
+                </Text>
+              </Section>
+            ) : null}
+
+            {data.certifications.length > 0 ? (
+              <Section title={t(lang, "certifications")} styles={styles}>
+                <BulletList
+                  items={data.certifications.map((c) =>
+                    [c.name, c.issuer].filter(Boolean).join(" — "),
+                  )}
+                  styles={styles}
+                />
+              </Section>
             ) : null}
           </View>
 
-          <View style={styles.rightCol}>
-            <PdfModernBody
-              data={data}
-              config={{ ...config, sectionOrder: mainOrder }}
-              styles={bodyStyles}
-              options={{
-                skipSections: ["skills", "languages", "certifications"],
-                skillDisplay: "tags",
-                experienceLayout: "row",
-              }}
-            />
+          <View style={styles.rightColumn}>
+            {data.experiences.length > 0 ? (
+              <Section title={t(lang, "experience", config.cvProfile)} styles={styles}>
+                {data.experiences.map((exp) => (
+                  <View key={exp.id} style={styles.entryWrap} wrap={false}>
+                    <View style={styles.entryHeader}>
+                      <Text style={styles.entryTitle}>{exp.company}</Text>
+                      <Text style={styles.entryDate}>
+                        {ezcvPeriod(
+                          exp.startDate,
+                          exp.endDate,
+                          exp.current,
+                          lang,
+                        )}
+                      </Text>
+                    </View>
+                    {exp.position ? (
+                      <Text style={styles.entrySubtitle}>{exp.position}</Text>
+                    ) : null}
+                    {exp.description ? (
+                      <Text style={styles.entryDescription}>
+                        {exp.description}
+                      </Text>
+                    ) : null}
+                    <BulletList items={exp.highlights} styles={styles} />
+                  </View>
+                ))}
+              </Section>
+            ) : null}
+
+            {data.projects.length > 0 ? (
+              <Section title={t(lang, "projects")} styles={styles}>
+                {data.projects.map((proj) => (
+                  <View key={proj.id} style={styles.entryWrap} wrap={false}>
+                    <View style={styles.entryHeader}>
+                      <Text style={styles.entryTitle}>{proj.name}</Text>
+                    </View>
+                    {proj.description ? (
+                      <Text style={styles.entryDescription}>
+                        {proj.description}
+                      </Text>
+                    ) : null}
+                    {proj.technologies.length > 0 ? (
+                      <Text style={styles.subContent}>
+                        {proj.technologies.join(", ")}
+                      </Text>
+                    ) : null}
+                  </View>
+                ))}
+              </Section>
+            ) : null}
+
+            {data.organizations.length > 0 ? (
+              <Section title={t(lang, "organizations")} styles={styles}>
+                {data.organizations.map((org) => (
+                  <View key={org.id} style={styles.entryWrap} wrap={false}>
+                    <View style={styles.entryHeader}>
+                      <Text style={styles.entryTitle}>{org.name}</Text>
+                      <Text style={styles.entryDate}>
+                        {ezcvPeriod(
+                          org.startDate,
+                          org.endDate,
+                          org.current,
+                          lang,
+                        )}
+                      </Text>
+                    </View>
+                    {org.role ? (
+                      <Text style={styles.entrySubtitle}>{org.role}</Text>
+                    ) : null}
+                    <BulletList items={org.highlights} styles={styles} />
+                  </View>
+                ))}
+              </Section>
+            ) : null}
           </View>
         </View>
       </Page>

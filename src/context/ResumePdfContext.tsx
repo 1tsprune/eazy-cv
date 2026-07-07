@@ -8,13 +8,16 @@ import {
   useEffect,
   useMemo,
   useRef,
+  type ReactElement,
   type ReactNode,
 } from "react";
+import type { DocumentProps } from "@react-pdf/renderer";
 import { buildResumePdfDocument } from "@/lib/build-resume-pdf-document";
 import { useResume } from "@/context/ResumeContext";
 import { ensurePdfSetup } from "@/lib/pdf-setup";
 
 type ResumePdfContextValue = {
+  document: ReactElement<DocumentProps>;
   url: string | null;
   blob: Blob | null;
   loading: boolean;
@@ -56,6 +59,7 @@ export function ResumePdfProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     (): ResumePdfContextValue => ({
+      document,
       url: pdfState.url,
       blob: pdfState.blob,
       loading: pdfState.loading,
@@ -63,6 +67,7 @@ export function ResumePdfProvider({ children }: { children: ReactNode }) {
       waitForBlob,
     }),
     [
+      document,
       pdfState.url,
       pdfState.blob,
       pdfState.loading,
@@ -86,7 +91,6 @@ export function useResumePdf(): ResumePdfContextValue {
   return ctx;
 }
 
-/** Optional hook for components that may render outside the provider. */
 export function useResumePdfOptional(): ResumePdfContextValue | null {
   return useContext(ResumePdfContext);
 }

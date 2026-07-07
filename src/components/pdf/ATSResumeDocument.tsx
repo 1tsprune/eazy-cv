@@ -5,272 +5,339 @@ import {
   Text,
   View,
   StyleSheet,
+  Link,
 } from "@react-pdf/renderer";
+import { t, tAts } from "@/lib/i18n";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
+import { EZCV_ATS, ezcvBullets, ezcvPeriod } from "@/lib/ezcv-pdf-layout";
 import {
-  formatAtsEducationMeta,
-  formatAtsPeriodLine,
-  getAtsPdfLayout,
-  splitAtsProseLines,
-} from "@/lib/pdf-ats-layout";
-import {
-  chunkSkillLines,
   hasSkillContent,
   normalizeSkillGroups,
 } from "@/lib/skill-groups";
-import { t, tAts } from "@/lib/i18n";
-import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
-import { sanitizePdfSheet } from "@/lib/pdf-sheet";
-import { cvContactItems, PdfContactInline } from "./pdf-contact";
+import type { ResumeConfig, ResumeData } from "@/lib/types";
 import { PdfCustomSections } from "./pdf-blocks";
-import { AtsPdfBullet, AtsPdfEntryHeader } from "./ats-pdf-blocks";
 
 interface Props {
   data: ResumeData;
   config: ResumeConfig;
 }
 
-function SectionHeading({
+function createStyles() {
+  const s = EZCV_ATS;
+  return StyleSheet.create({
+    page: {
+      paddingTop: s.pageMargin,
+      paddingBottom: s.pageMargin,
+      paddingHorizontal: s.pageMargin,
+      fontFamily: "Helvetica",
+      fontSize: 10,
+      color: "#000000",
+      lineHeight: 1.3,
+    },
+    header: {
+      alignItems: "center",
+      marginBottom: 4,
+    },
+    name: {
+      fontSize: 18,
+      fontFamily: "Helvetica-Bold",
+      color: "#000000",
+      textAlign: "center",
+      marginBottom: 14,
+      textTransform: "uppercase",
+    },
+    position: {
+      fontSize: 10,
+      color: "#333333",
+      textAlign: "center",
+    },
+    contactSection: {
+      alignItems: "center",
+      marginBottom: s.sectionGap,
+      marginTop: 4,
+    },
+    contactInline: {
+      fontSize: 9,
+      color: "#000000",
+      textAlign: "center",
+      marginBottom: 1,
+    },
+    contactLink: {
+      fontSize: 9,
+      color: "#000000",
+      textDecoration: "none",
+    },
+    section: {
+      marginTop: s.sectionGap,
+    },
+    sectionHeading: {
+      fontSize: 11,
+      fontFamily: "Helvetica-Bold",
+      color: "#000000",
+      marginBottom: 4,
+      paddingBottom: 2,
+      borderBottomWidth: 0.75,
+      borderBottomColor: "#000000",
+    },
+    body: {
+      fontSize: 10,
+      color: "#000000",
+      lineHeight: 1.3,
+    },
+    muted: {
+      fontSize: 9,
+      color: "#333333",
+    },
+    entryWrap: {
+      marginBottom: s.itemGap,
+    },
+    entryRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+    },
+    entryTitle: {
+      fontSize: 10,
+      fontFamily: "Helvetica-Bold",
+      color: "#000000",
+      flex: 1,
+      paddingRight: 8,
+    },
+    entrySubtitle: {
+      fontSize: 10,
+      color: "#000000",
+    },
+    entryDate: {
+      fontSize: 9,
+      color: "#000000",
+      textAlign: "right",
+      flexShrink: 0,
+    },
+    entryDescription: {
+      fontSize: 10,
+      color: "#000000",
+      lineHeight: 1.3,
+      marginTop: 2,
+    },
+    bulletList: {
+      paddingLeft: s.bulletIndent,
+      marginTop: 2,
+    },
+    bulletItem: {
+      fontSize: 10,
+      color: "#000000",
+      lineHeight: 1.3,
+      marginBottom: 1,
+    },
+    skillList: {
+      fontSize: 10,
+      color: "#000000",
+    },
+  });
+}
+
+function AtsSection({
   title,
-  style,
+  children,
+  styles,
 }: {
   title: string;
-  style: ReturnType<typeof StyleSheet.create>;
+  children: ReactNode;
+  styles: ReturnType<typeof createStyles>;
 }) {
-  return <Text style={style.sectionTitle}>{title}</Text>;
+  if (!children) return null;
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionHeading}>{title}</Text>
+      {children}
+    </View>
+  );
+}
+
+function AtsContact({ data, styles }: { data: ResumeData; styles: ReturnType<typeof createStyles> }) {
+  const { personal } = data;
+  const line1 = [personal.location, personal.email, personal.phone].filter(Boolean);
+  const line2 = [personal.linkedin, personal.github, personal.website].filter(Boolean);
+
+  if (!line1.length && !line2.length) return null;
+
+  return (
+    <View style={styles.contactSection}>
+      {line1.length > 0 ? (
+        <Text style={styles.contactInline}>{line1.join(" · ")}</Text>
+      ) : null}
+      {line2.length > 0 ? (
+        <Text style={styles.contactInline}>
+          {line2.map((item, i) => (
+            <Text key={item}>
+              {i > 0 ? " · " : ""}
+              <Link
+                src={item.includes("://") ? item : `https://${item}`}
+                style={styles.contactLink}
+              >
+                {item}
+              </Link>
+            </Text>
+          ))}
+        </Text>
+      ) : null}
+    </View>
+  );
 }
 
 export default function ATSResumeDocument({ data, config }: Props) {
-  const { sheet: layout } = getAtsPdfLayout(config);
-  const styles = StyleSheet.create(sanitizePdfSheet(layout));
-  const contactLinkColor = layout.contact.linkColor as string;
-  const language = config.language;
+  const lang = config.language;
   const { personal } = data;
-
-  const contact = cvContactItems(personal);
-  const skillGroups = normalizeSkillGroups(data).filter(
-    (g) => g.skills.length > 0,
-  );
-  const skillsMid = Math.ceil(skillGroups.length / 2);
-
-  const sectionBlocks: Record<SectionKey, ReactNode> = {
-    experience:
-      data.experiences.length > 0 ? (
-        <>
-          <SectionHeading
-            title={tAts(language, "experience", config.cvProfile)}
-            style={styles}
-          />
-          {data.experiences.map((exp) => (
-            <View key={exp.id} style={styles.entry}>
-              <AtsPdfEntryHeader
-                primary={exp.position}
-                secondary={exp.company}
-                period={formatAtsPeriodLine(
-                  exp.startDate,
-                  exp.endDate,
-                  exp.current,
-                  exp.location,
-                  language,
-                )}
-                styles={styles}
-              />
-              {exp.description ? (
-                <Text style={styles.paragraph}>{exp.description}</Text>
-              ) : null}
-              {exp.highlights.map((h, i) => (
-                <AtsPdfBullet key={i} text={h} bulletStyle={styles.bullet} />
-              ))}
-            </View>
-          ))}
-        </>
-      ) : null,
-
-    education:
-      data.educations.length > 0 ? (
-        <>
-          <SectionHeading
-            title={t(language, "education")}
-            style={styles}
-          />
-          {data.educations.map((edu) => (
-            <View key={edu.id} style={styles.entry}>
-              <AtsPdfEntryHeader
-                primary={edu.degree}
-                secondary={edu.institution}
-                period={formatAtsEducationMeta(
-                  edu.startDate,
-                  edu.endDate,
-                  edu.gpa,
-                  language,
-                )}
-                styles={styles}
-              />
-              {splitAtsProseLines(edu.description).map((line, i) => (
-                <Text key={i} style={styles.paragraph}>
-                  {line}
-                </Text>
-              ))}
-            </View>
-          ))}
-        </>
-      ) : null,
-
-    organizations:
-      data.organizations.length > 0 ? (
-        <>
-          <SectionHeading
-            title={tAts(language, "organizations")}
-            style={styles}
-          />
-          {data.organizations.map((org) => (
-            <View key={org.id} style={styles.entry}>
-              <AtsPdfEntryHeader
-                primary={org.role}
-                secondary={org.name}
-                period={formatAtsPeriodLine(
-                  org.startDate,
-                  org.endDate,
-                  org.current,
-                  org.location,
-                  language,
-                )}
-                styles={styles}
-              />
-              {org.highlights.map((h, i) => (
-                <AtsPdfBullet key={i} text={h} bulletStyle={styles.bullet} />
-              ))}
-            </View>
-          ))}
-        </>
-      ) : null,
-
-    skills: hasSkillContent(data) ? (
-        <>
-          <SectionHeading
-            title={tAts(language, "technicalSkills")}
-            style={styles}
-          />
-          <View style={styles.skillsGrid}>
-            {[0, 1].map((col) => (
-              <View
-                key={col}
-                style={
-                  col === 0
-                    ? { ...styles.skillsCol, paddingRight: 8 }
-                    : { ...styles.skillsCol, paddingLeft: 8 }
-                }
-              >
-                {skillGroups
-                  .slice(
-                    col === 0 ? 0 : skillsMid,
-                    col === 0 ? skillsMid : undefined,
-                  )
-                  .map((group) => (
-                    <View key={group.id} style={{ marginBottom: 8 }}>
-                      {group.name ? (
-                        <Text style={styles.skillGroup}>{group.name}</Text>
-                      ) : null}
-                      {chunkSkillLines(group.skills).map((line, i) => (
-                        <Text key={i} style={styles.skillsLine}>
-                          {line}
-                        </Text>
-                      ))}
-                    </View>
-                  ))}
-              </View>
-            ))}
-          </View>
-        </>
-      ) : null,
-
-    projects: null,
-
-    certifications:
-      data.certifications.length > 0 ? (
-        <>
-          <SectionHeading
-            title={t(language, "certifications")}
-            style={styles}
-          />
-          {data.certifications.map((cert) => (
-            <View key={cert.id} style={styles.certRow}>
-              <Text style={styles.certItem}>
-                {cert.name}
-                {cert.issuer ? ` — ${cert.issuer}` : ""}
-              </Text>
-              {cert.date ? (
-                <Text style={styles.certDate}>{cert.date}</Text>
-              ) : null}
-            </View>
-          ))}
-        </>
-      ) : null,
-
-    languages:
-      data.languages.length > 0 ? (
-        <>
-          <SectionHeading
-            title={t(language, "languages")}
-            style={styles}
-          />
-          <Text style={styles.skillsLine}>
-            {data.languages
-              .map(
-                (l) =>
-                  `${l.name}${l.level ? ` (${getLanguageLevelLabel(l.level, language)})` : ""}`,
-              )
-              .join(" · ")}
-          </Text>
-        </>
-      ) : null,
-
-    custom: data.customSections.some((s) => s.showInAts && s.title) ? (
-      <PdfCustomSections
-        sections={data.customSections}
-        styles={{
-          sectionTitle: styles.sectionTitle,
-          bullet: styles.bullet,
-        }}
-        atsOnly
-      />
-    ) : null,
-  };
+  const styles = createStyles();
+  const skillGroups = normalizeSkillGroups(data).filter((g) => g.skills.length > 0);
 
   return (
-    <Document>
+    <Document title={`${personal.fullName || "Resume"} - ATS`}>
       <Page size="A4" style={styles.page} wrap>
-        <View style={styles.header}>
-          <Text style={styles.name}>
-            {personal.fullName || "Your Name"}
-          </Text>
-          {personal.title ? (
-            <Text style={styles.headline}>{personal.title}</Text>
-          ) : null}
-          <PdfContactInline
-            items={contact}
-            style={styles.contact}
-            linkColor={contactLinkColor}
-          />
-        </View>
-
-        {personal.summary ? (
-          <Text style={styles.summary}>{personal.summary}</Text>
+        {personal.fullName ? (
+          <View style={styles.header}>
+            <Text style={styles.name}>{personal.fullName}</Text>
+            {personal.title ? (
+              <Text style={styles.position}>{personal.title}</Text>
+            ) : null}
+          </View>
         ) : null}
 
-        {(() => {
-          let visible = 0;
-          return config.sectionOrder.map((key) => {
-            const block = sectionBlocks[key];
-            if (!block) return null;
-            const gap = visible++ > 0 ? { marginTop: 18 } : undefined;
-            return (
-              <View key={key} style={gap}>
-                {block}
+        <AtsContact data={data} styles={styles} />
+
+        {personal.summary ? (
+          <AtsSection title={t(lang, "summary")} styles={styles}>
+            <Text style={styles.body}>{personal.summary}</Text>
+          </AtsSection>
+        ) : null}
+
+        {data.experiences.length > 0 ? (
+          <AtsSection
+            title={tAts(lang, "experience", config.cvProfile)}
+            styles={styles}
+          >
+            {data.experiences.map((exp) => (
+              <View key={exp.id} style={styles.entryWrap}>
+                <View style={styles.entryRow}>
+                  <Text style={styles.entryTitle}>{exp.company}</Text>
+                  <Text style={styles.entryDate}>
+                    {ezcvPeriod(exp.startDate, exp.endDate, exp.current, lang)}
+                  </Text>
+                </View>
+                {exp.position ? (
+                  <Text style={styles.entrySubtitle}>{exp.position}</Text>
+                ) : null}
+                {exp.description ? (
+                  <Text style={styles.entryDescription}>{exp.description}</Text>
+                ) : null}
+                {ezcvBullets(exp.highlights).length > 0 ? (
+                  <View style={styles.bulletList}>
+                    {ezcvBullets(exp.highlights).map((h, i) => (
+                      <Text key={i} style={styles.bulletItem}>
+                        • {h}
+                      </Text>
+                    ))}
+                  </View>
+                ) : null}
               </View>
-            );
-          });
-        })()}
+            ))}
+          </AtsSection>
+        ) : null}
+
+        {data.educations.length > 0 ? (
+          <AtsSection title={t(lang, "education")} styles={styles}>
+            {data.educations.map((edu) => (
+              <View key={edu.id} style={styles.entryWrap}>
+                <View style={styles.entryRow}>
+                  <Text style={styles.entryTitle}>{edu.degree}</Text>
+                  <Text style={styles.entryDate}>
+                    {ezcvPeriod(edu.startDate, edu.endDate, false, lang)}
+                  </Text>
+                </View>
+                <Text style={styles.entrySubtitle}>{edu.institution}</Text>
+              </View>
+            ))}
+          </AtsSection>
+        ) : null}
+
+        {data.technicalSkills.length > 0 ? (
+          <AtsSection title={tAts(lang, "technicalSkills")} styles={styles}>
+            <Text style={styles.skillList}>
+              {data.technicalSkills.join(", ")}
+            </Text>
+          </AtsSection>
+        ) : null}
+
+        {data.softSkills.length > 0 ? (
+          <AtsSection title={t(lang, "softSkills")} styles={styles}>
+            <Text style={styles.skillList}>{data.softSkills.join(", ")}</Text>
+          </AtsSection>
+        ) : null}
+
+        {hasSkillContent(data) &&
+          data.technicalSkills.length === 0 &&
+          data.softSkills.length === 0 &&
+          skillGroups.map((group) => (
+            <AtsSection
+              key={group.id}
+              title={group.name || tAts(lang, "technicalSkills")}
+              styles={styles}
+            >
+              <Text style={styles.skillList}>{group.skills.join(", ")}</Text>
+            </AtsSection>
+          ))}
+
+        {data.certifications.length > 0 ? (
+          <AtsSection title={t(lang, "certifications")} styles={styles}>
+            {data.certifications.map((cert) => (
+              <Text key={cert.id} style={styles.body}>
+                • {[cert.name, cert.issuer, cert.date].filter(Boolean).join(" — ")}
+              </Text>
+            ))}
+          </AtsSection>
+        ) : null}
+
+        {data.languages.length > 0 ? (
+          <AtsSection title={t(lang, "languages")} styles={styles}>
+            <Text style={styles.skillList}>
+              {data.languages
+                .map(
+                  (l) =>
+                    `${l.name}${l.level ? ` (${getLanguageLevelLabel(l.level, lang)})` : ""}`,
+                )
+                .join(", ")}
+            </Text>
+          </AtsSection>
+        ) : null}
+
+        {data.organizations.length > 0 ? (
+          <AtsSection title={tAts(lang, "organizations")} styles={styles}>
+            {data.organizations.map((org) => (
+              <View key={org.id} style={styles.entryWrap}>
+                <View style={styles.entryRow}>
+                  <Text style={styles.entryTitle}>{org.name}</Text>
+                  <Text style={styles.entryDate}>
+                    {ezcvPeriod(org.startDate, org.endDate, org.current, lang)}
+                  </Text>
+                </View>
+                {org.role ? (
+                  <Text style={styles.entrySubtitle}>{org.role}</Text>
+                ) : null}
+              </View>
+            ))}
+          </AtsSection>
+        ) : null}
+
+        {data.customSections.some((s) => s.showInAts && s.title) ? (
+          <PdfCustomSections
+            sections={data.customSections}
+            styles={{
+              sectionTitle: styles.sectionHeading,
+              bullet: styles.bulletItem,
+            }}
+            atsOnly
+          />
+        ) : null}
       </Page>
     </Document>
   );

@@ -7,18 +7,12 @@ import { useResume } from "@/context/ResumeContext";
 import { useResumePdf } from "@/context/ResumePdfContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
-import { ensurePdfJsWorker } from "@/lib/pdfjs-setup";
 import { PreviewPaper } from "./PreviewPaper";
 import { PdfDownloadOverlay } from "./PdfDownloadOverlay";
 import { deliverPdfBlob } from "@/lib/pdf-download";
 
-const PdfDocument = dynamic(
-  () => import("react-pdf").then((m) => m.Document),
-  { ssr: false },
-);
-
-const PdfPage = dynamic(
-  () => import("react-pdf").then((m) => m.Page),
+const PDFViewer = dynamic(
+  () => import("@react-pdf/renderer").then((m) => m.PDFViewer),
   { ssr: false },
 );
 
@@ -26,6 +20,7 @@ const ZOOM_MIN = 0.5;
 const ZOOM_MAX = 2.5;
 const ZOOM_STEP = 0.25;
 const DOWNLOAD_SECONDS = 10;
+const A4_RATIO = 297 / 210;
 
 interface Props {
   wysiwygHint?: string;
@@ -37,25 +32,20 @@ export function ResumePdfPreview({
   showToolbar = true,
 }: Props) {
   const { data, config } = useResume();
-  const { url, blob, loading, error, waitForBlob } = useResumePdf();
+  const { document, loading, error, waitForBlob } = useResumePdf();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(360);
   const [zoom, setZoom] = useState(1);
-  const [numPages, setNumPages] = useState(0);
   const [downloading, setDownloading] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(DOWNLOAD_SECONDS);
   const [progress, setProgress] = useState(0);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const hint = wysiwygHint ?? t.previewWysiwyg;
-  const pageWidth = Math.round(containerWidth * zoom);
-  const pdfReady = Boolean(blob && url && !loading && !error);
-
-  useEffect(() => {
-    ensurePdfJsWorker();
-  }, []);
+  const viewerWidth = Math.round(containerWidth * zoom);
+  const viewerHeight = Math.round(viewerWidth * A4_RATIO);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -65,10 +55,6 @@ export function ResumePdfPreview({
     setContainerWidth(el.clientWidth || 360);
     return () => ro.disconnect();
   }, []);
-
-  useEffect(() => {
-    setNumPages(0);
-  }, [url]);
 
   const stopTicks = useCallback(() => {
     if (tickRef.current) {
@@ -197,37 +183,15 @@ export function ResumePdfPreview({
             </div>
           ) : null}
 
-          {pdfReady ? (
+          {!loading && !error ? (
             <div className="flex justify-center p-3">
-              <PdfDocument
-                key={url}
-                file={blob}
-                onLoadSuccess={({ numPages: n }) => setNumPages(n)}
-                loading={
-                  <div className="flex items-center gap-2 py-12 text-xs text-zinc-500">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    {t.previewPdfPagesLoading}
-                  </div>
-                }
-                error={
-                  <p className="py-12 text-center text-sm text-red-600">
-                    {t.previewPdfPagesError}
-                  </p>
-                }
+              <PDFViewer
+                width={viewerWidth}
+                height={viewerHeight}
+                showToolbar={false}
               >
-                {numPages > 0
-                  ? Array.from({ length: numPages }, (_, i) => (
-                      <div key={`${url}-${i}`} className="mb-3 shadow-md">
-                        <PdfPage
-                          pageNumber={i + 1}
-                          width={pageWidth}
-                          renderTextLayer={false}
-                          renderAnnotationLayer={false}
-                        />
-                      </div>
-                    ))
-                  : null}
-              </PdfDocument>
+                {document}
+              </PDFViewer>
             </div>
           ) : null}
         </div>
