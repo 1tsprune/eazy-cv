@@ -4,7 +4,7 @@ import { Shield, Sparkles, Zap } from "lucide-react";
 import { DevAvatar } from "@/components/DevAvatar";
 import { Logo } from "@/components/Logo";
 import { TrakteerFab } from "@/components/TrakteerFab";
-import { APP, SOCIAL } from "@/lib/config";
+import { SOCIAL } from "@/lib/config";
 import { getUiDict } from "@/lib/ui-i18n";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -36,9 +36,9 @@ export function WelcomeScreen({ onStart }: Props) {
       <div className="relative z-10 flex w-full max-w-3xl flex-col items-center text-center">
         <Logo variant="icon" size="lg" className="mb-5" />
         <h1 className="text-4xl font-extrabold tracking-tighter text-zinc-900 dark:text-white md:text-6xl">
-          {t.welcomePrefix}{" "}
+          {t.welcomeHi}{" "}
           <span className="bg-gradient-to-br from-slate-800 to-slate-600 bg-clip-text text-transparent dark:from-slate-300 dark:to-slate-400">
-            {APP.name}
+            EazyCV
           </span>
         </h1>
 

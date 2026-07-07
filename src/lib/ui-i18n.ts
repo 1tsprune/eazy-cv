@@ -2,6 +2,7 @@ import type { Language } from "./types";
 
 const dict = {
   id: {
+    welcomeHi: "Hi, selamat datang di",
     welcomePrefix: "Selamat datang di",
     welcomeLead: "Website ini",
     welcomeFree: "100% GRATIS",
@@ -164,6 +165,7 @@ const dict = {
     photoModernOnly: "Foto hanya untuk mode Modern, bukan ATS.",
   },
   en: {
+    welcomeHi: "Hi, welcome to",
     welcomePrefix: "Welcome to",
     welcomeLead: "This site is",
     welcomeFree: "100% FREE",

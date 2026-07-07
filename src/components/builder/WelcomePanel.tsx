@@ -2,9 +2,13 @@
 
 import { FileText, Sparkles, Wand2 } from "lucide-react";
 import { useResume } from "@/context/ResumeContext";
+import { useTheme } from "@/context/ThemeContext";
+import { getUiDict } from "@/lib/ui-i18n";
 
 export function WelcomePanel() {
   const { data, loadSample } = useResume();
+  const { uiLocale } = useTheme();
+  const t = getUiDict(uiLocale);
   const isEmpty =
     !data.personal.fullName &&
     data.experiences.length === 0 &&
@@ -19,8 +23,8 @@ export function WelcomePanel() {
           <Sparkles className="h-6 w-6" />
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-bold text-zinc-900">
-            Selamat datang di Eazy CV!
+          <h3 className="text-lg font-bold text-zinc-900 dark:text-white">
+            {t.welcomeHi} EazyCV
           </h3>
           <p className="mt-1 text-sm text-zinc-600">
             Mulai dari nol atau muat contoh CV — kerja, magang, atau pelajar.
