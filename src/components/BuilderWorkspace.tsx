@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Eye, FileText, Target } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import {
+  BuilderBottomNav,
+  type BuilderTab,
+} from "@/components/builder/BuilderBottomNav";
 import { ResumeForm } from "@/components/builder/ResumeForm";
 import { ResumePreview } from "@/components/builder/ResumePreview";
 import { AtsScorePanel } from "@/components/builder/AtsScorePanel";
@@ -18,13 +22,11 @@ import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
 
-type Tab = "form" | "preview" | "score";
-
 export function BuilderWorkspace() {
   const { data, config, coverLetter, isLoaded } = useResume();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
-  const [tab, setTab] = useState<Tab>("form");
+  const [tab, setTab] = useState<BuilderTab>("form");
   const [showCover, setShowCover] = useState(false);
 
   if (!isLoaded) {
@@ -35,11 +37,11 @@ export function BuilderWorkspace() {
     );
   }
 
-  const tabs = [
-    { id: "form" as Tab, label: t.tabForm, icon: FileText },
-    { id: "preview" as Tab, label: t.tabPreview, icon: Eye },
-    { id: "score" as Tab, label: t.tabScore, icon: Target },
-  ];
+  const bottomNavLabels: Record<BuilderTab, string> = {
+    form: t.tabForm,
+    preview: t.tabPreview,
+    score: t.tabScore,
+  };
 
   const showMobileLeft = showCover || tab === "form";
   const showMobileCvPreview = !showCover && tab === "preview";
@@ -67,25 +69,7 @@ export function BuilderWorkspace() {
             {t.coverLetterTitle}
           </span>
         </div>
-      ) : (
-        <div className="sticky top-14 z-20 flex border-b border-zinc-200 bg-white md:hidden dark:border-zinc-800 dark:bg-zinc-900">
-          {tabs.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setTab(id)}
-              className={`flex flex-1 items-center justify-center gap-1.5 py-3 text-xs font-bold ${
-                tab === id
-                  ? "border-b-2 border-slate-700 text-slate-700 dark:text-slate-300"
-                  : "text-zinc-400"
-              }`}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      ) : null}
 
       {/* ── Desktop: 1 halaman, 2 kolom, tanpa tab ── */}
       <div className="mx-auto hidden max-w-screen-2xl items-start gap-4 p-4 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
@@ -153,7 +137,7 @@ export function BuilderWorkspace() {
       </div>
 
       {/* ── Mobile: tab switching ── */}
-      <div className="mx-auto min-w-0 max-w-full space-y-4 overflow-x-hidden p-3 md:hidden sm:p-4">
+      <div className="mx-auto min-w-0 max-w-full space-y-4 overflow-x-hidden p-3 pb-20 md:hidden sm:p-4 sm:pb-20">
         {showMobileLeft && (
           <div className="space-y-4">
             <QuickActions
@@ -216,6 +200,14 @@ export function BuilderWorkspace() {
 
         {showMobileScore && !showCover && <AtsScorePanel />}
       </div>
+
+      {!showCover ? (
+        <BuilderBottomNav
+          tab={tab}
+          onTabChange={setTab}
+          labels={bottomNavLabels}
+        />
+      ) : null}
     </div>
   );
 }

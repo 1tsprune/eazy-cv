@@ -104,9 +104,9 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 shrink-0 border-b border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
       <div className="mx-auto flex h-14 max-w-screen-2xl items-center justify-between gap-3 px-4 sm:px-5">
-        <Logo size="sm" showTagline />
+        <Logo size="sm" showTagline className="max-sm:[&_p:last-child]:hidden" />
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <a
             href={SOCIAL.twitter.url}
             target="_blank"
@@ -120,11 +120,12 @@ export function AppHeader() {
           <button
             type="button"
             onClick={toggleCvLanguage}
-            className="flex items-center gap-1 rounded-lg border border-zinc-200 px-2.5 py-1.5 text-[10px] font-bold text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="flex items-center gap-1 rounded-lg border border-zinc-200 p-2 text-[10px] font-bold text-zinc-600 hover:bg-zinc-50 sm:px-2.5 sm:py-1.5 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
             title={t.cvLanguage}
           >
             <Globe className="h-3.5 w-3.5" />
-            CV {config.language.toUpperCase()}
+            <span className="hidden sm:inline">CV {config.language.toUpperCase()}</span>
+            <span className="sm:hidden">{config.language.toUpperCase()}</span>
           </button>
 
           <button
@@ -147,14 +148,14 @@ export function AppHeader() {
                 setDataMenuOpen(!dataMenuOpen);
                 setStyleMenuOpen(false);
               }}
-              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-bold transition ${
+              className={`flex items-center gap-1.5 rounded-lg border p-2 text-xs font-bold transition sm:px-3 sm:py-2 ${
                 dataMenuOpen
                   ? "border-slate-400 bg-slate-100 text-slate-700 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-300"
                   : "border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
               }`}
             >
               <Database className="h-4 w-4" />
-              <span className="hidden sm:inline">{t.menuData}</span>
+              <span className="hidden md:inline">{t.menuData}</span>
             </button>
 
             {dataMenuOpen && (
@@ -217,7 +218,7 @@ export function AppHeader() {
                 setStyleMenuOpen(!styleMenuOpen);
                 setDataMenuOpen(false);
               }}
-              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-bold transition ${
+              className={`flex items-center gap-1.5 rounded-lg border p-2 text-xs font-bold transition sm:px-3 sm:py-2 ${
                 styleMenuOpen
                   ? "border-slate-400 bg-slate-100 text-slate-700 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-300"
                   : "border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
@@ -228,7 +229,7 @@ export function AppHeader() {
               ) : (
                 <Menu className="h-4 w-4" />
               )}
-              {t.menuStyle}
+              <span className="hidden md:inline">{t.menuStyle}</span>
             </button>
 
             {styleMenuOpen && (
