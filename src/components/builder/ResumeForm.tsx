@@ -15,6 +15,8 @@ import {
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { Input } from "@/components/ui/Input";
+import { DateInput } from "@/components/ui/DateInput";
+import { MonthYearInput } from "@/components/ui/MonthYearInput";
 import { Select } from "@/components/ui/Select";
 import { getLanguageLevelOptions } from "@/lib/language-levels";
 import { Textarea } from "@/components/ui/Textarea";
@@ -205,21 +207,21 @@ export function ResumeForm() {
                   }
                 />
                 <div className="grid grid-cols-2 gap-2">
-                  <Input
+                  <MonthYearInput
                     label={t.startDate}
                     value={exp.startDate}
-                    onChange={(e) =>
-                      updateExperience(exp.id, { startDate: e.target.value })
+                    locale={config.language}
+                    onChange={(startDate) =>
+                      updateExperience(exp.id, { startDate })
                     }
-                    placeholder="Jan 2022"
                   />
-                  <Input
+                  <MonthYearInput
                     label={t.endDate}
                     value={exp.endDate}
-                    onChange={(e) =>
-                      updateExperience(exp.id, { endDate: e.target.value })
+                    locale={config.language}
+                    onChange={(endDate) =>
+                      updateExperience(exp.id, { endDate })
                     }
-                    placeholder="Dec 2024"
                     disabled={exp.current}
                   />
                 </div>
@@ -308,21 +310,21 @@ export function ResumeForm() {
                   }
                   placeholder="Bandung"
                 />
-                <Input
+                <MonthYearInput
                   label={t.eduStartDate}
                   value={edu.startDate}
-                  onChange={(e) =>
-                    updateEducation(edu.id, { startDate: e.target.value })
+                  locale={config.language}
+                  onChange={(startDate) =>
+                    updateEducation(edu.id, { startDate })
                   }
-                  placeholder="2015"
                 />
-                <Input
+                <MonthYearInput
                   label={t.eduEndDate}
                   value={edu.endDate}
-                  onChange={(e) =>
-                    updateEducation(edu.id, { endDate: e.target.value })
+                  locale={config.language}
+                  onChange={(endDate) =>
+                    updateEducation(edu.id, { endDate })
                   }
-                  placeholder="2019"
                 />
                 <Input
                   label={t.gpa}
@@ -390,18 +392,20 @@ export function ResumeForm() {
                     updateOrganization(org.id, { location: e.target.value })
                   }
                 />
-                <Input
+                <MonthYearInput
                   label={t.startDate}
                   value={org.startDate}
-                  onChange={(e) =>
-                    updateOrganization(org.id, { startDate: e.target.value })
+                  locale={config.language}
+                  onChange={(startDate) =>
+                    updateOrganization(org.id, { startDate })
                   }
                 />
-                <Input
+                <MonthYearInput
                   label={t.endDate}
                   value={org.endDate}
-                  onChange={(e) =>
-                    updateOrganization(org.id, { endDate: e.target.value })
+                  locale={config.language}
+                  onChange={(endDate) =>
+                    updateOrganization(org.id, { endDate })
                   }
                   disabled={org.current}
                 />
@@ -559,11 +563,12 @@ export function ResumeForm() {
                     updateCertification(cert.id, { issuer: e.target.value })
                   }
                 />
-                <Input
+                <MonthYearInput
                   label={t.date}
                   value={cert.date}
-                  onChange={(e) =>
-                    updateCertification(cert.id, { date: e.target.value })
+                  locale={config.language}
+                  onChange={(date) =>
+                    updateCertification(cert.id, { date })
                   }
                 />
               </div>

@@ -6,6 +6,7 @@ import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { buildCoverLetterDraft } from "@/lib/cover-letter";
 import { getUiDict } from "@/lib/ui-i18n";
+import { DateInput } from "@/components/ui/DateInput";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { SectionCard } from "@/components/ui/SectionCard";
@@ -37,10 +38,11 @@ export function CoverLetterForm() {
 
       <SectionCard title={t.coverLetterDetails} defaultOpen>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Input
+          <DateInput
             label={t.coverLetterDate}
             value={coverLetter.date}
-            onChange={(e) => updateCoverLetter({ date: e.target.value })}
+            locale={config.language}
+            onChange={(date) => updateCoverLetter({ date })}
           />
           <Input
             label={t.coverLetterRecipient}
