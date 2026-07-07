@@ -100,7 +100,7 @@ export default function CoverLetterDocument({
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         <Text style={styles.date}>{dateLine}</Text>
 
         <View style={styles.senderBlock}>

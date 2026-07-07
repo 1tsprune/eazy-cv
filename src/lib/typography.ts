@@ -81,7 +81,7 @@ export function getPdfTypography(config: ResumeConfig): PdfTypography {
   const sizes = PDF_SIZE[config.fontSize ?? "md"];
   const bold = config.fontBold ?? false;
   return {
-    fontFamily: bold ? fonts.bold : fonts.regular,
+    fontFamily: fonts.regular,
     headingFamily: fonts.bold,
     sizes,
     lineHeight: sizes.lh,
@@ -97,8 +97,11 @@ export const DEFAULT_TYPOGRAPHY = {
 
 export function getPdfSheetTokens(config: ResumeConfig) {
   const ty = getPdfTypography(config);
+  const fonts = PDF_FONTS[config.fontFamily ?? "outfit"];
+  const bold = config.fontBold ?? false;
   return {
-    fontFamily: ty.fontFamily,
+    fontFamily: fonts.regular,
+    bodyFamily: bold ? fonts.bold : fonts.regular,
     headingFamily: ty.headingFamily,
     bodyWeight: ty.bodyWeight,
     base: ty.sizes.base,
@@ -110,7 +113,7 @@ export function getPdfSheetTokens(config: ResumeConfig) {
     display: ty.sizes.display,
     lh: ty.lineHeight,
     page: {
-      fontFamily: ty.fontFamily,
+      fontFamily: fonts.regular,
       fontSize: ty.sizes.base,
       lineHeight: ty.lineHeight,
     },

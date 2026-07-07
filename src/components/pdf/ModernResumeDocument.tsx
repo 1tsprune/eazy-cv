@@ -59,7 +59,7 @@ function ProfessionalTemplate({ data, config }: Props) {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         <View style={styles.sidebar}>
           {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
           <Text style={styles.sidebarName}>{personal.fullName || "Your Name"}</Text>
@@ -133,7 +133,7 @@ function MinimalTemplate({ data, config }: Props) {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         <View style={styles.headerRow}>
           <View style={{ flex: 1 }}>
             <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
@@ -193,7 +193,7 @@ function ElegantTemplate({ data, config }: Props) {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         <View style={styles.header}>
           <View style={{ flex: 1 }}>
             <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
@@ -274,7 +274,7 @@ function ExecutiveTemplate({ data, config }: Props) {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         <View style={styles.header}>
           {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
           <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
@@ -345,7 +345,7 @@ function CreativeTemplate({ data, config }: Props) {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         <View style={styles.topBar}>
           {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
           <View style={{ flex: 1 }}>
@@ -409,7 +409,7 @@ function CompactTemplate({ data, config }: Props) {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         <View style={styles.headerRow}>
           {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
           <View>
@@ -472,7 +472,7 @@ function AcademicTemplate({ data, config }: Props) {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap>
         <View style={styles.header}>
           {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
           <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
