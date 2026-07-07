@@ -69,6 +69,8 @@ const dict = {
       "Gak masuk database, gak ke server. Semua tersimpan lokal di perangkat kamu.",
     previewTitle: "Preview CV",
     previewWysiwyg: "Preview sama dengan PDF",
+    templateAtsHint:
+      "Mode ATS tidak pakai template visual. Klik Modern atau pilih template di bawah.",
     scoreTitle: "Skor ATS",
     atsTipsTitle: "Yang perlu dilengkapi",
     dataBackupHint: "Backup CV kamu ke file JSON. Bisa dimuat lagi kapan saja.",
@@ -224,6 +226,8 @@ const dict = {
       "No database, no server. Everything is stored locally on your device.",
     previewTitle: "CV Preview",
     previewWysiwyg: "Preview matches PDF download",
+    templateAtsHint:
+      "ATS mode has no visual templates. Switch to Modern or pick a template below.",
     scoreTitle: "ATS Score",
     atsTipsTitle: "What to complete",
     dataBackupHint: "Back up your CV as a JSON file. Load it back anytime.",

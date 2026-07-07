@@ -27,7 +27,7 @@ const features = [
     icon: <Eye className="h-6 w-6" />,
     title: "Live Preview + Zoom",
     description:
-      "Preview real-time dengan kontrol zoom. Lihat persis seperti hasil PDF sebelum download.",
+      "Preview real-time fixed & center. Lihat persis seperti hasil PDF sebelum download.",
   },
   {
     icon: <GripVertical className="h-6 w-6" />,

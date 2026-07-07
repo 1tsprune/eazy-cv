@@ -8,7 +8,9 @@ import { AtsScorePanel } from "@/components/builder/AtsScorePanel";
 import { CoverLetterForm } from "@/components/builder/CoverLetterForm";
 import { CoverLetterPreview } from "@/components/builder/CoverLetterPreview";
 import { QuickActions } from "@/components/builder/QuickActions";
-import { PreviewControls } from "@/components/builder/PreviewControls";
+import { PreviewDesk } from "@/components/builder/PreviewDesk";
+import { TemplatePicker } from "@/components/builder/TemplatePicker";
+import { WelcomePanel } from "@/components/builder/WelcomePanel";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
 import { SectionOrderPanel } from "@/components/builder/SectionOrderPanel";
 import { useResume } from "@/context/ResumeContext";
@@ -23,8 +25,6 @@ export function BuilderWorkspace() {
   const t = getUiDict(uiLocale);
   const [tab, setTab] = useState<Tab>("form");
   const [showCover, setShowCover] = useState(false);
-  const [zoom, setZoom] = useState(0.85);
-  const [coverZoom, setCoverZoom] = useState(0.8);
 
   if (!isLoaded) {
     return (
@@ -98,6 +98,8 @@ export function BuilderWorkspace() {
             <CoverLetterForm />
           ) : (
             <>
+              <WelcomePanel />
+              <TemplatePicker />
               <SectionOrderPanel />
               <ResumeForm />
             </>
@@ -111,24 +113,15 @@ export function BuilderWorkspace() {
                 <h2 className="text-sm font-bold text-zinc-800 dark:text-white">
                   {t.coverLetterTitle} 📄
                 </h2>
-                <PreviewControls
-                  zoom={coverZoom}
-                  onZoomChange={setCoverZoom}
+              </div>
+              <PreviewDesk variant="letter">
+                <CoverLetterPreview
+                  personal={data.personal}
+                  coverLetter={coverLetter}
+                  language={config.language}
+                  config={config}
                 />
-              </div>
-              <div className="overflow-auto rounded-2xl border border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-700">
-                <div
-                  className="origin-top transition-transform"
-                  style={{ transform: `scale(${coverZoom})` }}
-                >
-                  <CoverLetterPreview
-                    personal={data.personal}
-                    coverLetter={coverLetter}
-                    language={config.language}
-                    config={config}
-                  />
-                </div>
-              </div>
+              </PreviewDesk>
             </>
           ) : (
             <>
@@ -137,27 +130,19 @@ export function BuilderWorkspace() {
                   <h2 className="text-sm font-bold text-zinc-800 dark:text-white">
                     {t.previewTitle} 👀
                   </h2>
-                  <div className="flex items-center gap-2">
-                    <PreviewControls zoom={zoom} onZoomChange={setZoom} />
-                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                      {config.exportMode === "ats" ? "ATS" : config.template}
-                    </span>
-                  </div>
+                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold capitalize text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    {config.exportMode === "ats" ? "ATS" : config.template}
+                  </span>
                 </div>
-                <div className="overflow-auto rounded-2xl border border-zinc-200 bg-[#e8eaed] p-6 dark:border-zinc-700 dark:bg-zinc-800/80">
-                  <div
-                    className="mx-auto origin-top transition-transform"
-                    style={{ transform: `scale(${zoom})`, width: "fit-content" }}
-                  >
-                    <ResumePreview
-                      data={data}
-                      config={config}
-                      wysiwygHint={
-                        config.exportMode === "ats" ? t.previewWysiwyg : undefined
-                      }
-                    />
-                  </div>
-                </div>
+                <PreviewDesk>
+                  <ResumePreview
+                    data={data}
+                    config={config}
+                    wysiwygHint={
+                      config.exportMode === "ats" ? t.previewWysiwyg : undefined
+                    }
+                  />
+                </PreviewDesk>
               </div>
               <AtsScorePanel />
             </>
@@ -177,6 +162,8 @@ export function BuilderWorkspace() {
               <CoverLetterForm />
             ) : (
               <>
+                <WelcomePanel />
+                <TemplatePicker />
                 <SectionOrderPanel />
                 <ResumeForm />
               </>
@@ -190,22 +177,19 @@ export function BuilderWorkspace() {
               <h2 className="text-sm font-bold text-zinc-800 dark:text-white">
                 {t.previewTitle} 👀
               </h2>
-              <PreviewControls zoom={zoom} onZoomChange={setZoom} />
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold capitalize text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                {config.exportMode === "ats" ? "ATS" : config.template}
+              </span>
             </div>
-            <div className="overflow-auto rounded-2xl border border-zinc-200 bg-[#e8eaed] p-4 dark:border-zinc-700 dark:bg-zinc-800/80">
-              <div
-                className="mx-auto origin-top transition-transform"
-                style={{ transform: `scale(${zoom})`, width: "fit-content" }}
-              >
-                <ResumePreview
-                  data={data}
-                  config={config}
-                  wysiwygHint={
-                    config.exportMode === "ats" ? t.previewWysiwyg : undefined
-                  }
-                />
-              </div>
-            </div>
+            <PreviewDesk>
+              <ResumePreview
+                data={data}
+                config={config}
+                wysiwygHint={
+                  config.exportMode === "ats" ? t.previewWysiwyg : undefined
+                }
+              />
+            </PreviewDesk>
           </div>
         )}
 
@@ -215,21 +199,15 @@ export function BuilderWorkspace() {
               <h2 className="text-sm font-bold text-zinc-800 dark:text-white">
                 {t.coverLetterTitle} 📄
               </h2>
-              <PreviewControls zoom={coverZoom} onZoomChange={setCoverZoom} />
             </div>
-            <div className="overflow-auto rounded-2xl border border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-700">
-              <div
-                className="origin-top transition-transform"
-                style={{ transform: `scale(${coverZoom})` }}
-              >
-                <CoverLetterPreview
-                  personal={data.personal}
-                  coverLetter={coverLetter}
-                  language={config.language}
-                  config={config}
-                />
-              </div>
-            </div>
+            <PreviewDesk variant="letter">
+              <CoverLetterPreview
+                personal={data.personal}
+                coverLetter={coverLetter}
+                language={config.language}
+                config={config}
+              />
+            </PreviewDesk>
           </div>
         )}
 
