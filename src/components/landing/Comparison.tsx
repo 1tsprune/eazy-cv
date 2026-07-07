@@ -44,7 +44,7 @@ export function Comparison() {
                   Fitur
                 </th>
                 <th className="px-6 py-4 text-center">
-                  <span className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-bold text-white">
+                  <span className="rounded-full bg-slate-700 px-3 py-1 text-xs font-bold text-white">
                     {APP.name}
                   </span>
                 </th>

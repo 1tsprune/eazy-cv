@@ -88,7 +88,7 @@ export function AtsScorePanel() {
       <div className="mt-4 flex items-center gap-2 text-xs text-zinc-400">
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-lime-400 transition-all duration-500"
+            className="h-full rounded-full bg-gradient-to-r from-slate-600 to-emerald-500 transition-all duration-500"
             style={{ width: `${(passed / checks.length) * 100}%` }}
           />
         </div>

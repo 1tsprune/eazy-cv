@@ -14,12 +14,12 @@ export function TrakteerFab() {
       href={DONATION.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 shadow-xl shadow-zinc-200/50 transition hover:border-indigo-300 hover:shadow-2xl dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-black/30"
+      className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 shadow-xl shadow-zinc-200/50 transition hover:border-slate-300 hover:shadow-2xl dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-black/30"
     >
-      <Logo variant="icon" size="sm" className="ring-4 ring-indigo-50 dark:ring-indigo-950" />
+      <Logo variant="icon" size="sm" className="ring-4 ring-slate-100 dark:ring-slate-900" />
       <div className="mr-1 hidden flex-col items-start sm:flex">
         <span className="text-[10px] font-black uppercase leading-none tracking-tight text-zinc-900 dark:text-white">
-          Eazy <span className="text-indigo-600 dark:text-indigo-400">CV</span>
+          Eazy <span className="text-slate-700 dark:text-slate-300">CV</span>
         </span>
         <span className="mt-0.5 text-[8px] font-bold uppercase leading-none tracking-widest text-zinc-400">
           {t.trakteerLabel}

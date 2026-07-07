@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-700 text-xs font-bold text-white">
                 CV
               </span>
               <span className="text-lg font-bold text-white">Eazy CV</span>

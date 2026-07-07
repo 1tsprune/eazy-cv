@@ -75,7 +75,7 @@ export function BuilderWorkspace() {
               onClick={() => setTab(id)}
               className={`flex flex-1 items-center justify-center gap-1.5 py-3 text-xs font-bold ${
                 tab === id
-                  ? "border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                  ? "border-b-2 border-slate-700 text-slate-700 dark:text-slate-300"
                   : "text-zinc-400"
               }`}
             >
@@ -139,7 +139,7 @@ export function BuilderWorkspace() {
                   </h2>
                   <div className="flex items-center gap-2">
                     <PreviewControls zoom={zoom} onZoomChange={setZoom} />
-                    <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-[10px] font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                       {config.exportMode === "ats" ? "ATS" : config.template}
                     </span>
                   </div>

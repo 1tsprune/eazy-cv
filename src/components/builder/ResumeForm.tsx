@@ -31,7 +31,7 @@ import { getUiDict } from "@/lib/ui-i18n";
 const ITEM_CARD =
   "rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50";
 const ADD_BTN =
-  "flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 py-3 text-sm font-bold text-zinc-500 transition hover:border-indigo-400 hover:text-indigo-600 dark:border-zinc-600 dark:text-zinc-400 dark:hover:border-indigo-500 dark:hover:text-indigo-400";
+  "flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 py-3 text-sm font-bold text-zinc-500 transition hover:border-slate-400 hover:text-slate-700 dark:border-zinc-600 dark:text-zinc-400 dark:hover:border-slate-500 dark:hover:text-slate-500";
 
 export function ResumeForm() {
   const {

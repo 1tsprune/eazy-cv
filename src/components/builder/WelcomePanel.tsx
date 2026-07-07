@@ -13,9 +13,9 @@ export function WelcomePanel() {
   if (!isEmpty) return null;
 
   return (
-    <div className="rounded-2xl border-2 border-dashed border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
+    <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-gradient-to-br from-slate-50 to-zinc-100 p-6">
       <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-700 text-white">
           <Sparkles className="h-6 w-6" />
         </div>
         <div className="flex-1">
@@ -30,7 +30,7 @@ export function WelcomePanel() {
           <button
             type="button"
             onClick={loadSample}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700"
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-slate-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:bg-slate-800"
           >
             <Wand2 className="h-4 w-4" />
             Muat Contoh CV
@@ -47,7 +47,7 @@ export function WelcomePanel() {
             key={step.text}
             className="flex items-center gap-2 rounded-lg bg-white/70 px-3 py-2 text-xs text-zinc-600"
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-700">
               {i + 1}
             </span>
             {step.text}

@@ -51,7 +51,7 @@ export function TemplateShowcase() {
     <section className="bg-zinc-950 py-24 text-white">
       <div className="mx-auto max-w-6xl px-6">
         <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-indigo-400">
+          <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">
             7 Template · 6 Tema Warna
           </p>
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
@@ -69,7 +69,7 @@ export function TemplateShowcase() {
             return (
               <div
                 key={t.id}
-                className="group overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 transition hover:border-zinc-600 hover:shadow-xl hover:shadow-indigo-500/10"
+                className="group overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 transition hover:border-zinc-600 hover:shadow-xl hover:shadow-slate-500/10"
               >
                 <div className="p-4">
                   <div className="aspect-[3/4] overflow-hidden rounded-lg bg-white p-3 shadow-inner">
@@ -135,7 +135,7 @@ export function TemplateShowcase() {
         <div className="mt-10 text-center">
           <Link
             href="/builder"
-            className="inline-flex rounded-xl bg-indigo-600 px-8 py-3 text-sm font-semibold transition hover:bg-indigo-500"
+            className="inline-flex rounded-xl bg-slate-700 px-8 py-3 text-sm font-semibold transition hover:bg-slate-600"
           >
             Coba Semua Template →
           </Link>

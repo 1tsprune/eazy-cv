@@ -136,7 +136,7 @@ export const sampleResumeState: ResumeState = {
     language: "id",
     exportMode: "modern",
     template: "elegant",
-    colorTheme: "indigo",
+    colorTheme: "slate",
     showPhoto: false,
     ...DEFAULT_TYPOGRAPHY,
     sectionOrder: [

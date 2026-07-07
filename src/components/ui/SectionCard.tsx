@@ -27,7 +27,7 @@ export function SectionCard({
       >
         <div className="flex items-center gap-3">
           {icon && (
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
               {icon}
             </span>
           )}

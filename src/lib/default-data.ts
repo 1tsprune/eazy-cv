@@ -34,7 +34,7 @@ export const defaultResumeState: ResumeState = {
     language: "id",
     exportMode: "modern",
     template: "elegant",
-    colorTheme: "indigo",
+    colorTheme: "slate",
     showPhoto: false,
     sectionOrder: [...DEFAULT_SECTION_ORDER],
     ...DEFAULT_TYPOGRAPHY,

@@ -32,8 +32,8 @@ function LogoIcon({ size }: { size: number }) {
           y2="30"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#4F46E5" />
-          <stop offset="1" stopColor="#7C3AED" />
+          <stop stopColor="#334155" />
+          <stop offset="1" stopColor="#475569" />
         </linearGradient>
         <linearGradient
           id="eazycv-logo-doc"
@@ -44,7 +44,7 @@ function LogoIcon({ size }: { size: number }) {
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor="#FFFFFF" />
-          <stop offset="1" stopColor="#EEF2FF" />
+          <stop offset="1" stopColor="#F1F5F9" />
         </linearGradient>
       </defs>
       <rect width="32" height="32" rx="8" fill="url(#eazycv-logo-bg)" />
@@ -56,9 +56,9 @@ function LogoIcon({ size }: { size: number }) {
         rx="2"
         fill="url(#eazycv-logo-doc)"
       />
-      <rect x="10.5" y="9.5" width="7" height="1.4" rx="0.7" fill="#C7D2FE" />
-      <rect x="10.5" y="12.5" width="9" height="1.4" rx="0.7" fill="#A5B4FC" />
-      <rect x="10.5" y="15.5" width="5.5" height="1.4" rx="0.7" fill="#C7D2FE" />
+      <rect x="10.5" y="9.5" width="7" height="1.4" rx="0.7" fill="#CBD5E1" />
+      <rect x="10.5" y="12.5" width="9" height="1.4" rx="0.7" fill="#94A3B8" />
+      <rect x="10.5" y="15.5" width="5.5" height="1.4" rx="0.7" fill="#CBD5E1" />
       <path
         d="M21.2 17.8 18.4 22.2h2.1l-1.3 4.2 4.8-6.4h-2.3l-.5-2.2Z"
         fill="#FBBF24"
@@ -91,7 +91,7 @@ export function Logo({
           className={`${s.name} font-extrabold tracking-tight text-zinc-900 dark:text-white`}
         >
           <span>Eazy</span>{" "}
-          <span className="text-indigo-600 dark:text-indigo-400">CV</span>
+          <span className="text-slate-700 dark:text-slate-300">CV</span>
         </p>
         {showTagline && (
           <p className={`${s.tagline} mt-0.5 text-zinc-400`}>{APP.tagline}</p>

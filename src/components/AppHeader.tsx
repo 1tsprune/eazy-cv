@@ -159,7 +159,7 @@ export function AppHeader() {
               }}
               className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-bold transition ${
                 dataMenuOpen
-                  ? "border-indigo-400 bg-indigo-50 text-indigo-700 dark:border-indigo-500 dark:bg-indigo-950 dark:text-indigo-300"
+                  ? "border-slate-400 bg-slate-100 text-slate-700 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-300"
                   : "border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
               }`}
             >
@@ -179,7 +179,7 @@ export function AppHeader() {
                       saveJson();
                       setDataMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-indigo-700"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-700 px-4 py-2.5 text-xs font-bold text-white hover:bg-slate-800"
                   >
                     <FileDown className="h-4 w-4" />
                     {t.save} JSON
@@ -229,7 +229,7 @@ export function AppHeader() {
               }}
               className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-bold transition ${
                 styleMenuOpen
-                  ? "border-indigo-400 bg-indigo-50 text-indigo-700 dark:border-indigo-500 dark:bg-indigo-950 dark:text-indigo-300"
+                  ? "border-slate-400 bg-slate-100 text-slate-700 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-300"
                   : "border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
               }`}
             >
@@ -254,7 +254,7 @@ export function AppHeader() {
                       onClick={() => updateConfig({ exportMode: mode })}
                       className={`flex-1 rounded-xl py-2 text-xs font-bold ${
                         config.exportMode === mode
-                          ? "bg-indigo-600 text-white"
+                          ? "bg-slate-700 text-white"
                           : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
                       }`}
                     >
@@ -276,7 +276,7 @@ export function AppHeader() {
                           onClick={() => updateConfig({ template: tpl.id })}
                           className={`rounded-lg px-2 py-2 text-left text-[11px] font-semibold ${
                             config.template === tpl.id
-                              ? "bg-indigo-600 text-white"
+                              ? "bg-slate-700 text-white"
                               : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
                           }`}
                         >
@@ -334,7 +334,7 @@ export function AppHeader() {
                       }
                       className={`rounded-lg px-2 py-2 text-left text-[11px] font-semibold ${
                         config.fontFamily === font.id
-                          ? "bg-indigo-600 text-white"
+                          ? "bg-slate-700 text-white"
                           : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
                       }`}
                     >
@@ -356,7 +356,7 @@ export function AppHeader() {
                       }
                       className={`flex-1 rounded-xl py-2 text-xs font-bold ${
                         config.fontSize === size.id
-                          ? "bg-indigo-600 text-white"
+                          ? "bg-slate-700 text-white"
                           : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
                       }`}
                     >
@@ -374,7 +374,7 @@ export function AppHeader() {
                     onClick={() => updateConfig({ fontBold: false })}
                     className={`flex-1 rounded-xl py-2 text-xs font-bold ${
                       !config.fontBold
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-slate-700 text-white"
                         : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
                     }`}
                   >
@@ -385,7 +385,7 @@ export function AppHeader() {
                     onClick={() => updateConfig({ fontBold: true })}
                     className={`flex-1 rounded-xl py-2 text-xs font-bold ${
                       config.fontBold
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-slate-700 text-white"
                         : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
                     }`}
                   >

@@ -85,9 +85,9 @@ export function Features() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="group rounded-2xl border border-zinc-100 p-6 transition hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-50"
+              className="group rounded-2xl border border-zinc-100 p-6 transition hover:border-slate-200 hover:shadow-lg hover:shadow-slate-100"
             >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition group-hover:bg-slate-700 group-hover:text-white">
                 {f.icon}
               </div>
               <h3 className="text-lg font-semibold text-zinc-900">{f.title}</h3>

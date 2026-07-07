@@ -52,7 +52,7 @@ export function PhotoUpload({
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={loading}
-          className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-indigo-400 dark:border-zinc-600 dark:bg-zinc-800"
+          className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-slate-400 dark:border-zinc-600 dark:bg-zinc-800"
         >
           {photo ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -81,7 +81,7 @@ export function PhotoUpload({
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={loading}
-              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="rounded-lg bg-slate-700 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-slate-800 disabled:opacity-50"
             >
               {loading ? "..." : photo ? t.photoChange : t.photoUpload}
             </button>

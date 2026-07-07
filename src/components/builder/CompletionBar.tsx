@@ -13,7 +13,7 @@ export function CompletionBar() {
       ? "bg-emerald-500"
       : percent >= 50
         ? "bg-amber-500"
-        : "bg-indigo-500";
+        : "bg-slate-600";
 
   return (
     <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-sm">

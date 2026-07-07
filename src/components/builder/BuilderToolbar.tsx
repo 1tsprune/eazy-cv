@@ -65,10 +65,10 @@ export function BuilderToolbar() {
   };
 
   return (
-    <div className="sticky top-0 z-30 border-b border-white/10 bg-[#0f0a1a]/90 backdrop-blur-xl">
+    <div className="sticky top-0 z-30 border-b border-white/10 bg-zinc-900/95 backdrop-blur-xl">
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 px-4 py-3">
         <a href="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-cyan-400 text-xs font-black">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-500 text-xs font-black">
             CV
           </span>
           <span className="text-sm font-black">Eazy CV</span>
@@ -83,7 +83,7 @@ export function BuilderToolbar() {
                 onClick={() => updateConfig({ exportMode: mode })}
                 className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
                   config.exportMode === mode
-                    ? "bg-purple-500 text-white"
+                    ? "bg-slate-600 text-white"
                     : "text-white/50 hover:text-white"
                 }`}
               >
@@ -148,7 +148,7 @@ export function BuilderToolbar() {
               className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white outline-none"
             >
               {templates.map((t) => (
-                <option key={t.id} value={t.id} className="bg-[#1a1025]">
+                <option key={t.id} value={t.id} className="bg-zinc-800">
                   {t.label}
                 </option>
               ))}
@@ -183,7 +183,7 @@ export function BuilderToolbar() {
                   onClick={() => updateConfig({ exportMode: mode })}
                   className={`rounded-full px-3 py-1 text-xs font-bold ${
                     config.exportMode === mode
-                      ? "bg-purple-500 text-white"
+                      ? "bg-slate-600 text-white"
                       : "text-white/50"
                   }`}
                 >
@@ -202,7 +202,7 @@ export function BuilderToolbar() {
                 className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-white"
               >
                 {templates.map((t) => (
-                  <option key={t.id} value={t.id} className="bg-[#1a1025]">
+                  <option key={t.id} value={t.id} className="bg-zinc-800">
                     {t.label}
                   </option>
                 ))}

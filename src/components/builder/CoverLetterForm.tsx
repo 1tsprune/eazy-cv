@@ -69,7 +69,7 @@ export function CoverLetterForm() {
         <button
           type="button"
           onClick={handleGenerate}
-          className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-[10px] font-bold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-300"
+          className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
         >
           <Sparkles className="h-3.5 w-3.5" />
           {t.generateFromCv}

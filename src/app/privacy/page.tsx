@@ -9,7 +9,7 @@ export default function PrivacyPage() {
       <article className="mx-auto max-w-3xl px-6 py-16">
         <Link
           href="/"
-          className="text-sm text-indigo-600 hover:text-indigo-800"
+          className="text-sm text-slate-700 hover:text-slate-900"
         >
           ← Kembali ke Home
         </Link>

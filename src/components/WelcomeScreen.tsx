@@ -37,7 +37,7 @@ export function WelcomeScreen({ onStart }: Props) {
         <Logo variant="icon" size="lg" className="mb-5" />
         <h1 className="text-4xl font-extrabold tracking-tighter text-zinc-900 dark:text-white md:text-6xl">
           {t.welcomePrefix}{" "}
-          <span className="bg-gradient-to-br from-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-violet-400">
+          <span className="bg-gradient-to-br from-slate-800 to-slate-600 bg-clip-text text-transparent dark:from-slate-300 dark:to-slate-400">
             {APP.name}
           </span>
         </h1>
@@ -57,7 +57,7 @@ export function WelcomeScreen({ onStart }: Props) {
               href={SOCIAL.twitter.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-bold text-indigo-600 hover:underline dark:text-indigo-400"
+              className="font-bold text-slate-700 hover:underline dark:text-slate-300"
             >
               {SOCIAL.twitter.handle}
             </a>{" "}
@@ -94,7 +94,7 @@ export function WelcomeScreen({ onStart }: Props) {
               key={title}
               className="rounded-xl border border-zinc-100 bg-white p-3 text-left shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
             >
-              <Icon className="mb-2 h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              <Icon className="mb-2 h-4 w-4 text-slate-700 dark:text-slate-300" />
               <p className="text-[11px] font-bold text-zinc-900 dark:text-white">
                 {title}
               </p>
@@ -106,7 +106,7 @@ export function WelcomeScreen({ onStart }: Props) {
         <button
           type="button"
           onClick={onStart}
-          className="mt-10 inline-flex items-center gap-2 rounded-full bg-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700 dark:shadow-indigo-900/30"
+          className="mt-10 inline-flex items-center gap-2 rounded-full bg-slate-700 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-slate-200 transition hover:bg-slate-800 dark:shadow-slate-900/30"
         >
           {t.startNow} →
         </button>

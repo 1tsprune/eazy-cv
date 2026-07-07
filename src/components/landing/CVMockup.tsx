@@ -3,12 +3,12 @@
 import { themeColors } from "@/lib/colors";
 
 export function CVMockup() {
-  const c = themeColors.indigo;
+  const c = themeColors.slate;
 
   return (
     <div className="relative mx-auto w-full max-w-md">
-      <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-indigo-200/50 to-violet-200/50 blur-2xl" />
-      <div className="relative rotate-1 rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl shadow-indigo-200/50 transition hover:rotate-0">
+      <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-slate-200/40 to-zinc-200/40 blur-2xl" />
+      <div className="relative rotate-1 rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl shadow-zinc-200/60 transition hover:rotate-0">
         <div
           className="mb-4 border-b-2 pb-4"
           style={{ borderColor: c.primary }}
