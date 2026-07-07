@@ -74,8 +74,7 @@ const dict = {
     previewWysiwyg: "Preview sama dengan PDF",
     sampleDataBanner:
       "Ini data contoh supaya kamu lihat bentuk CV-nya. Ganti semua dengan info kamu sendiri.",
-    igStoryTemplate: "Template IG Story",
-    igStoryShort: "IG Story",
+
     scoreTitle: "Skor ATS",
     atsTipsTitle: "Yang perlu dilengkapi",
     dataBackupHint: "Backup CV kamu ke file JSON. Bisa dimuat lagi kapan saja.",
@@ -236,8 +235,7 @@ const dict = {
     previewWysiwyg: "Preview matches PDF download",
     sampleDataBanner:
       "This is sample data so you can see how the CV looks. Replace everything with your own info.",
-    igStoryTemplate: "Instagram Story templates",
-    igStoryShort: "IG Story",
+
     scoreTitle: "ATS Score",
     atsTipsTitle: "What to complete",
     dataBackupHint: "Back up your CV as a JSON file. Load it back anytime.",

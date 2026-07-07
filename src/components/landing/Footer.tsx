@@ -1,6 +1,5 @@
 import { MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { IgStoryLink } from "@/components/IgStoryLink";
 import { SITE, whatsappUrl } from "@/lib/site";
 
 export function Footer() {
@@ -39,7 +38,6 @@ export function Footer() {
                   Privasi
                 </Link>
               </li>
-              <IgStoryLink variant="footer" />
             </ul>
           </div>
 
