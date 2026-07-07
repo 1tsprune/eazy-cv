@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { Logo } from "@/components/Logo";
 import "./story.css";
 
 const SLIDE_COUNT = 5;
@@ -89,7 +90,7 @@ export function IgStoryDeck() {
           <div className="ig-story-blob ig-story-b2" />
           <div className="ig-story-content ig-story-spacer-top">
             <div className="ig-story-logo">
-              <div className="ig-story-logo-icon">CV</div>
+              <Logo variant="icon" size="lg" className="ig-story-logo-mark" />
               <span className="ig-story-logo-text">Eazy CV</span>
             </div>
             <span className="ig-story-tag">bikin CV satset · gaperlu login</span>
@@ -141,7 +142,7 @@ export function IgStoryDeck() {
           <div className="ig-story-blob ig-story-b1" style={{ opacity: 0.2 }} />
           <div className="ig-story-content ig-story-spacer-top">
             <div className="ig-story-logo">
-              <div className="ig-story-logo-icon">CV</div>
+              <Logo variant="icon" size="lg" className="ig-story-logo-mark" />
               <span className="ig-story-logo-text white">Eazy CV</span>
             </div>
             <div className="ig-story-cta-box">
