@@ -38,6 +38,7 @@ const dict = {
     coverLetterBodyPlaceholder:
       "Tulis paragraf surat lamaran kamu di sini. Pisahkan paragraf dengan baris kosong.",
     generateFromCv: "Generate dari CV",
+    coverLetterAutoBadge: "Otomatis ikut isi CV",
     coverLetterAutoInfo:
       "Kop surat & tanda tangan otomatis dari CV: {name}",
     downloadCoverLetter: "Download Surat PDF",
@@ -221,6 +222,7 @@ const dict = {
     coverLetterBodyPlaceholder:
       "Write your cover letter paragraphs here. Separate paragraphs with a blank line.",
     generateFromCv: "Generate from CV",
+    coverLetterAutoBadge: "Auto-synced with CV",
     coverLetterAutoInfo: "Letterhead & signature auto-filled from CV: {name}",
     downloadCoverLetter: "Download Letter PDF",
     trakteerLabel: "Buy me ☕",

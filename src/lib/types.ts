@@ -169,6 +169,11 @@ export interface CoverLetterData {
   company: string;
   position: string;
   body: string;
+  /**
+   * True once the user has manually edited the body. While false/undefined the
+   * body auto-follows the CV data + cvProfile (kerja / magang / pelajar).
+   */
+  bodyCustom?: boolean;
 }
 
 export interface ResumeState {

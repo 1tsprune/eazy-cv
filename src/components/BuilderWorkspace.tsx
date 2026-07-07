@@ -24,6 +24,7 @@ import { PrivacyBadge } from "@/components/PrivacyBadge";
 import { SectionOrderPanel } from "@/components/builder/SectionOrderPanel";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
+import { resolveCoverLetterBody } from "@/lib/cover-letter";
 import { getUiDict } from "@/lib/ui-i18n";
 
 export function BuilderWorkspace() {
@@ -32,6 +33,16 @@ export function BuilderWorkspace() {
   const t = getUiDict(uiLocale);
   const [tab, setTab] = useState<BuilderTab>("form");
   const [showCover, setShowCover] = useState(false);
+
+  const coverLetterResolved = {
+    ...coverLetter,
+    body: resolveCoverLetterBody(
+      data,
+      coverLetter,
+      config.language,
+      config.cvProfile,
+    ),
+  };
 
   const handleFixAtsCheck = useCallback((checkId: string) => {
     const sectionId = getAtsScrollTarget(checkId);
@@ -188,7 +199,7 @@ export function BuilderWorkspace() {
             <PreviewDesk variant="letter">
               <CoverLetterPreview
                 personal={data.personal}
-                coverLetter={coverLetter}
+                coverLetter={coverLetterResolved}
                 language={config.language}
                 config={config}
               />

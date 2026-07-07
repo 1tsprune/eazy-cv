@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
+import { resolveCoverLetterBody } from "@/lib/cover-letter";
 import CoverLetterDocument from "@/components/pdf/CoverLetterDocument";
 import { PdfDownloadButton } from "./PdfDownloadButton";
 
@@ -16,12 +17,20 @@ export function CoverLetterPDFDownload() {
     () => (
       <CoverLetterDocument
         personal={data.personal}
-        coverLetter={coverLetter}
+        coverLetter={{
+          ...coverLetter,
+          body: resolveCoverLetterBody(
+            data,
+            coverLetter,
+            config.language,
+            config.cvProfile,
+          ),
+        }}
         language={config.language}
         config={config}
       />
     ),
-    [data.personal, coverLetter, config],
+    [data, coverLetter, config],
   );
 
   const filename = `${data.personal.fullName || "cover-letter"}-surat-lamaran.pdf`;

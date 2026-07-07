@@ -152,6 +152,7 @@ export const sampleProfessionalState: ResumeState = {
   config: baseConfig("professional"),
   coverLetter: {
     ...defaultCoverLetter("id"),
+    bodyCustom: false,
     company: "Acme Digital",
     position: "Software Engineer",
     body:
@@ -258,6 +259,7 @@ export const sampleInternshipState: ResumeState = {
   config: baseConfig("internship"),
   coverLetter: {
     ...defaultCoverLetter("id"),
+    bodyCustom: false,
     company: "Tech Startup Nusantara",
     position: "Magang Frontend Developer",
     body:
@@ -379,6 +381,7 @@ export const sampleStudentState: ResumeState = {
   config: baseConfig("student"),
   coverLetter: {
     ...defaultCoverLetter("id"),
+    bodyCustom: false,
     company: "Perusahaan Contoh",
     position: "Program Magang SMA",
     body:
