@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { themeColors } from "@/lib/colors";
-import { isResumeDataEmpty, isSampleResumeData } from "@/lib/resume-empty";
 import { getUiDict } from "@/lib/ui-i18n";
 import type { ModernTemplate } from "@/lib/types";
 
@@ -127,21 +126,17 @@ function StyleCard({
 }
 
 export function TemplatePicker() {
-  const { data, config, updateConfig, loadSampleWithTemplate, loadSampleAts } =
-    useResume();
+  const { config, updateConfig } = useResume();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const isAts = config.exportMode === "ats";
-  const useSample = isResumeDataEmpty(data) || isSampleResumeData(data);
 
   const pickAts = () => {
-    if (useSample) loadSampleAts();
-    else updateConfig({ exportMode: "ats" });
+    updateConfig({ exportMode: "ats" });
   };
 
   const pickModern = (id: ModernTemplate) => {
-    if (useSample) loadSampleWithTemplate(id);
-    else updateConfig({ exportMode: "modern", template: id });
+    updateConfig({ exportMode: "modern", template: id });
   };
 
   const activeLabel = isAts ? t.exportAts : config.template;

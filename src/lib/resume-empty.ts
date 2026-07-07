@@ -8,6 +8,8 @@ export function isResumeDataEmpty(data: ResumeData): boolean {
     !p.title?.trim() &&
     !p.summary?.trim() &&
     !p.email?.trim() &&
+    !p.photo?.trim() &&
+    !p.phone?.trim() &&
     data.experiences.length === 0 &&
     data.educations.length === 0 &&
     data.organizations.length === 0 &&
