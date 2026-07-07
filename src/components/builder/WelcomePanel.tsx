@@ -24,7 +24,7 @@ export function WelcomePanel() {
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-bold text-zinc-900 dark:text-white">
-            {t.welcomeHi} EazyCV
+            {t.welcomeHi} eazycv
           </h3>
           <p className="mt-1 text-sm text-zinc-600">
             Mulai dari nol atau muat contoh CV — kerja, magang, atau pelajar.

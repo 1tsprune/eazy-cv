@@ -33,12 +33,12 @@ export function WelcomeScreen({ onStart }: Props) {
         }}
       />
 
-      <div className="relative z-10 flex w-full max-w-3xl flex-col items-center text-center">
+      <div className="relative z-10 flex w-full max-w-3xl flex-col items-center text-center lowercase">
         <Logo variant="icon" size="lg" className="mb-5" />
         <h1 className="text-4xl font-extrabold tracking-tighter text-zinc-900 dark:text-white md:text-6xl">
           {t.welcomeHi}{" "}
           <span className="bg-gradient-to-br from-slate-800 to-slate-600 bg-clip-text text-transparent dark:from-slate-300 dark:to-slate-400">
-            EazyCV
+            eazycv
           </span>
         </h1>
 
