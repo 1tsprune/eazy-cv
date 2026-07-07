@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
-import { calculateAtsScore } from "@/lib/ats-score";
+import { calculateCvAssistant } from "@/lib/cv-assistant";
 
 interface Props {
   size?: "sm" | "lg";
@@ -15,8 +15,11 @@ export function ScoreRing({ size = "sm" }: Props) {
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const { score } = useMemo(
-    () => calculateAtsScore(data, config.language, config.cvProfile),
-    [data, config.language],
+    () =>
+      calculateCvAssistant(data, uiLocale, config.cvProfile, {
+        showPhoto: config.showPhoto,
+      }),
+    [data, uiLocale, config.cvProfile, config.showPhoto],
   );
 
   const ringColor =

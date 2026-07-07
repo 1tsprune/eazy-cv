@@ -1,13 +1,12 @@
 "use client";
 
-import { Eye, FileText, Target } from "lucide-react";
+import { Eye, FileText } from "lucide-react";
 
-export type BuilderTab = "form" | "preview" | "score";
+export type BuilderTab = "form" | "preview";
 
 const TABS: { id: BuilderTab; icon: typeof FileText }[] = [
   { id: "form", icon: FileText },
   { id: "preview", icon: Eye },
-  { id: "score", icon: Target },
 ];
 
 type Props = {
@@ -22,7 +21,7 @@ export function BuilderBottomNav({ tab, onTabChange, labels }: Props) {
       className="fixed inset-x-0 bottom-0 z-50 border-t border-zinc-200 bg-white/95 backdrop-blur-md md:hidden dark:border-zinc-800 dark:bg-zinc-900/95"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="grid h-16 grid-cols-3">
+      <div className="grid h-16 grid-cols-2">
         {TABS.map(({ id, icon: Icon }) => {
           const active = tab === id;
           return (

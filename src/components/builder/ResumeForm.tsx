@@ -386,6 +386,7 @@ export function ResumeForm() {
       </SectionCard>
 
       <SectionCard
+        sectionId="cv-section-organizations"
         title={t.organizations}
         icon={<Users className="h-4 w-4" />}
         badge={`${data.organizations.length}`}

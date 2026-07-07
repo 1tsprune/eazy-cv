@@ -2,17 +2,15 @@
 
 import { useCallback, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import {
-  getAtsScrollTarget,
-  scrollToCvSection,
-} from "@/lib/ats-scroll-targets";
+import { scrollToCvSection } from "@/lib/ats-scroll-targets";
 import {
   BuilderBottomNav,
   type BuilderTab,
 } from "@/components/builder/BuilderBottomNav";
+import { CvTipsDrawer } from "@/components/builder/CvTipsDrawer";
+import { CvTipsFab } from "@/components/builder/CvTipsFab";
 import { ResumeForm } from "@/components/builder/ResumeForm";
 import { ResumePdfPreview } from "@/components/builder/ResumePdfPreview";
-import { AtsScorePanel } from "@/components/builder/AtsScorePanel";
 import { CoverLetterForm } from "@/components/builder/CoverLetterForm";
 import { CoverLetterPreview } from "@/components/builder/CoverLetterPreview";
 import { QuickActions } from "@/components/builder/QuickActions";
@@ -33,6 +31,7 @@ export function BuilderWorkspace() {
   const t = getUiDict(uiLocale);
   const [tab, setTab] = useState<BuilderTab>("form");
   const [showCover, setShowCover] = useState(false);
+  const [tipsOpen, setTipsOpen] = useState(false);
 
   const coverLetterResolved = {
     ...coverLetter,
@@ -44,11 +43,13 @@ export function BuilderWorkspace() {
     ),
   };
 
-  const handleFixAtsCheck = useCallback((checkId: string) => {
-    const sectionId = getAtsScrollTarget(checkId);
-    setTab("form");
-    window.setTimeout(() => scrollToCvSection(sectionId), 120);
-  }, []);
+  const handleFixCheck = useCallback(
+    (_checkId: string, scrollTarget: string) => {
+      setTab("form");
+      window.setTimeout(() => scrollToCvSection(scrollTarget), 120);
+    },
+    [],
+  );
 
   if (!isLoaded) {
     return (
@@ -61,17 +62,14 @@ export function BuilderWorkspace() {
   const bottomNavLabels: Record<BuilderTab, string> = {
     form: t.tabForm,
     preview: t.tabPreview,
-    score: t.tabScore,
   };
 
   const showMobileLeft = showCover || tab === "form";
   const showMobileCvPreview = !showCover && tab === "preview";
   const showMobileCoverPreview = showCover;
-  const showMobileScore = !showCover && tab === "score";
 
   return (
     <div className="bg-zinc-50 dark:bg-zinc-950">
-      {/* ── Mobile only ── */}
       <div className="border-b border-zinc-200 px-4 py-2 md:hidden dark:border-zinc-800">
         <PrivacyBadge variant="compact" />
       </div>
@@ -92,7 +90,6 @@ export function BuilderWorkspace() {
         </div>
       ) : null}
 
-      {/* ── Desktop: 1 halaman, 2 kolom, tanpa tab ── */}
       <div className="mx-auto hidden max-w-screen-2xl items-start gap-4 p-4 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
         <div className="space-y-4">
           <PrivacyBadge variant="subtle" />
@@ -113,7 +110,7 @@ export function BuilderWorkspace() {
           )}
         </div>
 
-        <div className="space-y-4 md:sticky md:top-14 md:self-start">
+        <div className="md:sticky md:top-14 md:self-start">
           {showCover ? (
             <>
               <div className="mb-3 flex items-center justify-between">
@@ -131,27 +128,23 @@ export function BuilderWorkspace() {
               </PreviewDesk>
             </>
           ) : (
-            <>
-              <div>
-                <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-zinc-800 dark:text-white">
-                    {t.previewTitle} 👀
-                  </h2>
-                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold capitalize text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    {config.exportMode === "ats" ? "ATS" : config.template}
-                  </span>
-                </div>
-                <PreviewDesk>
-                  <ResumePdfPreview />
-                </PreviewDesk>
+            <div>
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-bold text-zinc-800 dark:text-white">
+                  {t.previewTitle} 👀
+                </h2>
+                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold capitalize text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  {config.exportMode === "ats" ? "ATS" : config.template}
+                </span>
               </div>
-              <AtsScorePanel onFixCheck={handleFixAtsCheck} />
-            </>
+              <PreviewDesk>
+                <ResumePdfPreview />
+              </PreviewDesk>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ── Mobile: tab switching ── */}
       <div className="mx-auto min-w-0 max-w-full space-y-4 overflow-x-hidden p-3 pb-20 md:hidden sm:p-4 sm:pb-20">
         {showMobileLeft && (
           <div className="space-y-4">
@@ -206,18 +199,22 @@ export function BuilderWorkspace() {
             </PreviewDesk>
           </div>
         )}
-
-        {showMobileScore && !showCover && (
-          <AtsScorePanel onFixCheck={handleFixAtsCheck} />
-        )}
       </div>
 
       {!showCover ? (
-        <BuilderBottomNav
-          tab={tab}
-          onTabChange={setTab}
-          labels={bottomNavLabels}
-        />
+        <>
+          <BuilderBottomNav
+            tab={tab}
+            onTabChange={setTab}
+            labels={bottomNavLabels}
+          />
+          <CvTipsFab onClick={() => setTipsOpen(true)} />
+          <CvTipsDrawer
+            open={tipsOpen}
+            onClose={() => setTipsOpen(false)}
+            onFixCheck={handleFixCheck}
+          />
+        </>
       ) : null}
     </div>
   );
