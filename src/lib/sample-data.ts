@@ -37,7 +37,7 @@ export const sampleProfessionalState: ResumeState = {
       linkedin: "linkedin.com/in/alex-morgan",
       github: "github.com/alexmorgan",
       summary:
-        "Engineer dengan pengalaman membangun produk web. Fokus pada React, TypeScript, dan backend Node.js. Data ini cuma contoh — ganti semua dengan info kamu sendiri.",
+        "Software Engineer dengan 5+ tahun pengalaman membangun aplikasi web skala produksi untuk 50.000+ pengguna aktif. Terampil React, TypeScript, Node.js, PostgreSQL, dan arsitektur REST API. Berpengalaman memimpin squad 5 engineer, berkolaborasi dengan tim produk & desain, serta mengoptimalkan performa sistem hingga 35%. Mencari peran full-time di perusahaan yang mengutamakan produk berkualitas dan dampak nyata bagi pengguna.",
       photo: "",
     },
     experiences: [
@@ -51,9 +51,11 @@ export const sampleProfessionalState: ResumeState = {
         current: true,
         description: "",
         highlights: [
-          "Membangun fitur yang dipakai 50.000+ pengguna aktif",
-          "Meningkatkan performa halaman utama 35%",
-          "Kolaborasi dengan tim desain & produk",
+          "Merancang modul checkout yang menangani 12.000+ transaksi/bulan dengan error rate di bawah 0,1%",
+          "Meningkatkan waktu muat halaman utama 35% (dari 2,8 detik menjadi 1,8 detik) lewat code splitting dan optimasi query database",
+          "Memimpin squad 5 engineer dalam delivery 4 fitur utama per kuartal sesuai roadmap produk",
+          "Menaikkan test coverage modul pembayaran dari 45% menjadi 82% dengan unit test dan dokumentasi API",
+          "Berkoordinasi dengan tim UX menjalankan A/B test 3 varian onboarding yang menaikkan konversi registrasi 18%",
         ],
       },
       {
@@ -66,8 +68,10 @@ export const sampleProfessionalState: ResumeState = {
         current: false,
         description: "",
         highlights: [
-          "Ikut membangun MVP dari nol",
-          "Menulis unit test untuk modul pembayaran",
+          "Ikut membangun MVP dari nol hingga diluncurkan ke 2.000 pengguna beta dalam 6 bulan",
+          "Mengembangkan 8 endpoint REST API dan integrasi payment gateway untuk transaksi harian",
+          "Menulis 40+ unit test untuk modul pembayaran yang mengurangi bug produksi 30%",
+          "Membantu setup CI/CD sederhana sehingga waktu deploy turun dari 2 jam menjadi 20 menit",
         ],
       },
     ],
@@ -173,7 +177,7 @@ export const sampleInternshipState: ResumeState = {
       linkedin: "linkedin.com/in/sari-putri",
       github: "github.com/sariputri",
       summary:
-        "Mahasiswa semester 6 yang mencari magang di bidang pengembangan web. Berpengalaman magang 3 bulan dan aktif di organisasi kampus. Contoh data — ganti dengan info kamu.",
+        "Mahasiswa S1 Teknik Informatika semester 6 dengan IPK 3,65 dan pengalaman magang frontend 3 bulan di startup teknologi. Terbiasa React, JavaScript, HTML/CSS, Git, Figma, dan workflow agile (daily stand-up, code review, sprint). Aktif di UKM Programming dan pernah mengadakan workshop web dasar untuk 40 peserta kampus. Mencari magang pengembangan web untuk memperdalam skill membangun produk nyata dan belajar langsung dari tim profesional.",
       photo: "",
     },
     experiences: [
@@ -187,9 +191,11 @@ export const sampleInternshipState: ResumeState = {
         current: false,
         description: "",
         highlights: [
-          "Membantu tim membangun 2 fitur dashboard admin",
-          "Melakukan code review dan perbaikan bug UI",
-          "Belajar workflow Git & agile scrum",
+          "Membantu tim membangun 2 fitur dashboard admin yang dipakai 40+ staf operasional setiap hari",
+          "Memperbaiki 18 bug UI pada komponen React dan meningkatkan konsistensi desain dengan design system internal",
+          "Menulis 25+ unit test untuk komponen form dan tabel data, mengurangi regresi saat rilis",
+          "Ikut daily stand-up, sprint planning, dan code review selama 3 bulan magang",
+          "Melakukan riset singkat ke 8 pengguna internal; hasilnya dipakai untuk perbaikan alur laporan bulanan",
         ],
       },
     ],
@@ -280,7 +286,7 @@ export const sampleStudentState: ResumeState = {
       linkedin: "",
       github: "github.com/budisantoso",
       summary:
-        "Pelajar aktif dengan minat di teknologi dan desain. Pengalaman organisasi sekolah, lomba, dan proyek tim. Contoh data — ganti dengan info kamu.",
+        "Pelajar SMA kelas 12 IPA dengan minat teknologi, desain digital, dan robotika. Aktif di OSIS divisi IT dan ekstrakurikuler robotik; berpengalaman mengelola media sosial sekolah, membuat konten visual, dan membangun website sederhana untuk acara sekolah. Terbiasa kerja tim, presentasi di depan kelas, dan belajar tools baru dengan cepat. Mencari program magang atau kesempatan part-time di bidang IT untuk mengembangkan skill praktis sebelum melanjutkan ke perguruan tinggi.",
       photo: "",
     },
     experiences: [
@@ -294,8 +300,9 @@ export const sampleStudentState: ResumeState = {
         current: false,
         description: "",
         highlights: [
-          "Membantu instalasi OS dan troubleshooting ringan",
-          "Melayani 10+ pelanggan per hari",
+          "Membantu instalasi OS, backup data, dan troubleshooting ringan untuk 10+ pelanggan per hari",
+          "Menyusun checklist perbaatan komputer yang mempercepat proses diagnosa kerusakan 20%",
+          "Belajar komunikasi layanan pelanggan dan penanganan keluhan secara profesional",
         ],
       },
     ],
@@ -322,8 +329,9 @@ export const sampleStudentState: ResumeState = {
         endDate: "",
         current: true,
         highlights: [
-          "Mengelola media sosial sekolah",
-          "Membuat poster digital untuk 5 event sekolah",
+          "Mengelola media sosial OSIS (Instagram & TikTok) dengan 8 posting/minggu, engagement naik 60% dalam 6 bulan",
+          "Membuat 8 poster digital dan 3 video promosi singkat untuk 5 event sekolah (300+ peserta total)",
+          "Mengkoordinasi tim 4 orang untuk dokumentasi dan publikasi acara peringatan hari besar sekolah",
         ],
       },
       {
@@ -335,8 +343,9 @@ export const sampleStudentState: ResumeState = {
         endDate: "2025",
         current: false,
         highlights: [
-          "Juara 2 lomba robotik tingkat kota",
-          "Merancang prototipe line follower",
+          "Juara 2 lomba robotik tingkat kota bersama tim 4 orang dari 15 tim peserta",
+          "Merancang prototipe line follower dan melakukan 20+ iterasi tuning sensor sebelum kompetisi",
+          "Mempresentasikan desain robot dan strategi lintasan di depan juri dan 80+ peserta lomba",
         ],
       },
     ],

@@ -5,13 +5,18 @@ import type { ReactNode } from "react";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { themeColors } from "@/lib/colors";
+import {
+  COLOR_THEMES,
+  TEMPLATE_DEFAULT_COLOR,
+} from "@/lib/template-theme";
+import { CV_FONT_FAMILIES, CV_FONT_SIZES } from "@/lib/typography";
 import { getUiDict } from "@/lib/ui-i18n";
-import type { ModernTemplate } from "@/lib/types";
+import type { ColorTheme, CvFontFamily, CvFontSize, ModernTemplate } from "@/lib/types";
 
 const MODERN_TEMPLATES: {
   id: ModernTemplate;
   label: string;
-  color: keyof typeof themeColors;
+  color: ColorTheme;
 }[] = [
   { id: "elegant", label: "Elegant", color: "indigo" },
   { id: "professional", label: "Professional", color: "emerald" },
@@ -20,6 +25,12 @@ const MODERN_TEMPLATES: {
   { id: "compact", label: "Compact", color: "slate" },
   { id: "academic", label: "Academic", color: "amber" },
 ];
+
+const FONT_SIZE_LABEL_KEYS = {
+  sm: "fontSizeSmall",
+  md: "fontSizeMedium",
+  lg: "fontSizeLarge",
+} as const satisfies Record<CvFontSize, keyof ReturnType<typeof getUiDict>>;
 
 function AtsThumb() {
   return (
@@ -135,7 +146,11 @@ export function TemplatePicker() {
   };
 
   const pickModern = (id: ModernTemplate) => {
-    updateConfig({ exportMode: "modern", template: id });
+    updateConfig({
+      exportMode: "modern",
+      template: id,
+      colorTheme: TEMPLATE_DEFAULT_COLOR[id],
+    });
   };
 
   const activeLabel = isAts ? t.exportAts : config.template;
@@ -173,6 +188,132 @@ export function TemplatePicker() {
           );
         })}
       </div>
+
+      {!isAts ? (
+        <div className="mt-3 space-y-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              {t.color}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {COLOR_THEMES.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => updateConfig({ colorTheme: c })}
+                  className={`h-8 w-8 rounded-full border-2 transition ${
+                    config.colorTheme === c
+                      ? "border-zinc-900 scale-110 dark:border-white"
+                      : "border-transparent hover:scale-105"
+                  }`}
+                  style={{ backgroundColor: themeColors[c].primary }}
+                  title={c}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              {t.fontFamily}
+            </p>
+            <div className="grid grid-cols-2 gap-1.5">
+              {CV_FONT_FAMILIES.map((font) => (
+                <button
+                  key={font.id}
+                  type="button"
+                  onClick={() =>
+                    updateConfig({ fontFamily: font.id as CvFontFamily })
+                  }
+                  className={`rounded-lg px-2 py-2 text-left text-[11px] font-semibold ${
+                    config.fontFamily === font.id
+                      ? "bg-slate-700 text-white"
+                      : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                  }`}
+                >
+                  {font.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              {t.fontSize}
+            </p>
+            <div className="flex gap-2">
+              {CV_FONT_SIZES.map((size) => (
+                <button
+                  key={size.id}
+                  type="button"
+                  onClick={() =>
+                    updateConfig({ fontSize: size.id as CvFontSize })
+                  }
+                  className={`flex-1 rounded-xl py-2 text-xs font-bold ${
+                    config.fontSize === size.id
+                      ? "bg-slate-700 text-white"
+                      : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                  }`}
+                >
+                  {t[FONT_SIZE_LABEL_KEYS[size.id]]}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-3 space-y-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+          <p className="text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+            {t.atsStyleMenuHint}
+          </p>
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              {t.fontFamily}
+            </p>
+            <div className="grid grid-cols-2 gap-1.5">
+              {CV_FONT_FAMILIES.map((font) => (
+                <button
+                  key={font.id}
+                  type="button"
+                  onClick={() =>
+                    updateConfig({ fontFamily: font.id as CvFontFamily })
+                  }
+                  className={`rounded-lg px-2 py-2 text-left text-[11px] font-semibold ${
+                    config.fontFamily === font.id
+                      ? "bg-slate-700 text-white"
+                      : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                  }`}
+                >
+                  {font.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              {t.fontSize}
+            </p>
+            <div className="flex gap-2">
+              {CV_FONT_SIZES.map((size) => (
+                <button
+                  key={size.id}
+                  type="button"
+                  onClick={() =>
+                    updateConfig({ fontSize: size.id as CvFontSize })
+                  }
+                  className={`flex-1 rounded-xl py-2 text-xs font-bold ${
+                    config.fontSize === size.id
+                      ? "bg-slate-700 text-white"
+                      : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                  }`}
+                >
+                  {t[FONT_SIZE_LABEL_KEYS[size.id]]}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

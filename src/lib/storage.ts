@@ -7,6 +7,7 @@ import {
   syncLegacySkills,
 } from "./skill-groups";
 import { DEFAULT_TYPOGRAPHY, normalizeFontFamily } from "./typography";
+import { normalizeColorTheme } from "./template-theme";
 import {
   DEFAULT_SECTION_ORDER,
   normalizeModernTemplate,
@@ -56,6 +57,7 @@ function normalizeState(parsed: ResumeState): ResumeState {
       fontSize: parsed.config?.fontSize ?? DEFAULT_TYPOGRAPHY.fontSize,
       fontBold: parsed.config?.fontBold ?? DEFAULT_TYPOGRAPHY.fontBold,
       template: normalizeModernTemplate(parsed.config?.template),
+      colorTheme: normalizeColorTheme(parsed.config?.colorTheme),
     },
     coverLetter: {
       ...defaultResumeState.coverLetter,

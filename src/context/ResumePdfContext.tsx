@@ -40,7 +40,20 @@ export function ResumePdfProvider({ children }: { children: ReactNode }) {
 
   const document = useMemo(
     () => buildResumePdfDocument(data, config),
-    [data, config],
+    [
+      data,
+      config,
+      config.exportMode,
+      config.template,
+      config.colorTheme,
+      config.fontFamily,
+      config.fontSize,
+      config.fontBold,
+      config.language,
+      config.showPhoto,
+      config.cvProfile,
+      config.sectionOrder,
+    ],
   );
 
   const [pdfState, updatePdf] = usePDF({ document });

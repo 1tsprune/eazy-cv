@@ -14,6 +14,7 @@ import {
   hasSkillContent,
   normalizeSkillGroups,
 } from "@/lib/skill-groups";
+import { getPdfSheetTokens } from "@/lib/typography";
 import type { ResumeConfig, ResumeData } from "@/lib/types";
 import { PdfCustomSections } from "./pdf-blocks";
 
@@ -22,32 +23,33 @@ interface Props {
   config: ResumeConfig;
 }
 
-function createStyles() {
+function createStyles(config: ResumeConfig) {
   const s = EZCV_ATS;
+  const tk = getPdfSheetTokens(config);
   return StyleSheet.create({
     page: {
       paddingTop: s.pageMargin,
       paddingBottom: s.pageMargin,
       paddingHorizontal: s.pageMargin,
-      fontFamily: "Helvetica",
-      fontSize: 10,
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
       color: "#000000",
-      lineHeight: 1.3,
+      lineHeight: tk.lh,
     },
     header: {
       alignItems: "center",
       marginBottom: 4,
     },
     name: {
-      fontSize: 18,
-      fontFamily: "Helvetica-Bold",
+      fontSize: tk.xl,
+      fontFamily: tk.headingFamily,
       color: "#000000",
       textAlign: "center",
       marginBottom: 14,
       textTransform: "uppercase",
     },
     position: {
-      fontSize: 10,
+      fontSize: tk.sm,
       color: "#333333",
       textAlign: "center",
     },
@@ -57,20 +59,20 @@ function createStyles() {
       marginTop: 4,
     },
     contactInline: {
-      fontSize: 9,
+      fontSize: tk.xs,
       color: "#000000",
       textAlign: "center",
       marginBottom: 1,
     },
     contactLink: {
-      fontSize: 9,
+      fontSize: tk.xs,
       color: "#000000",
       textDecoration: "none",
     },
     summary: {
-      fontSize: 10,
+      fontSize: tk.base,
       color: "#000000",
-      lineHeight: 1.35,
+      lineHeight: tk.lh,
       textAlign: "justify",
       marginBottom: s.sectionGap,
     },
@@ -78,8 +80,8 @@ function createStyles() {
       marginTop: s.sectionGap,
     },
     sectionHeading: {
-      fontSize: 11,
-      fontFamily: "Helvetica-Bold",
+      fontSize: tk.md,
+      fontFamily: tk.headingFamily,
       color: "#000000",
       marginBottom: 4,
       paddingBottom: 2,
@@ -87,12 +89,12 @@ function createStyles() {
       borderBottomColor: "#000000",
     },
     body: {
-      fontSize: 10,
+      fontSize: tk.base,
       color: "#000000",
-      lineHeight: 1.3,
+      lineHeight: tk.lh,
     },
     muted: {
-      fontSize: 9,
+      fontSize: tk.xs,
       color: "#333333",
     },
     entryWrap: {
@@ -104,26 +106,26 @@ function createStyles() {
       alignItems: "flex-start",
     },
     entryTitle: {
-      fontSize: 10,
-      fontFamily: "Helvetica-Bold",
+      fontSize: tk.base,
+      fontFamily: tk.headingFamily,
       color: "#000000",
       flex: 1,
       paddingRight: 8,
     },
     entrySubtitle: {
-      fontSize: 10,
+      fontSize: tk.base,
       color: "#000000",
     },
     entryDate: {
-      fontSize: 9,
+      fontSize: tk.xs,
       color: "#000000",
       textAlign: "right",
       flexShrink: 0,
     },
     entryDescription: {
-      fontSize: 10,
+      fontSize: tk.base,
       color: "#000000",
-      lineHeight: 1.3,
+      lineHeight: tk.lh,
       marginTop: 2,
     },
     bulletList: {
@@ -131,13 +133,13 @@ function createStyles() {
       marginTop: 2,
     },
     bulletItem: {
-      fontSize: 10,
+      fontSize: tk.base,
       color: "#000000",
-      lineHeight: 1.3,
+      lineHeight: tk.lh,
       marginBottom: 1,
     },
     skillList: {
-      fontSize: 10,
+      fontSize: tk.base,
       color: "#000000",
     },
   });
@@ -195,7 +197,7 @@ function AtsContact({ data, styles }: { data: ResumeData; styles: ReturnType<typ
 export default function ATSResumeDocument({ data, config }: Props) {
   const lang = config.language;
   const { personal } = data;
-  const styles = createStyles();
+  const styles = createStyles(config);
   const skillGroups = normalizeSkillGroups(data).filter((g) => g.skills.length > 0);
 
   return (

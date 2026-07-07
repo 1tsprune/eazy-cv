@@ -45,9 +45,9 @@ const PREVIEW_FONTS: Record<CvFontFamily, string> = {
 };
 
 const SIZE_SCALE = {
-  sm: { base: 10, xs: 9, sm: 10, md: 11, lg: 14, xl: 18, display: 22, lh: 1.45 },
+  sm: { base: 10, xs: 9, sm: 10, md: 11, lg: 13, xl: 16, display: 20, lh: 1.4 },
   md: { base: 11, xs: 10, sm: 11, md: 12, lg: 16, xl: 20, display: 26, lh: 1.5 },
-  lg: { base: 12, xs: 11, sm: 12, md: 13, lg: 18, xl: 22, display: 30, lh: 1.55 },
+  lg: { base: 13, xs: 11, sm: 13, md: 14, lg: 18, xl: 24, display: 30, lh: 1.55 },
 } as const;
 
 /** @react-pdf/renderer built-in fonts (Calibri → Helvetica fallback in PDF) */
@@ -62,9 +62,9 @@ const PDF_FONTS: Record<
 };
 
 const PDF_SIZE = {
-  sm: { base: 9, xs: 8, sm: 9, md: 10, lg: 12, xl: 16, display: 20, lh: 1.45 },
+  sm: { base: 9, xs: 8, sm: 9, md: 10, lg: 11, xl: 14, display: 18, lh: 1.4 },
   md: { base: 10, xs: 9, sm: 10, md: 11, lg: 14, xl: 18, display: 24, lh: 1.5 },
-  lg: { base: 11, xs: 10, sm: 11, md: 12, lg: 15, xl: 20, display: 28, lh: 1.55 },
+  lg: { base: 12, xs: 10, sm: 12, md: 13, lg: 16, xl: 22, display: 28, lh: 1.55 },
 } as const;
 
 type PreviewSizeScale = (typeof SIZE_SCALE)[CvFontSize];

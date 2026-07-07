@@ -103,6 +103,7 @@ export function ResumeForm() {
         sectionId="cv-section-personal"
         title={t.personalInfo}
         icon={<User className="h-4 w-4" />}
+        defaultOpen
       >
         {config.exportMode === "modern" ? (
           <PhotoUpload
@@ -199,7 +200,7 @@ export function ResumeForm() {
         <div className="mt-3">
           <Textarea
             label={t.summary}
-            rows={4}
+            rows={6}
             value={data.personal.summary}
             onChange={(e) => updatePersonal({ summary: e.target.value })}
             placeholder={profileStrings.summaryPlaceholder}
@@ -212,6 +213,7 @@ export function ResumeForm() {
         title={experienceTitle}
         icon={<Briefcase className="h-4 w-4" />}
         badge={`${data.experiences.length}`}
+        defaultOpen={false}
       >
         <SortableList
           items={data.experiences}
@@ -284,6 +286,9 @@ export function ResumeForm() {
                 {profileStrings.currentlyWorking}
               </label>
               <div className="mt-3">
+                <p className="mb-2 whitespace-pre-line text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+                  {profileStrings.highlightsHint}
+                </p>
                 <TagInput
                   label={t.highlights}
                   tags={exp.highlights}
@@ -307,6 +312,7 @@ export function ResumeForm() {
         title={t.education}
         icon={<GraduationCap className="h-4 w-4" />}
         badge={`${data.educations.length}`}
+        defaultOpen={false}
       >
         <SortableList
           items={data.educations}
@@ -490,6 +496,7 @@ export function ResumeForm() {
         title={t.skills}
         icon={<Code className="h-4 w-4" />}
         badge={`${normalizeSkillGroups(data).length}`}
+        defaultOpen={false}
       >
         <SortableList
           items={normalizeSkillGroups(data)}
