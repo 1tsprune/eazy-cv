@@ -1,6 +1,6 @@
 # Eazy CV — Claude handoff guide
 
-> Dokumen ini mirror `AGENTS.md` dengan penekanan pada **masalah aktif** dan konteks untuk melanjutkan fix PDF/preview. Baca section **Masalah aktif** sebelum coding.
+> Dokumen ini mirror `AGENTS.md`. Baca section **Status terkini** sebelum coding.
 
 ---
 
@@ -32,48 +32,27 @@ npm.cmd run pdf:samples
 
 ---
 
-## ⚠️ MASALAH AKTIF — ini yang harus kamu selesaikan
+## Status terkini (update 2026-07-07, commit `15a38b6`)
 
-### Konteks dari user
+### Sudah beres ✅
 
-User sudah frustrasi sejak sore: **preview ancur, download ancur, tidak mirip EZCV**. Beberapa commit sudah di-push (`f56517f` terakhir) tapi user **belum konfirmasi fix**.
+- **Template picker kini nyata** — modern mode dispatch ke `ModernResumeDocument` (7 template beda-beda: `elegant`, `minimal`, `professional`, `executive`, `creative`, `compact`, `academic`). Pilih template di menu = desain PDF berubah. Dulu `build-resume-pdf-document.tsx` selalu render satu layout EZCV → itu penyebab "pilih template kok hasil sama".
+- **Layout PDF terverifikasi mirip EZCV** — ATS & Modern dibandingkan langsung dengan `samples/Your Full Name_*.pdf`. Format `perusahaan | tanggal`, tidak overflow, semua 7 template muat 1 halaman (fix `PDF_MAIN_BOTTOM_PAD` 28→16 + spacing header executive/academic + `lineHeight` nama creative).
+- **Layout EZCV modern lama (`PDFResumeDocument.tsx`) DIHAPUS** — sudah tak dipakai setelah wiring. Jangan cari file ini.
+- **Nav bawah tak geser** saat pindah ke tab Skor — `scrollbar-gutter: stable` di `globals.css` (dulu scrollbar hilang di tab pendek → viewport melebar → nav `fixed` recenter).
 
-### Gejala
+### Masih terbuka / belum diverifikasi ⚠️
 
-1. Tab Preview kosong / berantakan / tidak mirip file download.
-2. PDF ATS dan Modern layout rusak (teks numpuk, kolom salah, tidak seperti EZCV).
-3. Harapan: **preview = download 100%** (WYSIWYG), sama seperti EZCV.
+1. **Preview blank di iOS/HP** — preview pakai `<PDFViewer>` = iframe PDF-viewer **native browser**. Andal di desktop, tapi bisa blank di iOS Safari / in-app browser / sebagian Chrome. **Belum ada laporan pasti dari user di device asli.** Kalau kejadian: ganti ke render **canvas pdf.js** dari blob yang sama (`react-pdf` + `public/pdf.worker.min.mjs` + `pdfjs-setup.ts` sudah tersedia, tinggal wire). JANGAN generate PDF dua kali.
+2. **Font** — masih Helvetica built-in, belum embed Inter seperti EZCV. Tipografi belum 100% identik.
+3. **`sectionOrder`** — urutan section masih hardcoded di PDF, belum menghormati pilihan user.
 
-### Apa yang sudah dicoba (jangan ulang tanpa analisis)
-
-| Pendekatan | Hasil |
-|------------|-------|
-| HTML `ResumePreview` + metrics | Preview ≠ PDF; diganti |
-| `react-pdf` canvas + CDN worker | Preview blank (worker gagal) |
-| iframe `blob:` URL | Jelek, mobile bermasalah |
-| Shared blob `usePDF` + canvas | Masih komplain |
-| Rewrite layout + `PDFViewer` (`f56517f`) | Build OK, **belum verified user** |
-
-### Root cause teridentifikasi
-
-1. **Layout PDF salah** — kolom pt fixed overflow; entry format `posisi·perusahaan` vs EZCV `perusahaan|tanggal`. Sudah rewrite di `PDFResumeDocument.tsx` / `ATSResumeDocument.tsx` tapi perlu visual QA.
-
-2. **Template picker menipu user** — UI punya 7 template (`elegant`, `professional`, …) dengan thumbnail, tapi `build-resume-pdf-document.tsx` **selalu** pakai `PDFResumeDocument` (satu layout EZCV). `ModernResumeDocument.tsx` (7 template PDF) **tidak dipakai**.
-
-3. **Font beda** — EZCV embed Inter (~22KB PDF modern). Kita Helvetica built-in (~5KB). Tipografi tidak identik.
-
-4. **`sectionOrder` user diabaikan** di modern PDF — split kolom EZCV fixed (kiri: summary/edu/skills/lang/certs, kanan: exp/projects/orgs).
-
-5. **Preview pipeline** — sekarang `PDFViewer` render `document` dari `ResumePdfContext`. Download pakai `usePDF` blob dari `document` yang sama. Secara arsitektur benar; jika masih beda, bug di timing (`loading` state) atau di browser tertentu.
-
-6. **File legacy membingungkan agent** — `ResumePreview.tsx`, `ModernResumeDocument.tsx`, `pdf-ats-layout.ts` (metrics HTML lama) masih ada.
-
-### Arsitektur yang BENAR (pertahankan)
+### Arsitektur PDF (single source of truth — pertahankan)
 
 ```
 buildResumePdfDocument(data, config)   ← satu-satunya sumber PDF
     ├── exportMode "ats"    → ATSResumeDocument
-    └── exportMode "modern" → PDFResumeDocument
+    └── exportMode "modern" → ModernResumeDocument  (dispatch per config.template)
 
 ResumePdfProvider
     usePDF({ document })
@@ -86,18 +65,9 @@ ResumePdfPreview
 
 **Jangan** buat preview HTML terpisah untuk builder. **Jangan** generate PDF dua kali dengan builder berbeda.
 
-### Task list prioritas untuk Claude
-
-- [ ] Jalankan app, buka `/builder`, screenshot Preview ATS + Modern
-- [ ] Download PDF, buka file, bandingkan dengan preview (harus identik)
-- [ ] Bandingkan dengan `samples/Your Full Name_ATS.pdf` dan `Your Full Name_CV.pdf`
-- [ ] Fix layout `@react-pdf` yang masih pecah (hindari `gap`, cek `%` width, `wrap={false}` pada entry)
-- [ ] Putuskan: hapus/sync 7 template UI dengan PDF, atau wire `ModernResumeDocument` kembali
-- [ ] Optional: register Inter font (`public/fonts/`) seperti EZCV chunk `806.*.js`
-- [ ] Test iPhone Safari: preview, download, share sheet
-- [ ] Setelah fix: `npm.cmd run build`, `npm.cmd run pdf:samples`, commit, push
-
 ### EZCV reverse-engineering (dari `806.*.js`)
+
+> Spec ini dulu dipakai untuk `PDFResumeDocument` (sudah dihapus). Simpan sebagai referensi kalau nanti mau menambah template "EZCV" ke `ModernResumeDocument`.
 
 **Modern (`PDFResume` / component Y):**
 
@@ -124,9 +94,9 @@ ResumePdfPreview
 | Mode | Preview | PDF |
 |------|---------|-----|
 | ATS | `ResumePdfPreview` → `PDFViewer` | `ATSResumeDocument` |
-| Modern | `ResumePdfPreview` → `PDFViewer` | `PDFResumeDocument` |
+| Modern | `ResumePdfPreview` → `PDFViewer` | `ModernResumeDocument` (7 template via `config.template`) |
 
-Legacy tidak dipakai di builder: `ResumePreview.tsx`, `ModernResumeDocument.tsx`.
+Legacy tidak dipakai di builder: `ResumePreview.tsx` (HTML preview lama). `PDFResumeDocument.tsx` sudah **dihapus**.
 
 ## File penting
 
@@ -135,9 +105,11 @@ Legacy tidak dipakai di builder: `ResumePreview.tsx`, `ModernResumeDocument.tsx`
 | `src/lib/build-resume-pdf-document.tsx` | Builder tunggal |
 | `src/context/ResumePdfContext.tsx` | PDF state + blob |
 | `src/components/builder/ResumePdfPreview.tsx` | Preview + download toolbar |
-| `src/components/pdf/PDFResumeDocument.tsx` | Modern PDF |
+| `src/components/pdf/ModernResumeDocument.tsx` | Modern PDF — dispatch 7 template |
 | `src/components/pdf/ATSResumeDocument.tsx` | ATS PDF |
-| `src/lib/ezcv-pdf-layout.ts` | EZCV tokens/helpers |
+| `src/components/builder/TemplatePicker.tsx` | UI pilih ATS + 7 template modern |
+| `src/lib/pdf-modern-layout.ts` | Token layout modern (padding, sidebar width) |
+| `src/lib/ezcv-pdf-layout.ts` | Token/helper EZCV (dipakai ATS) |
 | `src/lib/pdf-download.ts` | Download + iOS share |
 | `src/components/builder/PdfDownloadOverlay.tsx` | Overlay 10s |
 | `src/lib/ui-i18n.ts` | Copy overlay (sudah dipendekkan) |
@@ -169,6 +141,7 @@ Deploy: Vercel dari `main` → `https://cv.1tsprune.com`
 
 ## Commit relevan
 
+- `15a38b6` — wire 7 template modern, hapus layout EZCV, fix pagination + nav
 - `f56517f` — rewrite PDF EZCV + PDFViewer preview
 - `0699a54` — shared blob iframe
 - `c26b337` — react-pdf canvas pipeline
