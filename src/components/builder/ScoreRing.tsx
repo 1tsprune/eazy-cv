@@ -15,7 +15,7 @@ export function ScoreRing({ size = "sm" }: Props) {
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const { score } = useMemo(
-    () => calculateAtsScore(data, config.language),
+    () => calculateAtsScore(data, config.language, config.cvProfile),
     [data, config.language],
   );
 

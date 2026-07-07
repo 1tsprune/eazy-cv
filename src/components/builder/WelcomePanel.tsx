@@ -23,13 +23,12 @@ export function WelcomePanel() {
             Selamat datang di Eazy CV!
           </h3>
           <p className="mt-1 text-sm text-zinc-600">
-            Mulai dari nol atau muat contoh CV profesional untuk melihat
-            bagaimana hasil akhirnya. Semua data tersimpan otomatis di browser
-            kamu.
+            Mulai dari nol atau muat contoh CV — kerja, magang, atau pelajar.
+            Semua data tersimpan otomatis di browser kamu.
           </p>
           <button
             type="button"
-            onClick={loadSample}
+            onClick={() => loadSample()}
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-slate-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:bg-slate-800"
           >
             <Wand2 className="h-4 w-4" />

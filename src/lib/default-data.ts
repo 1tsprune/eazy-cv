@@ -1,3 +1,4 @@
+import { DEFAULT_CV_PROFILE } from "./cv-profile";
 import { defaultCoverLetter } from "./cover-letter";
 import { DEFAULT_TYPOGRAPHY } from "./typography";
 import type { ResumeData, ResumeState } from "./types";
@@ -33,6 +34,7 @@ export const defaultResumeState: ResumeState = {
   config: {
     language: "id",
     exportMode: "modern",
+    cvProfile: DEFAULT_CV_PROFILE,
     template: "elegant",
     colorTheme: "slate",
     showPhoto: false,

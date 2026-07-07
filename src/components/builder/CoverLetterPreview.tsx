@@ -62,7 +62,7 @@ export function CoverLetterPreview({
   language,
   config,
 }: Props) {
-  const labels = getCoverLetterLabels(language);
+  const labels = getCoverLetterLabels(language, config.cvProfile);
   const name = getSenderName(personal, language);
   const paragraphs = splitLetterParagraphs(coverLetter.body);
   const dateLine = labels.dateLine(personal.location, coverLetter.date);

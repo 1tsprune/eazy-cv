@@ -103,7 +103,7 @@ function ProfessionalTemplate({ data, config }: Props) {
           )}
           {data.experiences.length > 0 && (
             <>
-              <Text style={styles.sectionTitle}>{t(lang, "experience")}</Text>
+              <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
               {data.experiences.map((exp) => (
                 <View key={exp.id} style={{ marginBottom: 8 }}>
                   <Text style={styles.itemTitle}>{exp.position}{exp.company ? ` @ ${exp.company}` : ""}</Text>
@@ -162,7 +162,7 @@ function MinimalTemplate({ data, config }: Props) {
         {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
         {data.experiences.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>{t(lang, "experience")}</Text>
+            <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
             {data.experiences.map((exp) => (
               <View key={exp.id} style={{ marginBottom: 8 }}>
                 <Text style={styles.itemTitle}>{exp.position}{exp.company ? ` @ ${exp.company}` : ""}</Text>
@@ -222,7 +222,7 @@ function ElegantTemplate({ data, config }: Props) {
         {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
         {data.experiences.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>{t(lang, "experience")}</Text>
+            <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
             {data.experiences.map((exp) => (
               <View key={exp.id} style={{ marginBottom: 8 }}>
                 <Text style={styles.itemTitle}>{exp.position}{exp.company ? ` @ ${exp.company}` : ""}</Text>
@@ -302,7 +302,7 @@ function ExecutiveTemplate({ data, config }: Props) {
           {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
           {data.experiences.length > 0 && (
             <>
-              <Text style={styles.sectionTitle}>{t(lang, "experience")}</Text>
+              <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
               {data.experiences.map((exp) => (
                 <View key={exp.id} style={{ marginBottom: 8 }}>
                   <Text style={styles.itemTitle}>{exp.position}{exp.company ? ` — ${exp.company}` : ""}</Text>
@@ -375,7 +375,7 @@ function CreativeTemplate({ data, config }: Props) {
           {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
           {data.experiences.length > 0 && (
             <>
-              <Text style={styles.sectionTitle}>{t(lang, "experience")}</Text>
+              <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
               {data.experiences.map((exp) => (
                 <View key={exp.id} style={{ marginBottom: 8 }}>
                   <Text style={styles.itemTitle}>{exp.position} @ {exp.company}</Text>
@@ -438,7 +438,7 @@ function CompactTemplate({ data, config }: Props) {
         {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text>{personal.summary}</Text></>)}
         {data.experiences.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>{t(lang, "experience")}</Text>
+            <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
             {data.experiences.map((exp) => (
               <View key={exp.id} style={{ marginBottom: 5 }}>
                 <Text style={styles.itemTitle}>{exp.position} — {exp.company}</Text>
@@ -510,7 +510,7 @@ function AcademicTemplate({ data, config }: Props) {
         />
         {data.experiences.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>{t(lang, "experience")}</Text>
+            <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
             {data.experiences.map((exp) => (
               <View key={exp.id} style={{ marginBottom: 8 }}>
                 <Text style={styles.itemTitle}>{exp.position}, {exp.company}</Text>

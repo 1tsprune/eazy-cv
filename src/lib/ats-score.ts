@@ -1,3 +1,4 @@
+import type { CvProfile } from "./types";
 import { countSoftSkills, countTechnicalSkills } from "./skill-groups";
 import type { Language, ResumeData } from "./types";
 
@@ -9,7 +10,7 @@ export interface AtsCheck {
   tip: string;
 }
 
-const copy = {
+const baseCopy = {
   id: {
     name: { label: "Nama lengkap", tip: "Isi nama lengkap di bagian Informasi Pribadi" },
     title: { label: "Jabatan / title", tip: "Tambahkan posisi yang dilamar, misalnya \"Software Engineer\"" },
@@ -84,11 +85,89 @@ const copy = {
   },
 } as const;
 
+type ScoreField = { label: string; tip: string };
+
+const profileCopy: Record<
+  CvProfile,
+  Record<Language, Partial<Record<keyof (typeof baseCopy)["id"], ScoreField>>>
+> = {
+  professional: { id: {}, en: {} },
+  internship: {
+    id: {
+      title: {
+        label: "Jabatan / status",
+        tip: "Contoh: Mahasiswa S1 Informatika / Intern IT",
+      },
+      experience: {
+        label: "Pengalaman magang",
+        tip: "Tambahkan magang, proyek kampus, atau freelance",
+      },
+      keywords: {
+        label: "Poin kegiatan di magang",
+        tip: "Isi 2+ poin hasil kegiatan — pakai angka kalau bisa",
+      },
+    },
+    en: {
+      title: {
+        label: "Title / status",
+        tip: "e.g. CS Undergraduate / IT Intern",
+      },
+      experience: {
+        label: "Internship experience",
+        tip: "Add internship, campus project, or freelance work",
+      },
+      keywords: {
+        label: "Activity bullets",
+        tip: "Add 2+ bullets per role with results or numbers",
+      },
+    },
+  },
+  student: {
+    id: {
+      title: {
+        label: "Status pelajar",
+        tip: "Contoh: Pelajar SMA Kelas 12 / Mahasiswa",
+      },
+      experience: {
+        label: "Pengalaman & kegiatan",
+        tip: "Magang singkat, part-time, volunteer, atau proyek sekolah",
+      },
+      keywords: {
+        label: "Poin kegiatan",
+        tip: "Tulis pencapaian lomba, organisasi, atau proyek tim",
+      },
+      projects: {
+        label: "Proyek (disarankan)",
+        tip: "Proyek sekolah/kampus membuktikan skill kamu",
+      },
+    },
+    en: {
+      title: {
+        label: "Student status",
+        tip: "e.g. Grade 12 Student / Undergraduate",
+      },
+      experience: {
+        label: "Experience & activities",
+        tip: "Short internship, part-time, volunteer, or school projects",
+      },
+      keywords: {
+        label: "Activity bullets",
+        tip: "List competition, club, or team project achievements",
+      },
+      projects: {
+        label: "Projects (recommended)",
+        tip: "School or campus projects show your skills",
+      },
+    },
+  },
+};
+
 export function calculateAtsScore(
   data: ResumeData,
   locale: Language = "id",
+  profile: CvProfile = "professional",
 ): { score: number; checks: AtsCheck[] } {
-  const t = copy[locale];
+  const t = { ...baseCopy[locale], ...profileCopy[profile][locale] };
 
   const checks: AtsCheck[] = [
     {

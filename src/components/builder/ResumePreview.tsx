@@ -308,7 +308,9 @@ function PreviewSections({
   const order = config.sectionOrder;
   const sep = isAts ? " · " : " — ";
   const sectionLabel = (key: Parameters<typeof t>[1]) =>
-    isAts ? tAts(lang, key) : t(lang, key);
+    isAts
+      ? tAts(lang, key, config.cvProfile)
+      : t(lang, key, config.cvProfile);
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h2

@@ -14,7 +14,7 @@ export function AtsScorePanel() {
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const { score, checks } = useMemo(
-    () => calculateAtsScore(data, config.language),
+    () => calculateAtsScore(data, config.language, config.cvProfile),
     [data, config.language],
   );
   const passed = checks.filter((c) => c.passed).length;

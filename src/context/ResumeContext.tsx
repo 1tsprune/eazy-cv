@@ -10,7 +10,8 @@ import {
   type ReactNode,
 } from "react";
 import { createId, defaultResumeState } from "@/lib/default-data";
-import { sampleResumeState } from "@/lib/sample-data";
+import { getSampleResumeState } from "@/lib/sample-data";
+import type { CvProfile } from "@/lib/types";
 import {
   clearStorage,
   exportToJson,
@@ -74,7 +75,7 @@ interface ResumeContextValue {
   reset: () => void;
   saveJson: () => void;
   loadJson: (file: File) => Promise<void>;
-  loadSample: () => void;
+  loadSample: (profile?: CvProfile) => void;
   importLinkedIn: (data: ResumeData) => void;
   addCustomSection: () => void;
   updateCustomSection: (id: string, section: Partial<CustomSection>) => void;
@@ -520,8 +521,8 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
     setState(imported);
   }, []);
 
-  const loadSample = useCallback(() => {
-    setState(structuredClone(sampleResumeState));
+  const loadSample = useCallback((profile?: CvProfile) => {
+    setState(getSampleResumeState(profile ?? "professional"));
   }, []);
 
   const importLinkedIn = useCallback((data: ResumeData) => {

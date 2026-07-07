@@ -93,7 +93,7 @@ export default function CoverLetterDocument({
     signatureTitle: { fontSize: tk.xs, color: "#666" },
   });
 
-  const labels = getCoverLetterLabels(language);
+  const labels = getCoverLetterLabels(language, config.cvProfile);
   const paragraphs = splitLetterParagraphs(coverLetter.body);
   const name = getSenderName(personal, language);
   const contact = getSenderContactLines(personal);

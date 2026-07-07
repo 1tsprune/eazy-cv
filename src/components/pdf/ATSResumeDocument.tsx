@@ -57,7 +57,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
       data.experiences.length > 0 ? (
         <>
           <SectionHeading
-            title={tAts(language, "experience")}
+            title={tAts(language, "experience", config.cvProfile)}
             style={layout}
           />
           {data.experiences.map((exp) => (

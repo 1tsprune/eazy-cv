@@ -1,4 +1,5 @@
-import type { Language } from "./types";
+import { getExperienceLabel } from "./cv-profile";
+import type { CvProfile, Language } from "./types";
 
 const labels = {
   id: {
@@ -31,7 +32,14 @@ const labels = {
 
 export type I18nKey = keyof (typeof labels)["id"];
 
-export function t(lang: Language, key: I18nKey): string {
+export function t(
+  lang: Language,
+  key: I18nKey,
+  profile?: CvProfile,
+): string {
+  if (key === "experience" && profile) {
+    return getExperienceLabel(lang, profile, false);
+  }
   return labels[lang][key];
 }
 
@@ -51,8 +59,15 @@ const atsLabels: Partial<Record<I18nKey, { id: string; en: string }>> = {
 };
 
 /** ATS export / preview — section titles that match common one-page CVs */
-export function tAts(lang: Language, key: I18nKey): string {
+export function tAts(
+  lang: Language,
+  key: I18nKey,
+  profile?: CvProfile,
+): string {
+  if (key === "experience" && profile) {
+    return getExperienceLabel(lang, profile, true);
+  }
   const override = atsLabels[key];
   if (override) return override[lang];
-  return t(lang, key);
+  return t(lang, key, profile);
 }

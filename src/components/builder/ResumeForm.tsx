@@ -25,7 +25,15 @@ import { DeleteButton } from "@/components/ui/DeleteButton";
 import { SortableItemHeader } from "@/components/ui/SortableItemHeader";
 import { SortableList } from "@/components/ui/SortableList";
 import { PhotoUpload } from "@/components/ui/PhotoUpload";
+import {
+  CV_PROFILES,
+  getExperienceLabel,
+  getProfileLabel,
+  getProfileUiStrings,
+  getRecommendedSectionOrder,
+} from "@/lib/cv-profile";
 import { normalizeSkillGroups } from "@/lib/skill-groups";
+import type { CvProfile } from "@/lib/types";
 import { getUiDict } from "@/lib/ui-i18n";
 
 const ITEM_CARD =
@@ -74,6 +82,18 @@ export function ResumeForm() {
   } = useResume();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
+  const profileStrings = getProfileUiStrings(config.cvProfile, uiLocale);
+  const experienceTitle = getExperienceLabel(
+    config.language,
+    config.cvProfile,
+  );
+
+  const handleProfileChange = (profile: CvProfile) => {
+    updateConfig({
+      cvProfile: profile,
+      sectionOrder: getRecommendedSectionOrder(profile),
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -98,6 +118,30 @@ export function ResumeForm() {
         ) : (
           <p className="mb-4 text-[10px] text-zinc-400">{t.photoModernOnly}</p>
         )}
+        <div className="mb-4">
+          <span className="mb-1.5 block text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            {profileStrings.cvProfile}
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {CV_PROFILES.map((profile) => (
+              <button
+                key={profile}
+                type="button"
+                onClick={() => handleProfileChange(profile)}
+                className={`rounded-full px-4 py-2 text-xs font-bold transition ${
+                  config.cvProfile === profile
+                    ? "bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900"
+                    : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                }`}
+              >
+                {getProfileLabel(profile, uiLocale)}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-[10px] text-zinc-400">
+            {profileStrings.cvProfileHint}
+          </p>
+        </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <Input
             label={t.fullName}
@@ -109,7 +153,7 @@ export function ResumeForm() {
             label={t.jobTitle}
             value={data.personal.title}
             onChange={(e) => updatePersonal({ title: e.target.value })}
-            placeholder="Software Engineer"
+            placeholder={profileStrings.jobTitlePlaceholder}
           />
           <Input
             label={t.email}
@@ -155,17 +199,13 @@ export function ResumeForm() {
             rows={4}
             value={data.personal.summary}
             onChange={(e) => updatePersonal({ summary: e.target.value })}
-            placeholder={
-              uiLocale === "id"
-                ? "Tulis ringkasan singkat tentang kamu, keahlian, dan tujuan karir..."
-                : "Write a brief summary about yourself, skills, and career goals..."
-            }
+            placeholder={profileStrings.summaryPlaceholder}
           />
         </div>
       </SectionCard>
 
       <SectionCard
-        title={t.workExperience}
+        title={experienceTitle}
         icon={<Briefcase className="h-4 w-4" />}
         badge={`${data.experiences.length}`}
       >
@@ -188,6 +228,7 @@ export function ResumeForm() {
                   onChange={(e) =>
                     updateExperience(exp.id, { position: e.target.value })
                   }
+                  placeholder={profileStrings.experiencePositionPlaceholder}
                 />
                 <Input
                   label={t.company}
@@ -195,6 +236,7 @@ export function ResumeForm() {
                   onChange={(e) =>
                     updateExperience(exp.id, { company: e.target.value })
                   }
+                  placeholder={profileStrings.experienceCompanyPlaceholder}
                 />
                 <Input
                   label={t.location}
@@ -235,7 +277,7 @@ export function ResumeForm() {
                   }
                   className="rounded"
                 />
-                {t.currentlyWorking}
+                {profileStrings.currentlyWorking}
               </label>
               <div className="mt-3">
                 <TagInput
@@ -244,7 +286,7 @@ export function ResumeForm() {
                   onChange={(highlights) =>
                     updateExperience(exp.id, { highlights })
                   }
-                  placeholder="Meningkatkan performa 40%..."
+                  placeholder={profileStrings.highlightsPlaceholder}
                 />
               </div>
             </div>

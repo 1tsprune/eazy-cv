@@ -2,6 +2,9 @@ export type Language = "id" | "en";
 
 export type ExportMode = "modern" | "ats";
 
+/** Tujuan CV — mengubah label section & contoh data */
+export type CvProfile = "professional" | "internship" | "student";
+
 export type ModernTemplate =
   | "elegant"
   | "minimal"
@@ -151,6 +154,7 @@ export const DEFAULT_SECTION_ORDER: SectionKey[] = [
 export interface ResumeConfig {
   language: Language;
   exportMode: ExportMode;
+  cvProfile: CvProfile;
   template: ModernTemplate;
   colorTheme: ColorTheme;
   showPhoto: boolean;

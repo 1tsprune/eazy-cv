@@ -8,7 +8,12 @@ import { getUiDict } from "@/lib/ui-i18n";
 import { t as cvT } from "@/lib/i18n";
 import type { SectionKey } from "@/lib/types";
 
-function sectionLabel(key: SectionKey, cvLang: "id" | "en", uiLocale: "id" | "en") {
+function sectionLabel(
+  key: SectionKey,
+  cvLang: "id" | "en",
+  uiLocale: "id" | "en",
+  cvProfile: import("@/lib/types").CvProfile,
+) {
   if (key === "custom")
     return uiLocale === "id" ? "Section Custom" : "Custom Sections";
   if (key === "skills")
@@ -22,7 +27,7 @@ function sectionLabel(key: SectionKey, cvLang: "id" | "en", uiLocale: "id" | "en
     languages: "languages",
   };
   const k = map[key];
-  return k ? cvT(cvLang, k) : key;
+  return k ? cvT(cvLang, k, cvProfile) : key;
 }
 
 export function SectionOrderPanel() {
@@ -64,7 +69,7 @@ export function SectionOrderPanel() {
             }`}
           >
             <GripVertical className="h-3 w-3 text-zinc-400" />
-            {sectionLabel(key, config.language, uiLocale)}
+            {sectionLabel(key, config.language, uiLocale, config.cvProfile)}
           </div>
         ))}
       </div>

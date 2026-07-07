@@ -5,7 +5,7 @@ import { useResume } from "@/context/ResumeContext";
 import { calculateCompletion } from "@/lib/completion";
 
 export function CompletionBar() {
-  const { data } = useResume();
+  const { data, config } = useResume();
   const percent = useMemo(() => calculateCompletion(data), [data]);
 
   const color =
@@ -32,7 +32,11 @@ export function CompletionBar() {
           ? "CV kamu hampir siap! Download PDF dan mulai melamar."
           : percent >= 50
             ? "Bagus! Lengkapi pengalaman & skills untuk hasil maksimal."
-            : "Mulai isi data pribadi dan pengalaman kerja kamu."}
+            : config.cvProfile === "student"
+              ? "Mulai isi data pribadi, pendidikan, dan kegiatan kamu."
+              : config.cvProfile === "internship"
+                ? "Mulai isi data pribadi, pendidikan, dan pengalaman magang."
+                : "Mulai isi data pribadi dan pengalaman kerja kamu."}
       </p>
     </div>
   );

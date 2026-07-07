@@ -79,7 +79,8 @@ const dict = {
     importLinkedIn: "Import dari LinkedIn",
     importLinkedInHint:
       "Bukan login LinkedIn. Copy teks profil kamu atau upload file ZIP export LinkedIn. Semua diproses di browser — data tidak dikirim ke server.",
-    exampleCvHint: "Data fiktif untuk lihat tampilan. Ganti dengan info kamu.",
+    exampleCvHint:
+      "Contoh CV fiktif: kerja, magang, atau pelajar. Ganti dengan info kamu.",
     personalInfo: "Informasi Pribadi",
     fullName: "Nama Lengkap",
     jobTitle: "Jabatan / Title",
@@ -232,7 +233,8 @@ const dict = {
     importLinkedIn: "Import from LinkedIn",
     importLinkedInHint:
       "Not a LinkedIn login. Paste your profile text or upload a LinkedIn data export ZIP. Everything runs in your browser — nothing is sent to a server.",
-    exampleCvHint: "Fictional demo data. Replace with your own info.",
+    exampleCvHint:
+      "Sample CV: job, internship, or student. Replace with your own info.",
     personalInfo: "Personal Information",
     fullName: "Full Name",
     jobTitle: "Job Title",

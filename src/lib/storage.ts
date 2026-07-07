@@ -1,4 +1,5 @@
 import { APP } from "./config";
+import { DEFAULT_CV_PROFILE } from "./cv-profile";
 import { defaultResumeState } from "./default-data";
 import { normalizeLanguageLevel } from "./language-levels";
 import {
@@ -45,6 +46,7 @@ function normalizeState(parsed: ResumeState): ResumeState {
       ...defaultResumeState.config,
       ...parsed.config,
       sectionOrder: normalizeSectionOrder(parsed.config?.sectionOrder),
+      cvProfile: parsed.config?.cvProfile ?? DEFAULT_CV_PROFILE,
       fontFamily: normalizeFontFamily(parsed.config?.fontFamily),
       fontSize: parsed.config?.fontSize ?? DEFAULT_TYPOGRAPHY.fontSize,
       fontBold: parsed.config?.fontBold ?? DEFAULT_TYPOGRAPHY.fontBold,
