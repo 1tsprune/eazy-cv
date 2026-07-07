@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 import { ensurePdfSetup } from "@/lib/pdf-setup";
 
 export type PdfDownloadResult = {
-  method: "share" | "download";
+  method: "share" | "download" | "tab";
 };
 
 function safeFilename(name: string): string {
@@ -33,8 +33,25 @@ async function sharePdfOnIos(file: File, title: string): Promise<boolean> {
     if (err instanceof Error && err.name === "AbortError") {
       return true;
     }
-    throw err;
+    return false;
   }
+}
+
+/** Fallback when Web Share API is unavailable or user activation expired. */
+export function openPdfInNewTab(blob: Blob, filename: string): boolean {
+  const safeName = safeFilename(filename);
+  const url = URL.createObjectURL(blob);
+  const anchor = window.document.createElement("a");
+  anchor.href = url;
+  anchor.target = "_blank";
+  anchor.rel = "noopener noreferrer";
+  anchor.download = safeName;
+  anchor.style.display = "none";
+  window.document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  return true;
 }
 
 export async function deliverPdfBlob(
@@ -47,7 +64,8 @@ export async function deliverPdfBlob(
   if (isIosDevice()) {
     const shared = await sharePdfOnIos(file, safeName);
     if (shared) return { method: "share" };
-    throw new Error("ios_share_unavailable");
+    openPdfInNewTab(blob, safeName);
+    return { method: "tab" };
   }
 
   const url = URL.createObjectURL(blob);
@@ -64,11 +82,17 @@ export async function deliverPdfBlob(
   return { method: "download" };
 }
 
+export async function renderPdfBlob(
+  document: ReactElement<DocumentProps>,
+): Promise<Blob> {
+  ensurePdfSetup();
+  return pdf(document).toBlob();
+}
+
 export async function downloadPdfBlob(
   document: ReactElement<DocumentProps>,
   filename: string,
 ): Promise<PdfDownloadResult> {
-  ensurePdfSetup();
-  const blob = await pdf(document).toBlob();
+  const blob = await renderPdfBlob(document);
   return deliverPdfBlob(blob, filename);
 }

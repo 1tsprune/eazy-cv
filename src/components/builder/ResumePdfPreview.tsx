@@ -1,18 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useResume } from "@/context/ResumeContext";
 import { useResumePdf } from "@/context/ResumePdfContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
-import { PdfDownloadOverlay } from "./PdfDownloadOverlay";
-import { deliverPdfBlob } from "@/lib/pdf-download";
+import { PdfDownloadButton } from "./PdfDownloadButton";
 
 const PdfCanvasView = dynamic(() => import("./PdfCanvasView"), { ssr: false });
 
-const DOWNLOAD_SECONDS = 10;
 const PREVIEW_DEBOUNCE_MS = 300;
 
 interface Props {
@@ -21,19 +19,18 @@ interface Props {
 
 export function ResumePdfPreview({ showToolbar = true }: Props) {
   const { data, config } = useResume();
-  const { blob, loading, error, waitForBlob } = useResumePdf();
+  const { blob, loading, error } = useResumePdf();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(360);
   const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
-  const [downloading, setDownloading] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(DOWNLOAD_SECONDS);
-  const [progress, setProgress] = useState(0);
-  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // display width = container minus the p-3 padding (12px each side)
   const displayWidth = Math.max(0, Math.round(containerWidth) - 24);
+
+  const base = data.personal.fullName?.trim() || "cv";
+  const suffix = config.exportMode === "ats" ? "_ATS" : "_CV";
+  const filename = `${base}${suffix}.pdf`;
 
   useEffect(() => {
     const el = containerRef.current;
@@ -46,7 +43,6 @@ export function ResumePdfPreview({ showToolbar = true }: Props) {
     return () => ro.disconnect();
   }, []);
 
-  // Debounce the blob feeding the preview so rapid edits don't thrash pdf.js.
   useEffect(() => {
     if (!blob) return;
     const id = window.setTimeout(
@@ -56,57 +52,6 @@ export function ResumePdfPreview({ showToolbar = true }: Props) {
     return () => window.clearTimeout(id);
   }, [blob, previewBlob]);
 
-  const stopTicks = useCallback(() => {
-    if (tickRef.current) {
-      clearInterval(tickRef.current);
-      tickRef.current = null;
-    }
-  }, []);
-
-  const startDownloadOverlay = useCallback(() => {
-    const started = Date.now();
-    const totalMs = DOWNLOAD_SECONDS * 1000;
-    setDownloading(true);
-    setSecondsLeft(DOWNLOAD_SECONDS);
-    setProgress(0);
-    stopTicks();
-    tickRef.current = setInterval(() => {
-      const elapsed = Date.now() - started;
-      const ratio = Math.min(1, elapsed / totalMs);
-      setProgress(ratio * 100);
-      setSecondsLeft(Math.max(0, Math.ceil((totalMs - elapsed) / 1000)));
-    }, 50);
-  }, [stopTicks]);
-
-  const handleDownload = useCallback(async () => {
-    if (downloading || loading) return;
-    startDownloadOverlay();
-    try {
-      const [pdfBlob] = await Promise.all([
-        waitForBlob(),
-        new Promise<void>((resolve) =>
-          window.setTimeout(resolve, DOWNLOAD_SECONDS * 1000),
-        ),
-      ]);
-      const base = data.personal.fullName?.trim() || "cv";
-      const suffix = config.exportMode === "ats" ? "_ATS" : "_CV";
-      await deliverPdfBlob(pdfBlob, `${base}${suffix}.pdf`);
-    } finally {
-      stopTicks();
-      setProgress(100);
-      setSecondsLeft(0);
-      window.setTimeout(() => setDownloading(false), 280);
-    }
-  }, [
-    config.exportMode,
-    data.personal.fullName,
-    downloading,
-    loading,
-    startDownloadOverlay,
-    stopTicks,
-    waitForBlob,
-  ]);
-
   const showSpinner = !previewBlob && !error;
 
   return (
@@ -114,18 +59,13 @@ export function ResumePdfPreview({ showToolbar = true }: Props) {
       <div className="overflow-hidden rounded-lg bg-white text-zinc-900 shadow-lg ring-1 ring-black/5">
         {showToolbar ? (
           <div className="flex items-center justify-end gap-2 border-b border-zinc-200 px-3 py-2">
-            <button
-              type="button"
-              onClick={handleDownload}
-              disabled={downloading || loading || !!error}
-              className="rounded-lg bg-zinc-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-zinc-900 disabled:cursor-wait disabled:opacity-50"
-            >
-              {downloading
-                ? t.downloadProcessing(secondsLeft)
-                : loading
-                  ? t.downloadGenerating
-                  : t.download}
-            </button>
+            <PdfDownloadButton
+              filename={filename}
+              label={t.download}
+              fullName={data.personal.fullName}
+              className="w-auto"
+              disabled={loading || !!error}
+            />
           </div>
         ) : null}
 
@@ -133,15 +73,6 @@ export function ResumePdfPreview({ showToolbar = true }: Props) {
           ref={containerRef}
           className="relative overflow-hidden bg-[#e8eaed] p-3"
         >
-          {downloading ? (
-            <PdfDownloadOverlay
-              fullName={data.personal.fullName}
-              secondsLeft={secondsLeft}
-              progress={progress}
-              placement="absolute"
-            />
-          ) : null}
-
           {showSpinner ? (
             <div className="flex min-h-[420px] flex-col items-center justify-center gap-2">
               <Loader2 className="h-7 w-7 animate-spin text-slate-600" />

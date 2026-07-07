@@ -7,11 +7,16 @@ import {
   deliverPdfBlob,
   downloadPdfBlob,
   isIosDevice,
+  renderPdfBlob,
+  type PdfDownloadResult,
 } from "@/lib/pdf-download";
 import { useResumePdfOptional } from "@/context/ResumePdfContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
-import { PdfDownloadOverlay } from "./PdfDownloadOverlay";
+import {
+  PdfDownloadOverlay,
+  type PdfDownloadPhase,
+} from "./PdfDownloadOverlay";
 
 export const DOWNLOAD_MIN_SECONDS = 10;
 const DOWNLOAD_MIN_MS = DOWNLOAD_MIN_SECONDS * 1000;
@@ -25,6 +30,7 @@ type Props = {
   fullName?: string;
   className?: string;
   showDonationOverlay?: boolean;
+  disabled?: boolean;
 };
 
 function wait(ms: number): Promise<void> {
@@ -39,6 +45,7 @@ export function PdfDownloadButton({
   fullName = "",
   className = "",
   showDonationOverlay = true,
+  disabled = false,
 }: Props) {
   const resumePdf = useResumePdfOptional();
   const waitForBlob = waitForBlobProp ?? resumePdf?.waitForBlob;
@@ -49,6 +56,7 @@ export function PdfDownloadButton({
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(DOWNLOAD_MIN_SECONDS);
   const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<PdfDownloadPhase>("preparing");
   const ios = isIosDevice();
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -62,6 +70,7 @@ export function PdfDownloadButton({
   const startOverlay = useCallback(() => {
     const started = Date.now();
     setOverlayOpen(true);
+    setPhase("preparing");
     setSecondsLeft(DOWNLOAD_MIN_SECONDS);
     setProgress(0);
     stopTicks();
@@ -73,39 +82,59 @@ export function PdfDownloadButton({
     }, TICK_MS);
   }, [stopTicks]);
 
+  const applyResultHint = useCallback(
+    (result: PdfDownloadResult) => {
+      if (result.method === "share") {
+        setPhase("share");
+        setHint(t.downloadIosOverlayShare);
+      } else if (result.method === "tab") {
+        setPhase("tab");
+        setHint(t.downloadIosOverlayTab);
+      }
+    },
+    [t],
+  );
+
+  async function resolveBlob(): Promise<Blob> {
+    if (waitForBlob) return waitForBlob();
+    if (buildDocument) return renderPdfBlob(buildDocument());
+    throw new Error("no_pdf_source");
+  }
+
   async function handleClick() {
-    if (loading) return;
+    if (loading || disabled) return;
     if (!waitForBlob && !buildDocument) return;
 
     setLoading(true);
     setHint(null);
     if (showDonationOverlay) startOverlay();
 
+    const started = Date.now();
+
     try {
-      let result;
-      if (waitForBlob) {
+      if (ios) {
+        // Deliver as soon as the blob is ready — waiting 10s first breaks
+        // navigator.share() on iOS (user-gesture window expires).
+        const blob = await resolveBlob();
+        const result = await deliverPdfBlob(blob, filename);
+        applyResultHint(result);
+
+        const remaining = Math.max(0, DOWNLOAD_MIN_MS - (Date.now() - started));
+        if (remaining > 0) await wait(remaining);
+      } else if (waitForBlob) {
         const [blob] = await Promise.all([waitForBlob(), wait(DOWNLOAD_MIN_MS)]);
-        result = await deliverPdfBlob(blob, filename);
+        await deliverPdfBlob(blob, filename);
       } else if (buildDocument) {
-        const [, r] = await Promise.all([
+        await Promise.all([
           wait(DOWNLOAD_MIN_MS),
           downloadPdfBlob(buildDocument(), filename),
         ]);
-        result = r;
       }
-
-      if (result?.method === "share") {
-        setHint(t.downloadIosHint);
-        window.setTimeout(() => setHint(null), 6000);
-      }
-    } catch (err) {
-      setHint(
-        err instanceof Error && err.message === "ios_share_unavailable"
-          ? t.downloadIosUnsupported
-          : t.downloadFailed,
-      );
+    } catch {
+      setHint(t.downloadFailed);
     } finally {
       stopTicks();
+      setPhase("done");
       setProgress(100);
       setSecondsLeft(0);
       window.setTimeout(() => setOverlayOpen(false), 280);
@@ -120,15 +149,17 @@ export function PdfDownloadButton({
           fullName={fullName}
           secondsLeft={secondsLeft}
           progress={progress}
+          phase={phase}
+          ios={ios}
         />
       ) : null}
       <div className={`w-full ${className}`}>
         <button
           type="button"
           onClick={handleClick}
-          disabled={loading}
+          disabled={loading || disabled}
           className={`inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold transition ${
-            loading
+            loading || disabled
               ? "cursor-wait bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500"
               : "bg-slate-700 text-white hover:bg-slate-800"
           }`}

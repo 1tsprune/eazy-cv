@@ -68,7 +68,14 @@ const dict = {
     darkMode: "Dark mode",
     lightMode: "Light mode",
     download: "Download PDF",
-    downloadIosHint: 'Di iPhone: tap Download → pilih "Simpan ke File".',
+    downloadIosHint:
+      'Di iPhone: setelah tap Download, pilih "Simpan ke File" di sheet Share.',
+    downloadIosOverlayPreparing:
+      "Menyiapkan PDF… sheet Share akan muncul otomatis.",
+    downloadIosOverlayShare:
+      'Sheet Share terbuka — pilih "Simpan ke File" atau "Save to Files".',
+    downloadIosOverlayTab:
+      "PDF dibuka di tab baru. Tap ikon Share (↑) lalu Simpan ke File.",
     downloadIosUnsupported:
       "Browser ini tidak mendukung simpan PDF. Buka di Safari lalu coba lagi.",
     downloadFailed: "Gagal membuat PDF. Coba lagi.",
@@ -252,7 +259,14 @@ const dict = {
     darkMode: "Dark mode",
     lightMode: "Light mode",
     download: "Download PDF",
-    downloadIosHint: 'On iPhone: tap Download → choose "Save to Files".',
+    downloadIosHint:
+      'On iPhone: after tapping Download, choose "Save to Files" in the Share sheet.',
+    downloadIosOverlayPreparing:
+      "Preparing PDF… the Share sheet will open automatically.",
+    downloadIosOverlayShare:
+      'Share sheet open — choose "Save to Files".',
+    downloadIosOverlayTab:
+      "PDF opened in a new tab. Tap Share (↑) then Save to Files.",
     downloadIosUnsupported:
       "This browser cannot save PDFs. Open in Safari and try again.",
     downloadFailed: "Failed to generate PDF. Try again.",
