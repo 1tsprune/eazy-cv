@@ -45,10 +45,10 @@ export function WelcomeScreen({ onStart }: Props) {
         <div className="mx-auto mt-6 max-w-lg space-y-3">
           <p className="text-sm font-medium leading-relaxed text-zinc-500 dark:text-zinc-400 md:text-base">
             {t.welcomeLead}{" "}
-            <strong className="font-bold text-emerald-600">{t.welcomeFree}</strong>{" "}
+            <strong className="font-bold normal-case text-emerald-600">{t.welcomeFree}</strong>{" "}
             {t.welcomeMid}
             <br />
-            <strong className="font-bold text-rose-500">{t.welcomeForbidden}</strong>{" "}
+            <strong className="font-bold normal-case text-rose-500">{t.welcomeForbidden}</strong>{" "}
             {t.welcomeEnd}
             <br />
             <br />
