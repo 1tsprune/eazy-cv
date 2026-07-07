@@ -18,6 +18,16 @@ export const DONATION = {
   url: "https://trakteer.id/prunepruneprune/gift",
 } as const;
 
+/** Coinfest promo overlay — aktif sampai event selesai (22 Agt 2026 WITA). */
+export const COINFEST_PROMO = {
+  ticketUrl: "https://coinfest.asia/with/EkyJanuarta",
+  endsAt: "2026-08-22T00:00:00+08:00",
+} as const;
+
+export function isCoinfestPromoActive(now = new Date()): boolean {
+  return now < new Date(COINFEST_PROMO.endsAt);
+}
+
 export const SOCIAL = {
   twitter: {
     url: "https://x.com/itsprune",

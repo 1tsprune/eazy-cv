@@ -8,25 +8,28 @@ import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { TrakteerFab } from "@/components/TrakteerFab";
 import { ResumeProvider } from "@/context/ResumeContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { isCoinfestPromoActive } from "@/lib/config";
 
 function CVAppInner() {
-  const [showPromo, setShowPromo] = useState(true);
+  const [showPromo, setShowPromo] = useState(isCoinfestPromoActive);
   const [showWelcome, setShowWelcome] = useState(true);
 
-  if (showPromo) {
-    return <CoinfestPopup onClose={() => setShowPromo(false)} />;
-  }
-
-  if (showWelcome) {
-    return <WelcomeScreen onStart={() => setShowWelcome(false)} />;
-  }
-
   return (
-    <div className="min-h-dvh bg-zinc-50 dark:bg-zinc-950">
-      <AppHeader />
-      <BuilderWorkspace />
-      <TrakteerFab />
-    </div>
+    <>
+      {showPromo ? (
+        <CoinfestPopup onClose={() => setShowPromo(false)} />
+      ) : null}
+
+      {showWelcome ? (
+        <WelcomeScreen onStart={() => setShowWelcome(false)} />
+      ) : (
+        <div className="min-h-dvh bg-zinc-50 dark:bg-zinc-950">
+          <AppHeader />
+          <BuilderWorkspace />
+          <TrakteerFab />
+        </div>
+      )}
+    </>
   );
 }
 
