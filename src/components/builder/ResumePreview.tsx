@@ -483,6 +483,40 @@ function PreviewSections({
     );
   };
 
+  const ModernEntryHeader = ({
+    primary,
+    secondary,
+    period,
+  }: {
+    primary: string;
+    secondary?: string;
+    period: string;
+  }) => (
+    <div className="mb-1 flex items-baseline justify-between gap-2">
+      <p className="min-w-0 flex-1" style={{ marginBottom: 0 }}>
+        <span
+          style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}
+        >
+          {primary}
+        </span>
+        {secondary ? (
+          <span style={{ fontSize: ty.sizes.md, color: "#555555" }}>
+            {" "}
+            · {secondary}
+          </span>
+        ) : null}
+      </p>
+      {period ? (
+        <span
+          className="shrink-0 text-right text-zinc-400"
+          style={{ fontSize: ty.sizes.xs, maxWidth: "42%" }}
+        >
+          {period}
+        </span>
+      ) : null}
+    </div>
+  );
+
   const AtsBullet = ({ text }: { text: string }) => {
     if (!ats) return <p style={bodyText()}>{text}</p>;
     return (
@@ -522,21 +556,17 @@ function PreviewSections({
                   )}
                 />
               ) : (
-                <>
-                  <p className="font-semibold" style={titleText()}>
-                    {exp.position}
-                    {exp.company && `${sep}${exp.company}`}
-                  </p>
-                  <p style={metaText()}>
-                    {[
-                      exp.startDate,
-                      exp.endDate || (exp.current ? t(lang, "present") : ""),
-                      exp.location,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </>
+                <ModernEntryHeader
+                  primary={exp.position}
+                  secondary={exp.company}
+                  period={[
+                    exp.startDate,
+                    exp.endDate || (exp.current ? t(lang, "present") : ""),
+                    exp.location,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                />
               )}
               {exp.description && (
                 <p
@@ -582,23 +612,18 @@ function PreviewSections({
                   )}
                 />
               ) : (
-                <>
-                  <p style={titleText()}>
-                    {`${edu.degree}${edu.field ? ` — ${edu.field}` : ""}`}
-                  </p>
-                  <p style={metaText()}>
-                    {[
-                      edu.institution,
-                      edu.location,
-                      edu.startDate && edu.endDate
-                        ? `${edu.startDate} – ${edu.endDate}`
-                        : edu.startDate || edu.endDate,
-                      edu.gpa ? `${t(lang, "gpa")}: ${edu.gpa}` : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </>
+                <ModernEntryHeader
+                  primary={edu.degree}
+                  secondary={edu.institution}
+                  period={[
+                    edu.startDate && edu.endDate
+                      ? `${edu.startDate} – ${edu.endDate}`
+                      : edu.startDate || edu.endDate,
+                    edu.gpa ? `${t(lang, "gpa")}: ${edu.gpa}` : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                />
               )}
               {isAts && edu.description
                 ? splitAtsProseLines(edu.description).map((line, i) => (
@@ -631,21 +656,17 @@ function PreviewSections({
                   )}
                 />
               ) : (
-                <>
-                  <p style={titleText()}>
-                    {org.role}
-                    {org.name && `${sep}${org.name}`}
-                  </p>
-                  <p style={metaText()}>
-                    {[
-                      org.startDate,
-                      org.endDate || (org.current ? t(lang, "present") : ""),
-                      org.location,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </>
+                <ModernEntryHeader
+                  primary={org.role}
+                  secondary={org.name}
+                  period={[
+                    org.startDate,
+                    org.endDate || (org.current ? t(lang, "present") : ""),
+                    org.location,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                />
               )}
               {org.highlights.map((h, i) =>
                 isAts ? (
@@ -811,11 +832,23 @@ function PreviewSections({
                 ) : null}
               </div>
             ) : (
-              <div key={cert.id} style={entryGap()}>
-                <p style={titleText()}>{cert.name}</p>
-                <p style={metaText()}>
-                  {[cert.issuer, cert.date].filter(Boolean).join(" · ")}
-                </p>
+              <div
+                key={cert.id}
+                className="flex items-baseline justify-between gap-3"
+                style={entryGap()}
+              >
+                <span style={titleText()}>
+                  {cert.name}
+                  {cert.issuer ? ` — ${cert.issuer}` : ""}
+                </span>
+                {cert.date ? (
+                  <span
+                    className="shrink-0 text-zinc-400"
+                    style={{ fontSize: ty.sizes.xs }}
+                  >
+                    {cert.date}
+                  </span>
+                ) : null}
               </div>
             ),
           )}

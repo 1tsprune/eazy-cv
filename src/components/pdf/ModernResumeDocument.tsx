@@ -5,15 +5,15 @@ import {
   Text,
   View,
   StyleSheet,
+  type Styles,
 } from "@react-pdf/renderer";
 import { themeColors } from "@/lib/colors";
 import { t } from "@/lib/i18n";
 import {
+  MODERN_PAD_LG_PT,
+  MODERN_PAD_PT,
   PDF_MAIN_BOTTOM_PAD,
-  PDF_PAGE_PAD_LG,
-  PDF_PAGE_PAD_MD,
-  PDF_PAGE_PAD_SM,
-  PDF_PAGE_PAD_XS,
+  PDF_MAIN_WIDTH_PT,
   PDF_SIDEBAR_WIDTH_PT,
 } from "@/lib/pdf-modern-layout";
 import { shouldShowPhoto } from "@/lib/photo-display";
@@ -36,11 +36,21 @@ interface Props {
   config: ResumeConfig;
 }
 
-function ContactLine({ data }: { data: ResumeData }) {
+function ContactLine({
+  data,
+  style,
+  linkColor,
+}: {
+  data: ResumeData;
+  style?: Styles[keyof Styles];
+  linkColor?: string;
+}) {
   return (
     <PdfContactInline
       items={modernContactItems(data.personal)}
-      separator="  ·  "
+      separator=" · "
+      style={style}
+      linkColor={linkColor}
     />
   );
 }
@@ -99,8 +109,8 @@ function ProfessionalTemplate({ data, config }: Props) {
       bottom: 0,
       width: PDF_SIDEBAR_WIDTH_PT,
       backgroundColor: colors.primary,
-      color: "#fff",
-      padding: 22,
+      color: "#ffffff",
+      padding: MODERN_PAD_PT,
     },
     sidebarName: {
       fontSize: tk.lg,
@@ -116,11 +126,12 @@ function ProfessionalTemplate({ data, config }: Props) {
       marginTop: 12,
       marginBottom: 6,
     },
-    sidebarText: { fontSize: tk.sm, marginBottom: 3 },
+    sidebarText: { fontSize: tk.sm, marginBottom: 3, color: "#ffffff" },
     main: {
       marginLeft: PDF_SIDEBAR_WIDTH_PT,
-      paddingTop: PDF_PAGE_PAD_MD,
-      paddingHorizontal: PDF_PAGE_PAD_MD,
+      width: PDF_MAIN_WIDTH_PT,
+      paddingTop: MODERN_PAD_PT,
+      paddingHorizontal: MODERN_PAD_PT,
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
     },
     photo: {
@@ -149,27 +160,45 @@ function ProfessionalTemplate({ data, config }: Props) {
           ) : null}
           <Text style={styles.sidebarLabel}>Contact</Text>
           {personal.email ? (
-            <PdfContactItem value={personal.email} style={styles.sidebarText} />
+            <PdfContactItem
+              value={personal.email}
+              style={styles.sidebarText}
+              linkColor="#ffffff"
+            />
           ) : null}
           {personal.phone ? (
-            <PdfContactItem value={personal.phone} style={styles.sidebarText} />
+            <PdfContactItem
+              value={personal.phone}
+              style={styles.sidebarText}
+              linkColor="#ffffff"
+            />
           ) : null}
           {personal.linkedin ? (
             <PdfContactItem
               value={personal.linkedin}
               style={styles.sidebarText}
+              linkColor="#ffffff"
             />
           ) : null}
           {personal.github ? (
-            <PdfContactItem value={personal.github} style={styles.sidebarText} />
+            <PdfContactItem
+              value={personal.github}
+              style={styles.sidebarText}
+              linkColor="#ffffff"
+            />
           ) : null}
           {personal.website ? (
-            <PdfContactItem value={personal.website} style={styles.sidebarText} />
+            <PdfContactItem
+              value={personal.website}
+              style={styles.sidebarText}
+              linkColor="#ffffff"
+            />
           ) : null}
           {personal.location ? (
             <PdfContactItem
               value={personal.location}
               style={styles.sidebarText}
+              linkColor="#ffffff"
             />
           ) : null}
           <PdfSidebarSkills
@@ -190,7 +219,10 @@ function ProfessionalTemplate({ data, config }: Props) {
             data={data}
             config={config}
             styles={body}
-            options={{ skipSections: ["skills"] }}
+            options={{
+              skipSections: ["skills"],
+              experienceLayout: "row",
+            }}
           />
         </View>
       </Page>
@@ -207,7 +239,7 @@ function MinimalTemplate({ data, config }: Props) {
 
   const styles = StyleSheet.create({
     page: {
-      padding: PDF_PAGE_PAD_LG,
+      padding: MODERN_PAD_PT,
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
       fontFamily: tk.fontFamily,
       fontSize: tk.base,
@@ -220,8 +252,8 @@ function MinimalTemplate({ data, config }: Props) {
       letterSpacing: -0.5,
       marginBottom: 4,
     },
-    title: { fontSize: tk.md, color: "#888", marginBottom: 10 },
-    contact: { fontSize: tk.xs, color: "#999", marginBottom: 4 },
+    title: { fontSize: tk.md, color: "#888888", marginBottom: 8 },
+    contact: { fontSize: tk.xs, color: "#666666", marginBottom: 6 },
     headerRow: {
       flexDirection: "row",
       justifyContent: "space-between",
@@ -259,16 +291,21 @@ function MinimalTemplate({ data, config }: Props) {
             <PdfPhoto src={personal.photo} style={styles.photo} />
           ) : null}
         </View>
-        <View style={styles.contact}>
-          <ContactLine data={data} />
-        </View>
+        <ContactLine data={data} style={styles.contact} />
         {personal.summary ? (
           <>
             <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
-            <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
+            <Text style={{ fontSize: tk.sm, lineHeight: 1.5 }}>
+              {personal.summary}
+            </Text>
           </>
         ) : null}
-        <PdfModernBody data={data} config={config} styles={minimalBody} />
+        <PdfModernBody
+          data={data}
+          config={config}
+          styles={minimalBody}
+          options={{ experienceLayout: "row" }}
+        />
       </Page>
     </Document>
   );
@@ -284,7 +321,7 @@ function ElegantTemplate({ data, config }: Props) {
 
   const styles = StyleSheet.create({
     page: {
-      padding: PDF_PAGE_PAD_MD,
+      padding: MODERN_PAD_PT,
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
       fontFamily: tk.fontFamily,
       fontSize: tk.base,
@@ -307,7 +344,7 @@ function ElegantTemplate({ data, config }: Props) {
       marginBottom: 3,
     },
     title: { fontSize: tk.md, color: "#555", marginBottom: 8 },
-    contact: { fontSize: tk.sm, color: "#777" },
+    contact: { fontSize: tk.sm, color: "#666666", marginTop: 4 },
     photo: { width: 68, height: 68, borderRadius: 34, marginLeft: 12 },
     sectionTitle: {
       fontSize: tk.md,
@@ -337,9 +374,7 @@ function ElegantTemplate({ data, config }: Props) {
             {personal.title ? (
               <Text style={styles.title}>{personal.title}</Text>
             ) : null}
-            <View style={styles.contact}>
-              <ContactLine data={data} />
-            </View>
+            <ContactLine data={data} style={styles.contact} />
           </View>
           {showPhoto ? (
             <PdfPhoto src={personal.photo} style={styles.photo} />
@@ -348,14 +383,16 @@ function ElegantTemplate({ data, config }: Props) {
         {personal.summary ? (
           <>
             <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
-            <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
+            <Text style={{ fontSize: tk.sm, lineHeight: 1.5 }}>
+              {personal.summary}
+            </Text>
           </>
         ) : null}
         <PdfModernBody
           data={data}
           config={config}
           styles={elegantBody}
-          options={{ skillDisplay: "tags" }}
+          options={{ skillDisplay: "tags", experienceLayout: "row" }}
         />
       </Page>
     </Document>
@@ -379,17 +416,23 @@ function ExecutiveTemplate({ data, config }: Props) {
     },
     header: {
       backgroundColor: colors.primary,
-      color: "#fff",
-      padding: PDF_PAGE_PAD_MD,
-      marginBottom: 16,
+      color: "#ffffff",
+      padding: MODERN_PAD_PT,
+      marginBottom: 14,
       textAlign: "center",
       alignItems: "center",
     },
     name: { fontSize: tk.xl, fontFamily: tk.headingFamily, marginBottom: 4 },
-    title: { fontSize: tk.md, opacity: 0.9 },
-    contact: { fontSize: tk.xs, opacity: 0.75, marginTop: 8 },
+    title: { fontSize: tk.md, color: "#ffffff", opacity: 0.9 },
+    contact: {
+      fontSize: tk.xs,
+      color: "#ffffff",
+      opacity: 0.8,
+      marginTop: 8,
+    },
     body: {
-      paddingHorizontal: PDF_PAGE_PAD_MD,
+      paddingTop: MODERN_PAD_PT,
+      paddingHorizontal: MODERN_PAD_PT,
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
     },
     photo: {
@@ -428,22 +471,30 @@ function ExecutiveTemplate({ data, config }: Props) {
           {personal.title ? (
             <Text style={styles.title}>{personal.title}</Text>
           ) : null}
-          <View style={styles.contact}>
-            <ContactLine data={data} />
-          </View>
+          <ContactLine
+            data={data}
+            style={styles.contact}
+            linkColor="#ffffff"
+          />
         </View>
         <View style={styles.body}>
           {personal.summary ? (
             <>
               <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
-              <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
+              <Text style={{ fontSize: tk.sm, lineHeight: 1.5 }}>
+                {personal.summary}
+              </Text>
             </>
           ) : null}
           <PdfModernBody
             data={data}
             config={config}
             styles={execBody}
-            options={{ skillDisplay: "inline", experienceSep: " — " }}
+            options={{
+              skillDisplay: "inline",
+              experienceSep: " — ",
+              experienceLayout: "row",
+            }}
           />
         </View>
       </Page>
@@ -467,16 +518,21 @@ function CreativeTemplate({ data, config }: Props) {
     },
     topBar: {
       backgroundColor: colors.primary,
-      padding: PDF_PAGE_PAD_MD,
-      color: "#fff",
+      padding: MODERN_PAD_PT,
+      color: "#ffffff",
       flexDirection: "row",
       alignItems: "center",
     },
     name: { fontSize: tk.display, fontFamily: tk.headingFamily },
-    title: { fontSize: tk.md, marginTop: 4, opacity: 0.9 },
-    contact: { fontSize: tk.xs, marginTop: 8, opacity: 0.8 },
+    title: { fontSize: tk.md, marginTop: 4, color: "#ffffff", opacity: 0.9 },
+    contact: {
+      fontSize: tk.xs,
+      marginTop: 8,
+      color: "#ffffff",
+      opacity: 0.85,
+    },
     body: {
-      padding: PDF_PAGE_PAD_MD,
+      padding: MODERN_PAD_PT,
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
     },
     photo: {
@@ -523,23 +579,27 @@ function CreativeTemplate({ data, config }: Props) {
             {personal.title ? (
               <Text style={styles.title}>{personal.title}</Text>
             ) : null}
-            <View style={styles.contact}>
-              <ContactLine data={data} />
-            </View>
+            <ContactLine
+              data={data}
+              style={styles.contact}
+              linkColor="#ffffff"
+            />
           </View>
         </View>
         <View style={styles.body}>
           {personal.summary ? (
             <>
               <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
-              <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
+              <Text style={{ fontSize: tk.sm, lineHeight: 1.5 }}>
+                {personal.summary}
+              </Text>
             </>
           ) : null}
           <PdfModernBody
             data={data}
             config={config}
             styles={creativeBody}
-            options={{ skillDisplay: "tags" }}
+            options={{ skillDisplay: "tags", experienceLayout: "row" }}
           />
         </View>
       </Page>
@@ -557,7 +617,7 @@ function CompactTemplate({ data, config }: Props) {
 
   const styles = StyleSheet.create({
     page: {
-      padding: PDF_PAGE_PAD_XS,
+      padding: MODERN_PAD_PT,
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
       fontFamily: tk.fontFamily,
       fontSize: tk.base,
@@ -619,13 +679,11 @@ function CompactTemplate({ data, config }: Props) {
             ) : null}
           </View>
         </View>
-        <View style={styles.contact}>
-          <ContactLine data={data} />
-        </View>
+        <ContactLine data={data} style={styles.contact} />
         {personal.summary ? (
           <>
             <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
-            <Text>{personal.summary}</Text>
+            <Text style={{ lineHeight: 1.45 }}>{personal.summary}</Text>
           </>
         ) : null}
         <PdfModernBody
@@ -636,6 +694,7 @@ function CompactTemplate({ data, config }: Props) {
             educationVariant: "compact",
             skillDisplay: "inline",
             experienceSep: " — ",
+            experienceLayout: "row",
           }}
         />
       </Page>
@@ -653,7 +712,7 @@ function AcademicTemplate({ data, config }: Props) {
 
   const styles = StyleSheet.create({
     page: {
-      padding: PDF_PAGE_PAD_LG,
+      padding: MODERN_PAD_LG_PT,
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
       fontFamily: tk.fontFamily,
       fontSize: tk.base,
@@ -703,21 +762,24 @@ function AcademicTemplate({ data, config }: Props) {
           {personal.title ? (
             <Text style={styles.title}>{personal.title}</Text>
           ) : null}
-          <View style={styles.contact}>
-            <ContactLine data={data} />
-          </View>
+          <ContactLine data={data} style={styles.contact} />
         </View>
         {personal.summary ? (
           <>
             <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
-            <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
+            <Text style={{ fontSize: tk.sm, lineHeight: 1.5 }}>
+              {personal.summary}
+            </Text>
           </>
         ) : null}
         <PdfModernBody
           data={data}
           config={config}
           styles={academicBody}
-          options={{ educationVariant: "academic" }}
+          options={{
+            educationVariant: "academic",
+            experienceLayout: "row",
+          }}
         />
       </Page>
     </Document>
