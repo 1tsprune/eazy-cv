@@ -21,7 +21,7 @@ export function PDFDownload() {
     if (deferredConfig.exportMode === "ats") {
       const clean = sanitizeResumeData(deferredData);
       return (
-        <ATSResumeDocument data={clean} language={deferredConfig.language} />
+        <ATSResumeDocument data={clean} config={deferredConfig} />
       );
     }
     return (

@@ -14,17 +14,18 @@ export function CoverLetterPDFDownload() {
   const t = getUiDict(uiLocale);
   const deferredPersonal = useDeferredValue(data.personal);
   const deferredCover = useDeferredValue(coverLetter);
-  const deferredLang = useDeferredValue(config.language);
+  const deferredConfig = useDeferredValue(config);
 
   const pdfDocument = useMemo(
     () => (
       <CoverLetterDocument
         personal={deferredPersonal}
         coverLetter={deferredCover}
-        language={deferredLang}
+        language={deferredConfig.language}
+        config={deferredConfig}
       />
     ),
-    [deferredPersonal, deferredCover, deferredLang],
+    [deferredPersonal, deferredCover, deferredConfig],
   );
 
   const filename = `${deferredPersonal.fullName || "cover-letter"}-surat-lamaran.pdf`;

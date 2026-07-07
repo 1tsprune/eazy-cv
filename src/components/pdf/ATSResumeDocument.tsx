@@ -6,96 +6,101 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import { t } from "@/lib/i18n";
-import type { Language, ResumeData } from "@/lib/types";
+import { getPdfSheetTokens } from "@/lib/typography";
+import type { ResumeConfig, ResumeData } from "@/lib/types";
 import { PdfOrganizations } from "./pdf-blocks";
-
-const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1.4,
-    color: "#111",
-  },
-  name: {
-    fontSize: 20,
-    fontFamily: "Helvetica-Bold",
-    marginBottom: 2,
-  },
-  title: {
-    fontSize: 11,
-    color: "#444",
-    marginBottom: 8,
-  },
-  contact: {
-    fontSize: 9,
-    color: "#555",
-    marginBottom: 2,
-  },
-  sectionTitle: {
-    fontSize: 11,
-    fontFamily: "Helvetica-Bold",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    paddingBottom: 3,
-    marginTop: 12,
-    marginBottom: 6,
-  },
-  itemTitle: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 10,
-  },
-  itemSub: {
-    fontSize: 9,
-    color: "#555",
-    marginBottom: 2,
-  },
-  bullet: {
-    fontSize: 9,
-    marginLeft: 8,
-    marginBottom: 2,
-  },
-  skills: {
-    fontSize: 9,
-    lineHeight: 1.5,
-  },
-});
 
 interface Props {
   data: ResumeData;
-  language: Language;
+  config: ResumeConfig;
 }
 
-export default function ATSResumeDocument({ data, language }: Props) {
+export default function ATSResumeDocument({ data, config }: Props) {
+  const tk = getPdfSheetTokens(config);
+  const language = config.language;
+
+  const styles = StyleSheet.create({
+    page: {
+      padding: 40,
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+      color: "#111",
+    },
+    name: {
+      fontSize: tk.xl,
+      fontFamily: tk.headingFamily,
+      marginBottom: 2,
+    },
+    title: {
+      fontSize: tk.md,
+      color: "#444",
+      marginBottom: 8,
+    },
+    contact: {
+      fontSize: tk.sm,
+      color: "#555",
+      marginBottom: 16,
+    },
+    sectionTitle: {
+      fontSize: tk.md,
+      fontFamily: tk.headingFamily,
+      textTransform: "uppercase",
+      letterSpacing: 1,
+      borderBottomWidth: 1,
+      borderBottomColor: "#ccc",
+      paddingBottom: 3,
+      marginTop: 12,
+      marginBottom: 6,
+    },
+    itemTitle: {
+      fontFamily: tk.headingFamily,
+      fontSize: tk.md,
+    },
+    itemSub: {
+      fontSize: tk.sm,
+      color: "#555",
+      marginBottom: 2,
+    },
+    bullet: {
+      fontSize: tk.sm,
+      marginLeft: 8,
+      marginBottom: 2,
+    },
+    skills: {
+      fontSize: tk.sm,
+      lineHeight: tk.lh,
+    },
+    body: {
+      fontSize: tk.sm,
+      textAlign: "justify",
+      lineHeight: tk.lh,
+    },
+  });
+
   const { personal } = data;
-  const contactLines = [
+  const contact = [
     personal.email,
     personal.phone,
     personal.location,
     personal.linkedin,
     personal.github,
     personal.website,
-  ].filter(Boolean);
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
         {personal.title && <Text style={styles.title}>{personal.title}</Text>}
-        {contactLines.map((line) => (
-          <Text key={line} style={styles.contact}>
-            {line}
-          </Text>
-        ))}
+        {contact ? <Text style={styles.contact}>{contact}</Text> : null}
 
         {personal.summary && (
           <>
             <Text style={styles.sectionTitle}>{t(language, "summary")}</Text>
-            <Text style={{ fontSize: 9, textAlign: "justify", lineHeight: 1.5 }}>
-              {personal.summary}
-            </Text>
+            <Text style={styles.body}>{personal.summary}</Text>
           </>
         )}
 
@@ -114,14 +119,7 @@ export default function ATSResumeDocument({ data, language }: Props) {
                     .join(" · ")}
                 </Text>
                 {exp.description && (
-                  <Text
-                    style={{
-                      fontSize: 9,
-                      marginBottom: 2,
-                      textAlign: "justify",
-                      lineHeight: 1.45,
-                    }}
-                  >
+                  <Text style={{ ...styles.body, marginBottom: 2 }}>
                     {exp.description}
                   </Text>
                 )}
@@ -157,7 +155,7 @@ export default function ATSResumeDocument({ data, language }: Props) {
                   {edu.gpa ? ` · ${t(language, "gpa")}: ${edu.gpa}` : ""}
                 </Text>
                 {edu.description && (
-                  <Text style={{ fontSize: 9 }}>{edu.description}</Text>
+                  <Text style={{ fontSize: tk.sm }}>{edu.description}</Text>
                 )}
               </View>
             ))}
@@ -194,7 +192,7 @@ export default function ATSResumeDocument({ data, language }: Props) {
               {t(language, "certifications")}
             </Text>
             {data.certifications.map((cert) => (
-              <Text key={cert.id} style={{ fontSize: 9, marginBottom: 3 }}>
+              <Text key={cert.id} style={{ fontSize: tk.sm, marginBottom: 3 }}>
                 {cert.name}
                 {cert.issuer ? ` — ${cert.issuer}` : ""}
                 {cert.date ? ` (${cert.date})` : ""}

@@ -19,6 +19,9 @@ export type ColorTheme =
   | "amber"
   | "violet";
 
+export type CvFontFamily = "outfit" | "inter" | "serif" | "mono";
+export type CvFontSize = "sm" | "md" | "lg";
+
 export interface PersonalInfo {
   fullName: string;
   title: string;
@@ -138,6 +141,9 @@ export interface ResumeConfig {
   colorTheme: ColorTheme;
   showPhoto: boolean;
   sectionOrder: SectionKey[];
+  fontFamily: CvFontFamily;
+  fontSize: CvFontSize;
+  fontBold: boolean;
 }
 
 export interface CoverLetterData {

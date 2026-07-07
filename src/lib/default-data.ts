@@ -1,4 +1,5 @@
 import { defaultCoverLetter } from "./cover-letter";
+import { DEFAULT_TYPOGRAPHY } from "./typography";
 import type { ResumeData, ResumeState } from "./types";
 import { DEFAULT_SECTION_ORDER } from "./types";
 
@@ -35,6 +36,7 @@ export const defaultResumeState: ResumeState = {
     colorTheme: "indigo",
     showPhoto: false,
     sectionOrder: [...DEFAULT_SECTION_ORDER],
+    ...DEFAULT_TYPOGRAPHY,
   },
   coverLetter: defaultCoverLetter("id"),
 };

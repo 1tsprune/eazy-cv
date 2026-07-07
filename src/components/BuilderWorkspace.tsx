@@ -125,6 +125,7 @@ export function BuilderWorkspace() {
                     personal={data.personal}
                     coverLetter={coverLetter}
                     language={config.language}
+                    config={config}
                   />
                 </div>
               </div>
@@ -213,6 +214,7 @@ export function BuilderWorkspace() {
                   personal={data.personal}
                   coverLetter={coverLetter}
                   language={config.language}
+                  config={config}
                 />
               </div>
             </div>

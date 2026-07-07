@@ -1,5 +1,6 @@
 import { createId } from "./default-data";
 import { defaultCoverLetter } from "./cover-letter";
+import { DEFAULT_TYPOGRAPHY } from "./typography";
 import type { ResumeState } from "./types";
 
 /** Data fiktif untuk demo — bukan orang nyata */
@@ -120,6 +121,7 @@ export const sampleResumeState: ResumeState = {
     template: "elegant",
     colorTheme: "indigo",
     showPhoto: false,
+    ...DEFAULT_TYPOGRAPHY,
     sectionOrder: [
       "experience",
       "education",

@@ -1,5 +1,6 @@
 import { APP } from "./config";
 import { defaultResumeState } from "./default-data";
+import { DEFAULT_TYPOGRAPHY } from "./typography";
 import { DEFAULT_SECTION_ORDER, type ResumeState, type SectionKey } from "./types";
 
 const STORAGE_KEY = `${APP.slug}-resume-v1`;
@@ -26,6 +27,9 @@ function normalizeState(parsed: ResumeState): ResumeState {
       ...defaultResumeState.config,
       ...parsed.config,
       sectionOrder: normalizeSectionOrder(parsed.config?.sectionOrder),
+      fontFamily: parsed.config?.fontFamily ?? DEFAULT_TYPOGRAPHY.fontFamily,
+      fontSize: parsed.config?.fontSize ?? DEFAULT_TYPOGRAPHY.fontSize,
+      fontBold: parsed.config?.fontBold ?? DEFAULT_TYPOGRAPHY.fontBold,
     },
     coverLetter: {
       ...defaultResumeState.coverLetter,

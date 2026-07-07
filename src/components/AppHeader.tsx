@@ -19,7 +19,17 @@ import { themeColors } from "@/lib/colors";
 import { getUiDict } from "@/lib/ui-i18n";
 import { useTheme } from "@/context/ThemeContext";
 import { useResume } from "@/context/ResumeContext";
-import type { ColorTheme, ExportMode, ModernTemplate } from "@/lib/types";
+import {
+  CV_FONT_FAMILIES,
+  CV_FONT_SIZES,
+} from "@/lib/typography";
+import type { ColorTheme, CvFontFamily, CvFontSize, ExportMode, ModernTemplate } from "@/lib/types";
+
+const FONT_SIZE_LABEL_KEYS = {
+  sm: "fontSizeSmall",
+  md: "fontSizeMedium",
+  lg: "fontSizeLarge",
+} as const satisfies Record<CvFontSize, keyof ReturnType<typeof getUiDict>>;
 import dynamic from "next/dynamic";
 
 const PDFDownload = dynamic(
@@ -310,6 +320,78 @@ export function AppHeader() {
                     )}
                   </>
                 )}
+
+                <p className="mb-2 mt-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  {t.fontFamily}
+                </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {CV_FONT_FAMILIES.map((font) => (
+                    <button
+                      key={font.id}
+                      type="button"
+                      onClick={() =>
+                        updateConfig({ fontFamily: font.id as CvFontFamily })
+                      }
+                      className={`rounded-lg px-2 py-2 text-left text-[11px] font-semibold ${
+                        config.fontFamily === font.id
+                          ? "bg-indigo-600 text-white"
+                          : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                      }`}
+                    >
+                      {font.label}
+                    </button>
+                  ))}
+                </div>
+
+                <p className="mb-2 mt-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  {t.fontSize}
+                </p>
+                <div className="flex gap-2">
+                  {CV_FONT_SIZES.map((size) => (
+                    <button
+                      key={size.id}
+                      type="button"
+                      onClick={() =>
+                        updateConfig({ fontSize: size.id as CvFontSize })
+                      }
+                      className={`flex-1 rounded-xl py-2 text-xs font-bold ${
+                        config.fontSize === size.id
+                          ? "bg-indigo-600 text-white"
+                          : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                      }`}
+                    >
+                      {t[FONT_SIZE_LABEL_KEYS[size.id]]}
+                    </button>
+                  ))}
+                </div>
+
+                <p className="mb-2 mt-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  {t.fontBold}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => updateConfig({ fontBold: false })}
+                    className={`flex-1 rounded-xl py-2 text-xs font-bold ${
+                      !config.fontBold
+                        ? "bg-indigo-600 text-white"
+                        : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                    }`}
+                  >
+                    {t.fontBoldOff}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateConfig({ fontBold: true })}
+                    className={`flex-1 rounded-xl py-2 text-xs font-bold ${
+                      config.fontBold
+                        ? "bg-indigo-600 text-white"
+                        : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                    }`}
+                  >
+                    {t.fontBoldOn}
+                  </button>
+                </div>
 
                 <div className="mt-4 border-t border-zinc-100 pt-4 dark:border-zinc-800">
                   <PDFDownload />

@@ -11,82 +11,87 @@ import {
   getSenderName,
   splitLetterParagraphs,
 } from "@/lib/cover-letter-layout";
-import type { CoverLetterData, Language, PersonalInfo } from "@/lib/types";
+import { getPdfSheetTokens } from "@/lib/typography";
+import type { CoverLetterData, Language, PersonalInfo, ResumeConfig } from "@/lib/types";
 
 interface Props {
   personal: PersonalInfo;
   coverLetter: CoverLetterData;
   language: Language;
+  config: ResumeConfig;
 }
-
-const styles = StyleSheet.create({
-  page: {
-    padding: 48,
-    fontFamily: "Helvetica",
-    fontSize: 11,
-    lineHeight: 1.6,
-    color: "#111",
-  },
-  date: {
-    marginBottom: 20,
-    fontSize: 10,
-    color: "#666",
-    textAlign: "right",
-  },
-  senderBlock: {
-    marginBottom: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  senderName: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 12,
-    marginBottom: 2,
-  },
-  senderTitle: { fontSize: 10, color: "#555", marginBottom: 6 },
-  senderLine: { fontSize: 9, color: "#666", marginBottom: 2 },
-  recipientLabel: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 10,
-    marginBottom: 4,
-  },
-  recipient: { marginBottom: 16, fontSize: 10, lineHeight: 1.5 },
-  recipientMuted: { fontSize: 9, color: "#777", marginTop: 4 },
-  subject: {
-    fontFamily: "Helvetica-Bold",
-    marginBottom: 14,
-    fontSize: 10,
-  },
-  opening: { marginBottom: 12, textAlign: "justify" },
-  paragraph: {
-    marginBottom: 10,
-    textAlign: "justify",
-    fontSize: 11,
-    lineHeight: 1.65,
-  },
-  formalClosing: {
-    marginTop: 8,
-    marginBottom: 16,
-    textAlign: "justify",
-    fontSize: 11,
-    lineHeight: 1.65,
-  },
-  closingBlock: { marginTop: 12 },
-  closing: { marginBottom: 40, textAlign: "justify" },
-  signatureName: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 12,
-    marginBottom: 2,
-  },
-  signatureTitle: { fontSize: 9, color: "#666" },
-});
 
 export default function CoverLetterDocument({
   personal,
   coverLetter,
   language,
+  config,
 }: Props) {
+  const tk = getPdfSheetTokens(config);
+
+  const styles = StyleSheet.create({
+    page: {
+      padding: 48,
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+      color: "#111",
+    },
+    date: {
+      marginBottom: 20,
+      fontSize: tk.sm,
+      color: "#666",
+      textAlign: "right",
+    },
+    senderBlock: {
+      marginBottom: 20,
+      paddingBottom: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: "#f0f0f0",
+    },
+    senderName: {
+      fontFamily: tk.headingFamily,
+      fontSize: tk.md,
+      marginBottom: 2,
+    },
+    senderTitle: { fontSize: tk.sm, color: "#555", marginBottom: 6 },
+    senderLine: { fontSize: tk.xs, color: "#666", marginBottom: 2 },
+    recipientLabel: {
+      fontFamily: tk.headingFamily,
+      fontSize: tk.sm,
+      marginBottom: 4,
+    },
+    recipient: { marginBottom: 16, fontSize: tk.sm, lineHeight: tk.lh },
+    recipientMuted: { fontSize: tk.xs, color: "#777", marginTop: 4 },
+    subject: {
+      fontFamily: tk.headingFamily,
+      marginBottom: 14,
+      fontSize: tk.sm,
+    },
+    opening: { marginBottom: 12, textAlign: "justify" },
+    paragraph: {
+      marginBottom: 10,
+      textAlign: "justify",
+      fontSize: tk.base,
+      lineHeight: tk.lh + 0.1,
+    },
+    formalClosing: {
+      marginTop: 8,
+      marginBottom: 16,
+      textAlign: "justify",
+      fontSize: tk.base,
+      lineHeight: tk.lh + 0.1,
+    },
+    closingBlock: { marginTop: 12 },
+    closing: { marginBottom: 40, textAlign: "justify" },
+    signatureName: {
+      fontFamily: tk.headingFamily,
+      fontSize: tk.md,
+      marginBottom: 2,
+    },
+    signatureTitle: { fontSize: tk.xs, color: "#666" },
+  });
+
   const labels = getCoverLetterLabels(language);
   const paragraphs = splitLetterParagraphs(coverLetter.body);
   const name = getSenderName(personal, language);

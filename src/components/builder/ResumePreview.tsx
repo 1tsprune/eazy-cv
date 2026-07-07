@@ -4,6 +4,7 @@ import { PreviewPhoto } from "@/components/builder/PreviewPhoto";
 import { themeColors } from "@/lib/colors";
 import { PROSE_JUSTIFY } from "@/lib/document-layout";
 import { t } from "@/lib/i18n";
+import { getPreviewTypography } from "@/lib/typography";
 import { shouldShowPhoto } from "@/lib/photo-display";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
 
@@ -12,20 +13,20 @@ interface Props {
   config: ResumeConfig;
 }
 
-function ContactLines({
+function ContactRow({
   items,
   className = "",
+  style,
 }: {
   items: string[];
   className?: string;
+  style?: React.CSSProperties;
 }) {
   if (!items.length) return null;
   return (
-    <div className={`space-y-0.5 ${className}`}>
-      {items.map((item) => (
-        <p key={item}>{item}</p>
-      ))}
-    </div>
+    <p className={className} style={style}>
+      {items.join(" · ")}
+    </p>
   );
 }
 
@@ -43,12 +44,19 @@ export function ResumePreview({ data, config }: Props) {
     data.personal.linkedin,
   ].filter(Boolean);
 
+  const ty = getPreviewTypography(config);
+  const docStyle = {
+    minHeight: "297mm",
+    fontFamily: ty.fontFamily,
+    fontSize: ty.sizes.base,
+    lineHeight: ty.lineHeight,
+    fontWeight: ty.fontWeight,
+  } as const;
+
   return (
     <div
-      className={`mx-auto w-full max-w-[210mm] origin-top bg-white text-zinc-900 shadow-2xl ${
-        isAts ? "font-sans" : ""
-      }`}
-      style={{ minHeight: "297mm", fontSize: "11px", lineHeight: 1.5 }}
+      className="mx-auto w-full max-w-[210mm] origin-top bg-white text-zinc-900 shadow-2xl"
+      style={docStyle}
     >
       {config.template === "executive" && !isAts ? (
         <div>
@@ -65,19 +73,22 @@ export function ResumePreview({ data, config }: Props) {
                 />
               </div>
             )}
-            <h1 className="text-2xl font-bold">
+            <h1 style={{ fontSize: ty.sizes.xl, fontWeight: ty.headingWeight }}>
               {data.personal.fullName || "Nama Kamu"}
             </h1>
             {data.personal.title && (
-              <p className="mt-1 text-sm opacity-90">{data.personal.title}</p>
+              <p className="mt-1 opacity-90" style={{ fontSize: ty.sizes.sm }}>
+                {data.personal.title}
+              </p>
             )}
-            <ContactLines
+            <ContactRow
               items={contact}
-              className="mt-3 text-[10px] opacity-75"
+              className="mt-3 opacity-75"
+              style={{ fontSize: ty.sizes.xs }}
             />
           </header>
           <div className="p-8">
-            <PreviewSections data={data} config={config} colors={colors} />
+            <PreviewSections data={data} config={config} colors={colors} ty={ty} />
           </div>
         </div>
       ) : config.template === "creative" && !isAts ? (
@@ -94,45 +105,54 @@ export function ResumePreview({ data, config }: Props) {
               />
             )}
             <div>
-            <h1 className="text-3xl font-bold">
+            <h1 style={{ fontSize: ty.sizes.display, fontWeight: ty.headingWeight }}>
               {data.personal.fullName || "Nama Kamu"}
             </h1>
             {data.personal.title && (
-              <p className="mt-1 text-sm opacity-90">{data.personal.title}</p>
+              <p className="mt-1 opacity-90" style={{ fontSize: ty.sizes.sm }}>
+                {data.personal.title}
+              </p>
             )}
-            <ContactLines
+            <ContactRow
               items={contact}
-              className="mt-3 text-[10px] opacity-75"
+              className="mt-3 opacity-75"
+              style={{ fontSize: ty.sizes.xs }}
             />
             </div>
           </header>
           <div className="p-8">
-            <PreviewSections data={data} config={config} colors={colors} />
+            <PreviewSections data={data} config={config} colors={colors} ty={ty} />
           </div>
         </div>
       ) : config.template === "compact" && !isAts ? (
-        <div className="p-6" style={{ fontSize: "10px", lineHeight: 1.35 }}>
+        <div className="p-6" style={{ fontSize: ty.sizes.sm, lineHeight: ty.lineHeight }}>
           <div className="flex items-center gap-3">
             {showPhoto && (
               <PreviewPhoto src={photo} size={48} rounded="lg" className="shrink-0" />
             )}
             <div>
           <h1
-            className="text-lg font-bold"
-            style={{ color: colors.primary }}
+            style={{
+              color: colors.primary,
+              fontSize: ty.sizes.lg,
+              fontWeight: ty.headingWeight,
+            }}
           >
             {data.personal.fullName || "Nama Kamu"}
           </h1>
           {data.personal.title && (
-            <p className="text-[10px] text-zinc-500">{data.personal.title}</p>
+            <p className="text-zinc-500" style={{ fontSize: ty.sizes.xs }}>
+              {data.personal.title}
+            </p>
           )}
             </div>
           </div>
-          <ContactLines
+          <ContactRow
             items={contact}
-            className="mt-1 border-b border-zinc-200 pb-2 text-[9px] text-zinc-400"
+            className="mt-1 border-b border-zinc-200 pb-2 text-zinc-400"
+            style={{ fontSize: ty.sizes.xs }}
           />
-          <PreviewSections data={data} config={config} colors={colors} />
+          <PreviewSections data={data} config={config} colors={colors} ty={ty} />
         </div>
       ) : config.template === "academic" && !isAts ? (
         <div className="p-10">
@@ -142,20 +162,21 @@ export function ResumePreview({ data, config }: Props) {
                 <PreviewPhoto src={photo} size={72} rounded="lg" />
               </div>
             )}
-            <h1 className="text-xl font-bold">
+            <h1 style={{ fontSize: ty.sizes.xl, fontWeight: ty.headingWeight }}>
               {data.personal.fullName || "Nama Kamu"}
             </h1>
             {data.personal.title && (
-              <p className="mt-1 text-xs text-zinc-600">
+              <p className="mt-1 text-zinc-600" style={{ fontSize: ty.sizes.sm }}>
                 {data.personal.title}
               </p>
             )}
-            <ContactLines
+            <ContactRow
               items={contact}
-              className="mt-2 text-[10px] text-zinc-400"
+              className="mt-2 text-zinc-400"
+              style={{ fontSize: ty.sizes.xs }}
             />
           </header>
-          <PreviewSections data={data} config={config} colors={colors} />
+          <PreviewSections data={data} config={config} colors={colors} ty={ty} />
         </div>
       ) : config.template === "professional" && !isAts ? (
         <div className="flex min-h-[297mm]">
@@ -172,23 +193,31 @@ export function ResumePreview({ data, config }: Props) {
                 />
               </div>
             )}
-            <h1 className="text-xl font-bold leading-tight">
+            <h1
+              className="leading-tight"
+              style={{ fontSize: ty.sizes.lg, fontWeight: ty.headingWeight }}
+            >
               {data.personal.fullName || "Nama Kamu"}
             </h1>
             {data.personal.title && (
-              <p className="mt-1 text-xs opacity-90">{data.personal.title}</p>
+              <p className="mt-1 opacity-90" style={{ fontSize: ty.sizes.sm }}>
+                {data.personal.title}
+              </p>
             )}
-            <div className="mt-6 space-y-1 text-[10px] opacity-90">
-              {contact.map((c) => (
-                <p key={c}>{c}</p>
-              ))}
-            </div>
+            <ContactRow
+              items={contact}
+              className="mt-6 opacity-90"
+              style={{ fontSize: ty.sizes.xs }}
+            />
             {data.technicalSkills.length > 0 && (
               <div className="mt-6">
-                <p className="text-[9px] font-bold uppercase tracking-wider opacity-70">
+                <p
+                  className="uppercase tracking-wider opacity-70"
+                  style={{ fontSize: ty.sizes.xs, fontWeight: ty.headingWeight }}
+                >
                   {t(lang, "technicalSkills")}
                 </p>
-                <ul className="mt-2 space-y-1 text-[10px]">
+                <ul className="mt-2 space-y-1" style={{ fontSize: ty.sizes.sm }}>
                   {data.technicalSkills.map((s) => (
                     <li key={s}>{s}</li>
                   ))}
@@ -197,7 +226,7 @@ export function ResumePreview({ data, config }: Props) {
             )}
           </aside>
           <main className="flex-1 p-7">
-            <PreviewSections data={data} config={config} colors={colors} />
+            <PreviewSections data={data} config={config} colors={colors} ty={ty} />
           </main>
         </div>
       ) : (
@@ -213,19 +242,23 @@ export function ResumePreview({ data, config }: Props) {
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <h1
-                  className="text-2xl font-bold"
-                  style={{ color: isAts ? "#111" : colors.primary }}
+                  style={{
+                    color: isAts ? "#111" : colors.primary,
+                    fontSize: ty.sizes.xl,
+                    fontWeight: ty.headingWeight,
+                  }}
                 >
                   {data.personal.fullName || "Nama Kamu"}
                 </h1>
                 {data.personal.title && (
-                  <p className="mt-1 text-sm text-zinc-500">
+                  <p className="mt-1 text-zinc-500" style={{ fontSize: ty.sizes.sm }}>
                     {data.personal.title}
                   </p>
                 )}
-                <ContactLines
+                <ContactRow
                   items={contact}
-                  className="mt-2 text-[10px] text-zinc-400"
+                  className="mt-2 text-zinc-400"
+                  style={{ fontSize: ty.sizes.xs }}
                 />
               </div>
               {showPhoto && (
@@ -233,7 +266,7 @@ export function ResumePreview({ data, config }: Props) {
               )}
             </div>
           </header>
-          <PreviewSections data={data} config={config} colors={colors} />
+          <PreviewSections data={data} config={config} colors={colors} ty={ty} />
         </div>
       )}
     </div>
@@ -244,10 +277,12 @@ function PreviewSections({
   data,
   config,
   colors,
+  ty,
 }: {
   data: ResumeData;
   config: ResumeConfig;
   colors: { primary: string; light: string };
+  ty: ReturnType<typeof getPreviewTypography>;
 }) {
   const lang = config.language;
   const isAts = config.exportMode === "ats";
@@ -255,8 +290,10 @@ function PreviewSections({
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h2
-      className="mb-2 mt-4 text-[10px] font-bold uppercase tracking-widest"
+      className="mb-2 mt-4 uppercase tracking-widest"
       style={{
+        fontSize: ty.sizes.sm,
+        fontWeight: ty.headingWeight,
         color: isAts ? "#333" : colors.primary,
         borderBottom: isAts ? "1px solid #ddd" : undefined,
         paddingBottom: isAts ? 4 : undefined,
@@ -273,11 +310,14 @@ function PreviewSections({
           <SectionTitle>{t(lang, "experience")}</SectionTitle>
           {data.experiences.map((exp) => (
             <div key={exp.id} className="mb-3">
-              <p className="text-[11px] font-semibold">
+              <p
+                className="font-semibold"
+                style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}
+              >
                 {exp.position}
                 {exp.company && ` — ${exp.company}`}
               </p>
-              <p className="text-[9px] text-zinc-400">
+              <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
                 {[
                   exp.startDate,
                   exp.endDate || (exp.current ? t(lang, "present") : ""),
@@ -287,12 +327,19 @@ function PreviewSections({
                   .join(" · ")}
               </p>
               {exp.description && (
-                <p className={`mt-1 text-[10px] text-zinc-600 ${PROSE_JUSTIFY}`}>
+                <p
+                  className={`mt-1 text-zinc-600 ${PROSE_JUSTIFY}`}
+                  style={{ fontSize: ty.sizes.sm }}
+                >
                   {exp.description}
                 </p>
               )}
               {exp.highlights.map((h, i) => (
-                <p key={i} className="ml-3 text-[10px] text-zinc-600">
+                <p
+                  key={i}
+                  className="ml-3 text-zinc-600"
+                  style={{ fontSize: ty.sizes.sm }}
+                >
                   • {h}
                 </p>
               ))}
@@ -307,11 +354,11 @@ function PreviewSections({
           <SectionTitle>{t(lang, "education")}</SectionTitle>
           {data.educations.map((edu) => (
             <div key={edu.id} className="mb-2">
-              <p className="text-[11px] font-semibold">
+              <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
                 {edu.degree}
                 {edu.field && ` — ${edu.field}`}
               </p>
-              <p className="text-[9px] text-zinc-400">
+              <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
                 {[
                   edu.institution,
                   edu.location,
@@ -334,11 +381,11 @@ function PreviewSections({
           <SectionTitle>{t(lang, "organizations")}</SectionTitle>
           {data.organizations.map((org) => (
             <div key={org.id} className="mb-3">
-              <p className="text-[11px] font-semibold">
+              <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
                 {org.role}
                 {org.name && ` — ${org.name}`}
               </p>
-              <p className="text-[9px] text-zinc-400">
+              <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
                 {[
                   org.startDate,
                   org.endDate || (org.current ? t(lang, "present") : ""),
@@ -348,7 +395,11 @@ function PreviewSections({
                   .join(" · ")}
               </p>
               {org.highlights.map((h, i) => (
-                <p key={i} className="ml-3 text-[10px] text-zinc-600">
+                <p
+                  key={i}
+                  className="ml-3 text-zinc-600"
+                  style={{ fontSize: ty.sizes.sm }}
+                >
                   • {h}
                 </p>
               ))}
@@ -368,8 +419,9 @@ function PreviewSections({
                 {data.technicalSkills.map((s) => (
                   <span
                     key={s}
-                    className="rounded px-2 py-0.5 text-[9px] font-medium"
+                    className="rounded px-2 py-0.5 font-medium"
                     style={{
+                      fontSize: ty.sizes.xs,
                       backgroundColor: isAts ? "#f4f4f5" : colors.light,
                       color: isAts ? "#333" : colors.primary,
                     }}
@@ -387,8 +439,9 @@ function PreviewSections({
                 {data.softSkills.map((s) => (
                   <span
                     key={s}
-                    className="rounded px-2 py-0.5 text-[9px] font-medium"
+                    className="rounded px-2 py-0.5 font-medium"
                     style={{
+                      fontSize: ty.sizes.xs,
                       backgroundColor: isAts ? "#f4f4f5" : colors.light,
                       color: isAts ? "#333" : colors.primary,
                     }}
@@ -408,8 +461,13 @@ function PreviewSections({
           <SectionTitle>{t(lang, "projects")}</SectionTitle>
           {data.projects.map((p) => (
             <div key={p.id} className="mb-2">
-              <p className="text-[11px] font-semibold">{p.name}</p>
-              <p className={`text-[10px] text-zinc-500 ${PROSE_JUSTIFY}`}>
+              <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
+                {p.name}
+              </p>
+              <p
+                className={`text-zinc-500 ${PROSE_JUSTIFY}`}
+                style={{ fontSize: ty.sizes.sm }}
+              >
                 {p.description}
               </p>
             </div>
@@ -423,8 +481,10 @@ function PreviewSections({
           <SectionTitle>{t(lang, "certifications")}</SectionTitle>
           {data.certifications.map((cert) => (
             <div key={cert.id} className="mb-2">
-              <p className="text-[11px] font-semibold">{cert.name}</p>
-              <p className="text-[9px] text-zinc-400">
+              <p style={{ fontSize: ty.sizes.md, fontWeight: ty.headingWeight }}>
+                {cert.name}
+              </p>
+              <p className="text-zinc-400" style={{ fontSize: ty.sizes.xs }}>
                 {[cert.issuer, cert.date].filter(Boolean).join(" · ")}
               </p>
             </div>
@@ -438,7 +498,11 @@ function PreviewSections({
           <SectionTitle>{t(lang, "languages")}</SectionTitle>
           <div className="flex flex-wrap gap-2">
             {data.languages.map((l) => (
-              <span key={l.id} className="text-[10px] text-zinc-600">
+              <span
+                key={l.id}
+                className="text-zinc-600"
+                style={{ fontSize: ty.sizes.sm }}
+              >
                 {l.name}
                 {l.level && ` (${l.level})`}
               </span>
@@ -457,7 +521,11 @@ function PreviewSections({
             <div key={section.id}>
               <SectionTitle>{section.title}</SectionTitle>
               {section.items.map((item, i) => (
-                <p key={i} className="ml-3 text-[10px] text-zinc-600">
+                <p
+                  key={i}
+                  className="ml-3 text-zinc-600"
+                  style={{ fontSize: ty.sizes.sm }}
+                >
                   • {item}
                 </p>
               ))}
@@ -472,7 +540,10 @@ function PreviewSections({
       {data.personal.summary && (
         <>
           <SectionTitle>{t(lang, "summary")}</SectionTitle>
-          <p className={`text-[10px] text-zinc-600 ${PROSE_JUSTIFY}`}>
+          <p
+            className={`text-zinc-600 ${PROSE_JUSTIFY}`}
+            style={{ fontSize: ty.sizes.sm }}
+          >
             {data.personal.summary}
           </p>
         </>
