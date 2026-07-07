@@ -25,15 +25,17 @@ export function AtsPdfEntryHeader({
   return (
     <View style={styles.expHeader}>
       <View style={styles.expHeaderLeft}>
-        <Text>
-          <Text style={styles.itemTitle}>{primary}</Text>
+        <Text style={styles.itemTitle} wrap>
+          {primary}
           {secondary ? (
-            <Text style={styles.itemTitleSub}> · {secondary}</Text>
+            <Text style={styles.itemTitleSub}>{` · ${secondary}`}</Text>
           ) : null}
         </Text>
       </View>
       {period ? (
-        <Text style={styles.itemMetaRight}>{period}</Text>
+        <Text style={styles.itemMetaRight} wrap>
+          {period}
+        </Text>
       ) : null}
     </View>
   );
@@ -45,10 +47,9 @@ export function AtsPdfBullet({
 }: {
   text: string;
   bulletStyle: Styles[keyof Styles];
-  markStyle?: Styles[keyof Styles];
 }) {
   return (
-    <Text style={bulletStyle}>
+    <Text style={bulletStyle} wrap>
       <Text style={{ color: BULLET_MARK_COLOR, fontSize: 7 }}>
         {ATS_BULLET_MARK}{" "}
       </Text>

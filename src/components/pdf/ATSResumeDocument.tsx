@@ -35,13 +35,9 @@ function SectionHeading({
   style,
 }: {
   title: string;
-  style: ReturnType<typeof getAtsPdfLayout>["sheet"];
+  style: ReturnType<typeof StyleSheet.create>;
 }) {
-  return (
-    <Text style={style.sectionTitle} minPresenceAhead={24}>
-      {title}
-    </Text>
-  );
+  return <Text style={style.sectionTitle}>{title}</Text>;
 }
 
 export default function ATSResumeDocument({ data, config }: Props) {
@@ -63,7 +59,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
         <>
           <SectionHeading
             title={tAts(language, "experience", config.cvProfile)}
-            style={layout}
+            style={styles}
           />
           {data.experiences.map((exp) => (
             <View key={exp.id} style={styles.entry}>
@@ -95,7 +91,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
         <>
           <SectionHeading
             title={t(language, "education")}
-            style={layout}
+            style={styles}
           />
           {data.educations.map((edu) => (
             <View key={edu.id} style={styles.entry}>
@@ -125,7 +121,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
         <>
           <SectionHeading
             title={tAts(language, "organizations")}
-            style={layout}
+            style={styles}
           />
           {data.organizations.map((org) => (
             <View key={org.id} style={styles.entry}>
@@ -153,7 +149,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
         <>
           <SectionHeading
             title={tAts(language, "technicalSkills")}
-            style={layout}
+            style={styles}
           />
           <View style={styles.skillsGrid}>
             {[0, 1].map((col) => (
@@ -195,7 +191,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
         <>
           <SectionHeading
             title={t(language, "certifications")}
-            style={layout}
+            style={styles}
           />
           {data.certifications.map((cert) => (
             <View key={cert.id} style={styles.certRow}>
@@ -216,7 +212,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
         <>
           <SectionHeading
             title={t(language, "languages")}
-            style={layout}
+            style={styles}
           />
           <Text style={styles.skillsLine}>
             {data.languages

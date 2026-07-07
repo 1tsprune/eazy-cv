@@ -1,44 +1,30 @@
 "use client";
 
-import { useDeferredValue, useMemo } from "react";
+import { useCallback } from "react";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
+import { buildResumePdfDocument } from "@/lib/build-resume-pdf-document";
 import { getUiDict } from "@/lib/ui-i18n";
-import { prepareModernPdfData } from "@/lib/pdf-modern-data";
-import { sanitizeResumeData } from "@/lib/sanitize";
-import ATSResumeDocument from "@/components/pdf/ATSResumeDocument";
-import ModernResumeDocument from "@/components/pdf/ModernResumeDocument";
 import { PdfDownloadButton } from "./PdfDownloadButton";
 
 export function PDFDownload() {
   const { data, config } = useResume();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
-  const deferredData = useDeferredValue(data);
-  const deferredConfig = useDeferredValue(config);
 
-  const pdfDocument = useMemo(() => {
-    if (deferredConfig.exportMode === "ats") {
-      const clean = sanitizeResumeData(deferredData);
-      return (
-        <ATSResumeDocument data={clean} config={deferredConfig} />
-      );
-    }
-    return (
-      <ModernResumeDocument
-        data={prepareModernPdfData(deferredData)}
-        config={deferredConfig}
-      />
-    );
-  }, [deferredData, deferredConfig]);
+  const buildDocument = useCallback(
+    () => buildResumePdfDocument(data, config),
+    [data, config],
+  );
 
-  const filename = `${deferredData.personal.fullName || "cv"}-${deferredConfig.exportMode}.pdf`;
+  const filename = `${data.personal.fullName || "cv"}-${config.exportMode}.pdf`;
 
   return (
     <PdfDownloadButton
-      document={pdfDocument}
+      buildDocument={buildDocument}
       filename={filename}
       label={t.download}
+      fullName={data.personal.fullName}
     />
   );
 }

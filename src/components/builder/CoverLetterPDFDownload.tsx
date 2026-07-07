@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useMemo } from "react";
+import { useCallback } from "react";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
@@ -11,29 +11,27 @@ export function CoverLetterPDFDownload() {
   const { data, coverLetter, config } = useResume();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
-  const deferredPersonal = useDeferredValue(data.personal);
-  const deferredCover = useDeferredValue(coverLetter);
-  const deferredConfig = useDeferredValue(config);
 
-  const pdfDocument = useMemo(
+  const buildDocument = useCallback(
     () => (
       <CoverLetterDocument
-        personal={deferredPersonal}
-        coverLetter={deferredCover}
-        language={deferredConfig.language}
-        config={deferredConfig}
+        personal={data.personal}
+        coverLetter={coverLetter}
+        language={config.language}
+        config={config}
       />
     ),
-    [deferredPersonal, deferredCover, deferredConfig],
+    [data.personal, coverLetter, config],
   );
 
-  const filename = `${deferredPersonal.fullName || "cover-letter"}-surat-lamaran.pdf`;
+  const filename = `${data.personal.fullName || "cover-letter"}-surat-lamaran.pdf`;
 
   return (
     <PdfDownloadButton
-      document={pdfDocument}
+      buildDocument={buildDocument}
       filename={filename}
       label={t.downloadCoverLetter}
+      fullName={data.personal.fullName}
     />
   );
 }

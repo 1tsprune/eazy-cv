@@ -68,6 +68,15 @@ const dict = {
     downloadIosUnsupported:
       "Browser ini tidak mendukung simpan PDF. Buka di Safari lalu coba lagi.",
     downloadFailed: "Gagal membuat PDF. Coba lagi.",
+    downloadOverlayDefaultName: "kamu",
+    downloadOverlayGreeting: (name: string) => `Halo, ${name}!`,
+    downloadOverlayThanks:
+      "Terima kasih sudah pakai Eazy CV. Tool ini 100% gratis tanpa iklan supaya siapa saja bisa pakai dengan mudah dan cepat. Kalau berguna, dukungan kecil untuk pengembangannya sangat berarti.",
+    downloadOverlayDonate: "Traktir secangkir teh (Rp1.000)",
+    downloadOverlayProcessing: "Menyiapkan PDF…",
+    downloadOverlayCountdown: (s: number) =>
+      s > 0 ? `Download dalam ${s} detik` : "Selesai…",
+    previewPdfError: "Gagal memuat preview PDF. Coba refresh.",
     save: "Simpan",
     load: "Muat",
     reset: "Reset",
@@ -235,6 +244,15 @@ const dict = {
     downloadIosUnsupported:
       "This browser cannot save PDFs. Open in Safari and try again.",
     downloadFailed: "Failed to generate PDF. Try again.",
+    downloadOverlayDefaultName: "there",
+    downloadOverlayGreeting: (name: string) => `Hello, ${name}!`,
+    downloadOverlayThanks:
+      "Thank you for using Eazy CV. I built this tool 100% free and without ads so anyone can use it easily and quickly. If it's useful to you, a small tip means a lot for continued development.",
+    downloadOverlayDonate: "Buy me a cup of tea (Rp1.000)",
+    downloadOverlayProcessing: "Preparing your PDF…",
+    downloadOverlayCountdown: (s: number) =>
+      s > 0 ? `Download in ${s}s` : "Done…",
+    previewPdfError: "Failed to load PDF preview. Try refreshing.",
     save: "Save",
     load: "Load",
     reset: "Reset",

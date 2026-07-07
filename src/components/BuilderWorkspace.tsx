@@ -12,7 +12,7 @@ import {
   type BuilderTab,
 } from "@/components/builder/BuilderBottomNav";
 import { ResumeForm } from "@/components/builder/ResumeForm";
-import { ResumePreview } from "@/components/builder/ResumePreview";
+import { ResumePdfPreview } from "@/components/builder/ResumePdfPreview";
 import { AtsScorePanel } from "@/components/builder/AtsScorePanel";
 import { CoverLetterForm } from "@/components/builder/CoverLetterForm";
 import { CoverLetterPreview } from "@/components/builder/CoverLetterPreview";
@@ -138,7 +138,7 @@ export function BuilderWorkspace() {
                   </span>
                 </div>
                 <PreviewDesk>
-                  <ResumePreview
+                  <ResumePdfPreview
                     data={data}
                     config={config}
                     wysiwygHint={
@@ -186,7 +186,7 @@ export function BuilderWorkspace() {
               </span>
             </div>
             <PreviewDesk>
-              <ResumePreview
+              <ResumePdfPreview
                 data={data}
                 config={config}
                 wysiwygHint={

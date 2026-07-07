@@ -23,15 +23,17 @@ export function ModernPdfEntryHeader({
   return (
     <View style={styles.expHeader}>
       <View style={styles.expHeaderLeft}>
-        <Text>
-          <Text style={styles.itemTitle}>{primary}</Text>
+        <Text style={styles.itemTitle} wrap>
+          {primary}
           {secondary ? (
-            <Text style={styles.itemTitleSub}> · {secondary}</Text>
+            <Text style={styles.itemTitleSub}>{` · ${secondary}`}</Text>
           ) : null}
         </Text>
       </View>
       {period ? (
-        <Text style={styles.itemMetaRight}>{period}</Text>
+        <Text style={styles.itemMetaRight} wrap>
+          {period}
+        </Text>
       ) : null}
     </View>
   );
@@ -47,6 +49,7 @@ export const MODERN_ENTRY_ROW_STYLES = {
   expHeaderLeft: {
     flex: 1,
     paddingRight: 8,
+    minWidth: 0,
   },
   itemMetaRight: {
     fontSize: 9,
@@ -54,7 +57,7 @@ export const MODERN_ENTRY_ROW_STYLES = {
     lineHeight: 1.4,
     flexShrink: 0,
     textAlign: "right" as const,
-    maxWidth: "40%",
+    maxWidth: "42%",
   },
   itemTitleSub: {
     fontSize: 10,
