@@ -11,9 +11,9 @@ interface Props {
 
 export function PreviewPaper({ children, showBadge = false, wysiwygHint }: Props) {
   return (
-    <div className="relative mx-auto w-full max-w-[210mm]">
+    <div className="relative w-full">
       {showBadge && (
-        <div className="mb-2.5 flex items-center justify-between px-0.5">
+        <div className="mb-1 flex items-center justify-between gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-500 shadow-sm ring-1 ring-zinc-200/60 dark:bg-zinc-800/90 dark:text-zinc-400 dark:ring-zinc-700">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
             A4

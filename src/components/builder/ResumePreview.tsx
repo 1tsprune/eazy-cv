@@ -89,7 +89,7 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
       {config.template === "executive" && !isAts ? (
         <div>
           <header
-            className="p-8 text-center text-white"
+            className="p-6 text-center text-white"
             style={{ backgroundColor: colors.primary }}
           >
             {showPhoto && (
@@ -115,14 +115,14 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
               style={{ fontSize: ty.sizes.xs }}
             />
           </header>
-          <div className="p-8">
+          <div className="p-6">
             <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
           </div>
         </div>
       ) : config.template === "creative" && !isAts ? (
         <div>
           <header
-            className="flex items-center gap-6 p-8 text-white"
+            className="flex items-center gap-6 p-6 text-white"
             style={{ backgroundColor: colors.primary }}
           >
             {showPhoto && (
@@ -148,7 +148,7 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
             />
             </div>
           </header>
-          <div className="p-8">
+          <div className="p-6">
             <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
           </div>
         </div>
@@ -183,7 +183,7 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
           <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
         </div>
       ) : config.template === "academic" && !isAts ? (
-        <div className="p-10">
+        <div className="p-8">
           <header className="border-b border-zinc-800 pb-4 text-center">
             {showPhoto && (
               <div className="mb-3 flex justify-center">
@@ -253,13 +253,13 @@ export function ResumePreview({ data, config, wysiwygHint }: Props) {
               </div>
             )}
           </aside>
-          <main className="flex-1 p-7">
+          <main className="flex-1 p-6">
             <PreviewSections data={data} config={config} colors={colors} ty={ty} ats={ats} />
           </main>
         </div>
       ) : (
         <div
-          className={isAts ? undefined : "p-8"}
+          className={isAts ? undefined : "p-6"}
           style={
             isAts && ats
               ? {

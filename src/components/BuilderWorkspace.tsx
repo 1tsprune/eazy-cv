@@ -88,7 +88,7 @@ export function BuilderWorkspace() {
       )}
 
       {/* ── Desktop: 1 halaman, 2 kolom, tanpa tab ── */}
-      <div className="mx-auto hidden max-w-screen-2xl gap-6 p-6 md:grid md:grid-cols-2">
+      <div className="mx-auto hidden max-w-screen-2xl items-start gap-4 p-4 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
         <div className="space-y-4">
           <PrivacyBadge variant="subtle" />
           <QuickActions

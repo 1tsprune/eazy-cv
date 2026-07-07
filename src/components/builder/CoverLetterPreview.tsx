@@ -70,7 +70,7 @@ export function CoverLetterPreview({
 
   return (
     <div
-      className="mx-auto w-full max-w-[210mm] bg-white p-10 text-zinc-900 shadow-2xl"
+      className="w-full bg-white p-8 text-zinc-900 shadow-lg ring-1 ring-zinc-200/80"
       style={{
         minHeight: "297mm",
         fontFamily: ty.fontFamily,

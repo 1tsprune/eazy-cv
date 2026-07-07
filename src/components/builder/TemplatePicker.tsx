@@ -147,7 +147,7 @@ export function TemplatePicker() {
   const activeLabel = isAts ? t.exportAts : config.template;
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="rounded-xl border border-zinc-200 bg-white p-2.5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
       <div className="mb-2.5 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
           <LayoutTemplate className="h-3.5 w-3.5 text-slate-600" />

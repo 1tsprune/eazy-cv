@@ -186,9 +186,9 @@ export function getAtsPdfLayout(config: ResumeConfig) {
 
   const sheet = {
     page: {
-      paddingTop: 40,
-      paddingBottom: 40,
-      paddingHorizontal: 52,
+      paddingTop: 32,
+      paddingBottom: 32,
+      paddingHorizontal: 40,
       fontFamily: tk.fontFamily,
       fontSize: tk.sm,
       lineHeight: 1.42,
