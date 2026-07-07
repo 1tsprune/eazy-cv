@@ -3,16 +3,23 @@
 import { Download, Loader2 } from "lucide-react";
 import { useCallback, useRef, useState, type ReactElement } from "react";
 import type { DocumentProps } from "@react-pdf/renderer";
-import { downloadPdfBlob, isIosDevice } from "@/lib/pdf-download";
+import {
+  deliverPdfBlob,
+  downloadPdfBlob,
+  isIosDevice,
+} from "@/lib/pdf-download";
+import { useResumePdfOptional } from "@/context/ResumePdfContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
 import { PdfDownloadOverlay } from "./PdfDownloadOverlay";
 
-const DOWNLOAD_MIN_MS = 3000;
+export const DOWNLOAD_MIN_SECONDS = 10;
+const DOWNLOAD_MIN_MS = DOWNLOAD_MIN_SECONDS * 1000;
 const TICK_MS = 50;
 
 type Props = {
-  buildDocument: () => ReactElement<DocumentProps>;
+  buildDocument?: () => ReactElement<DocumentProps>;
+  waitForBlob?: () => Promise<Blob>;
   filename: string;
   label: string;
   fullName?: string;
@@ -26,18 +33,21 @@ function wait(ms: number): Promise<void> {
 
 export function PdfDownloadButton({
   buildDocument,
+  waitForBlob: waitForBlobProp,
   filename,
   label,
   fullName = "",
   className = "",
   showDonationOverlay = true,
 }: Props) {
+  const resumePdf = useResumePdfOptional();
+  const waitForBlob = waitForBlobProp ?? resumePdf?.waitForBlob;
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
   const [loading, setLoading] = useState(false);
   const [hint, setHint] = useState<string | null>(null);
   const [overlayOpen, setOverlayOpen] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(3);
+  const [secondsLeft, setSecondsLeft] = useState(DOWNLOAD_MIN_SECONDS);
   const [progress, setProgress] = useState(0);
   const ios = isIosDevice();
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -52,7 +62,7 @@ export function PdfDownloadButton({
   const startOverlay = useCallback(() => {
     const started = Date.now();
     setOverlayOpen(true);
-    setSecondsLeft(3);
+    setSecondsLeft(DOWNLOAD_MIN_SECONDS);
     setProgress(0);
     stopTicks();
     tickRef.current = setInterval(() => {
@@ -65,18 +75,26 @@ export function PdfDownloadButton({
 
   async function handleClick() {
     if (loading) return;
+    if (!waitForBlob && !buildDocument) return;
+
     setLoading(true);
     setHint(null);
     if (showDonationOverlay) startOverlay();
 
     try {
-      const document = buildDocument();
-      const [, result] = await Promise.all([
-        wait(DOWNLOAD_MIN_MS),
-        downloadPdfBlob(document, filename),
-      ]);
+      let result;
+      if (waitForBlob) {
+        const [blob] = await Promise.all([waitForBlob(), wait(DOWNLOAD_MIN_MS)]);
+        result = await deliverPdfBlob(blob, filename);
+      } else if (buildDocument) {
+        const [, r] = await Promise.all([
+          wait(DOWNLOAD_MIN_MS),
+          downloadPdfBlob(buildDocument(), filename),
+        ]);
+        result = r;
+      }
 
-      if (result.method === "share") {
+      if (result?.method === "share") {
         setHint(t.downloadIosHint);
         window.setTimeout(() => setHint(null), 6000);
       }
@@ -120,7 +138,7 @@ export function PdfDownloadButton({
           ) : (
             <Download className="h-4 w-4" />
           )}
-          {label}
+          {loading ? t.downloadProcessing(secondsLeft) : label}
         </button>
         {ios || hint ? (
           <p className="mt-1.5 text-center text-[10px] leading-snug text-zinc-500 dark:text-zinc-400">

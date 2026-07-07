@@ -37,13 +37,10 @@ async function sharePdfOnIos(file: File, title: string): Promise<boolean> {
   }
 }
 
-export async function downloadPdfBlob(
-  document: ReactElement<DocumentProps>,
+export async function deliverPdfBlob(
+  blob: Blob,
   filename: string,
 ): Promise<PdfDownloadResult> {
-  ensurePdfSetup();
-
-  const blob = await pdf(document).toBlob();
   const safeName = safeFilename(filename);
   const file = new File([blob], safeName, { type: "application/pdf" });
 
@@ -65,4 +62,13 @@ export async function downloadPdfBlob(
   window.setTimeout(() => URL.revokeObjectURL(url), 2000);
 
   return { method: "download" };
+}
+
+export async function downloadPdfBlob(
+  document: ReactElement<DocumentProps>,
+  filename: string,
+): Promise<PdfDownloadResult> {
+  ensurePdfSetup();
+  const blob = await pdf(document).toBlob();
+  return deliverPdfBlob(blob, filename);
 }

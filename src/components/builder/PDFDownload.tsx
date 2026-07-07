@@ -1,27 +1,24 @@
 "use client";
 
-import { useCallback } from "react";
 import { useResume } from "@/context/ResumeContext";
+import { useResumePdfOptional } from "@/context/ResumePdfContext";
 import { useTheme } from "@/context/ThemeContext";
-import { buildResumePdfDocument } from "@/lib/build-resume-pdf-document";
 import { getUiDict } from "@/lib/ui-i18n";
 import { PdfDownloadButton } from "./PdfDownloadButton";
 
 export function PDFDownload() {
   const { data, config } = useResume();
+  const resumePdf = useResumePdfOptional();
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
 
-  const buildDocument = useCallback(
-    () => buildResumePdfDocument(data, config),
-    [data, config],
-  );
-
-  const filename = `${data.personal.fullName || "cv"}-${config.exportMode}.pdf`;
+  const base = data.personal.fullName?.trim() || "cv";
+  const suffix = config.exportMode === "ats" ? "_ATS" : "_CV";
+  const filename = `${base}${suffix}.pdf`;
 
   return (
     <PdfDownloadButton
-      buildDocument={buildDocument}
+      waitForBlob={resumePdf?.waitForBlob}
       filename={filename}
       label={t.download}
       fullName={data.personal.fullName}

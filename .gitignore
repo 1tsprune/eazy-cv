@@ -20,6 +20,9 @@
 # production
 /build
 
+# generated PDF comparison output
+/samples/eazycv-output/
+
 # misc
 .DS_Store
 *.pem

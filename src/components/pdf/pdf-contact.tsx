@@ -1,4 +1,4 @@
-import { Link, Text, View, type Styles } from "@react-pdf/renderer";
+import { Link, Text, type Styles } from "@react-pdf/renderer";
 import { CONTACT_LINK_DECORATION, resolveContactHref } from "@/lib/pdf-links";
 import type { PersonalInfo } from "@/lib/types";
 
@@ -36,24 +36,13 @@ export function PdfContactInline({
   if (!items.length) return null;
 
   const linkStyle = contactLinkPdfStyle(style, linkColor);
-  const base =
-    style && typeof style === "object" && !Array.isArray(style)
-      ? style
-      : undefined;
 
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        flexWrap: "wrap",
-        alignItems: "center",
-        ...(base ?? {}),
-      }}
-    >
+    <Text style={style} wrap>
       {items.map((item, index) => {
         const href = resolveContactHref(item);
         return (
-          <Text key={`${item}-${index}`} style={base} wrap>
+          <Text key={`${item}-${index}`}>
             {index > 0 ? separator : ""}
             {href ? (
               <Link src={href} style={linkStyle}>
@@ -65,7 +54,7 @@ export function PdfContactInline({
           </Text>
         );
       })}
-    </View>
+    </Text>
   );
 }
 

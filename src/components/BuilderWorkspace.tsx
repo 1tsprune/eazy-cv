@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import dynamic from "next/dynamic";
 import { ArrowLeft } from "lucide-react";
 import {
   getAtsScrollTarget,
@@ -26,12 +25,6 @@ import { SectionOrderPanel } from "@/components/builder/SectionOrderPanel";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
-
-const PDFDownload = dynamic(
-  () =>
-    import("@/components/builder/PDFDownload").then((m) => m.PDFDownload),
-  { ssr: false },
-);
 
 export function BuilderWorkspace() {
   const { data, config, coverLetter, isLoaded } = useResume();
@@ -138,13 +131,7 @@ export function BuilderWorkspace() {
                   </span>
                 </div>
                 <PreviewDesk>
-                  <ResumePdfPreview
-                    data={data}
-                    config={config}
-                    wysiwygHint={
-                      config.exportMode === "ats" ? t.previewWysiwyg : undefined
-                    }
-                  />
+                  <ResumePdfPreview />
                 </PreviewDesk>
               </div>
               <AtsScorePanel onFixCheck={handleFixAtsCheck} />
@@ -186,17 +173,8 @@ export function BuilderWorkspace() {
               </span>
             </div>
             <PreviewDesk>
-              <ResumePdfPreview
-                data={data}
-                config={config}
-                wysiwygHint={
-                  config.exportMode === "ats" ? t.previewWysiwyg : undefined
-                }
-              />
+              <ResumePdfPreview />
             </PreviewDesk>
-            <div className="mt-4">
-              <PDFDownload />
-            </div>
           </div>
         )}
 

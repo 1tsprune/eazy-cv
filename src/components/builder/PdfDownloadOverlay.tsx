@@ -1,6 +1,6 @@
 "use client";
 
-import { DONATION } from "@/lib/config";
+import { DONATION, SOCIAL } from "@/lib/config";
 import { getUiDict } from "@/lib/ui-i18n";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -8,12 +8,16 @@ type Props = {
   fullName: string;
   secondsLeft: number;
   progress: number;
+  /** `fixed` = full screen (header download); `absolute` = inside preview panel */
+  placement?: "fixed" | "absolute";
 };
 
+/** EZCV-style overlay: greeting, thanks, trakteer, 10s progress. */
 export function PdfDownloadOverlay({
   fullName,
   secondsLeft,
   progress,
+  placement = "fixed",
 }: Props) {
   const { uiLocale } = useTheme();
   const t = getUiDict(uiLocale);
@@ -21,41 +25,45 @@ export function PdfDownloadOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm"
+      className={`${placement === "fixed" ? "fixed" : "absolute"} inset-0 z-50 flex flex-col items-center justify-start overflow-auto bg-[#faf8f6]/97 px-6 py-12 backdrop-blur-sm`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="pdf-download-overlay-title"
     >
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
+      <div className="flex w-full max-w-[250px] flex-col items-center gap-4 text-center">
+        <img
+          src={SOCIAL.twitter.avatarUrl}
+          alt={SOCIAL.twitter.name}
+          className="h-12 w-12 rounded-full object-cover ring-2 ring-zinc-200"
+        />
         <h2
           id="pdf-download-overlay-title"
-          className="text-lg font-bold text-zinc-900 dark:text-white"
+          className="text-[0.9rem] font-semibold text-[#2c2824]"
         >
           {t.downloadOverlayGreeting(displayName)}
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+        <p className="text-[0.78rem] font-normal leading-relaxed text-[#6b635a]">
           {t.downloadOverlayThanks}
         </p>
         <a
           href={DONATION.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-amber-600"
+          className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-[#cb3527] px-4 py-2 text-[0.72rem] font-semibold text-white no-underline"
         >
           ☕ {t.downloadOverlayDonate}
         </a>
-        <div className="mt-5">
-          <div className="mb-2 flex items-center justify-between text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-            <span>{t.downloadOverlayProcessing}</span>
-            <span>{t.downloadOverlayCountdown(secondsLeft)}</span>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-            <div
-              className="h-full rounded-full bg-slate-700 transition-[width] duration-100 ease-linear dark:bg-slate-400"
-              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
-            />
-          </div>
+      </div>
+      <div className="mt-8 flex w-full max-w-[200px] flex-col items-center gap-2">
+        <div className="h-[3px] w-full overflow-hidden rounded-sm bg-[#e8e4df]">
+          <div
+            className="h-full rounded-sm bg-[#3a3530] transition-[width] duration-1000 ease-linear"
+            style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+          />
         </div>
+        <span className="text-[0.68rem] font-medium text-[#a9a29a]">
+          {t.downloadOverlayCountdown(secondsLeft)}
+        </span>
       </div>
     </div>
   );

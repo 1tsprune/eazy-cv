@@ -7,6 +7,7 @@ import { CoinfestPopup } from "@/components/CoinfestPopup";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { TrakteerFab } from "@/components/TrakteerFab";
 import { ResumeProvider } from "@/context/ResumeContext";
+import { ResumePdfProvider } from "@/context/ResumePdfContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { isCoinfestPromoActive } from "@/lib/config";
 
@@ -24,9 +25,11 @@ function CVAppInner() {
         <WelcomeScreen onStart={() => setShowWelcome(false)} />
       ) : (
         <div className="min-h-dvh bg-zinc-50 dark:bg-zinc-950">
-          <AppHeader />
-          <BuilderWorkspace />
-          <TrakteerFab />
+          <ResumePdfProvider>
+            <AppHeader />
+            <BuilderWorkspace />
+            <TrakteerFab />
+          </ResumePdfProvider>
         </div>
       )}
     </>

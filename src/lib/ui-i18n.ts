@@ -71,12 +71,18 @@ const dict = {
     downloadOverlayDefaultName: "kamu",
     downloadOverlayGreeting: (name: string) => `Halo, ${name}!`,
     downloadOverlayThanks:
-      "Terima kasih sudah pakai Eazy CV. Tool ini 100% gratis tanpa iklan supaya siapa saja bisa pakai dengan mudah dan cepat. Kalau berguna, dukungan kecil untuk pengembangannya sangat berarti.",
+      "Terima kasih sudah menggunakan Eazy CV. Saya membuat tool ini 100% gratis dan tanpa iklan agar bisa digunakan siapa saja dengan mudah dan cepat. Jika kebetulan bermanfaat, dan kamu ingin mendukungnya, itu tentu sangat berarti untuk pengembangan selanjutnya.",
     downloadOverlayDonate: "Traktir secangkir teh (Rp1.000)",
     downloadOverlayProcessing: "Menyiapkan PDF…",
     downloadOverlayCountdown: (s: number) =>
-      s > 0 ? `Download dalam ${s} detik` : "Selesai…",
-    previewPdfError: "Gagal memuat preview PDF. Coba refresh.",
+      s > 0 ? `Download dalam ${s}s` : "Selesai…",
+    downloadProcessing: (s: number) =>
+      s > 0 ? `Memproses… ${s}s` : "Download PDF",
+    downloadGenerating: "Membuat PDF…",
+    previewPdfLoading: "Loading Render.",
+    previewPdfPagesLoading: "Loading pages.",
+    previewPdfPagesError: "Gagal render halaman PDF.",
+    previewPdfError: "Gagal membuat preview PDF.",
     save: "Simpan",
     load: "Muat",
     reset: "Reset",
@@ -247,12 +253,18 @@ const dict = {
     downloadOverlayDefaultName: "there",
     downloadOverlayGreeting: (name: string) => `Hello, ${name}!`,
     downloadOverlayThanks:
-      "Thank you for using Eazy CV. I built this tool 100% free and without ads so anyone can use it easily and quickly. If it's useful to you, a small tip means a lot for continued development.",
+      "Thank you for using Eazy CV. I made this tool for 100% free and without ads so it can be used by anyone easily and quickly. If it happens to be useful, and you want to support it, it certainly means a lot for its continued development.",
     downloadOverlayDonate: "Buy me a cup of tea (Rp1.000)",
     downloadOverlayProcessing: "Preparing your PDF…",
     downloadOverlayCountdown: (s: number) =>
       s > 0 ? `Download in ${s}s` : "Done…",
-    previewPdfError: "Failed to load PDF preview. Try refreshing.",
+    downloadProcessing: (s: number) =>
+      s > 0 ? `Processing… ${s}s` : "Download PDF",
+    downloadGenerating: "Generating…",
+    previewPdfLoading: "Loading Render.",
+    previewPdfPagesLoading: "Loading pages.",
+    previewPdfPagesError: "Failed to render PDF pages.",
+    previewPdfError: "Failed to generate PDF preview.",
     save: "Save",
     load: "Load",
     reset: "Reset",
