@@ -1,38 +1,17 @@
 "use client";
 
 import { Calendar, MapPin, X } from "lucide-react";
-import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "eazycv:coinfest-popup-2026";
 const TICKET_URL = "https://coinfest.asia/with/EkyJanuarta";
 const MAPS_URL =
   "https://www.google.com/maps/place/Coinfest+Asia/@-8.8481907,115.1570723,20.72z/data=!4m6!3m5!1s0x2dd245a7179276d1:0x7d89a71f7eb052ca!8m2!3d-8.8480625!4d115.1570625!16s%2Fg%2F11stxm5__m?entry=tts";
 const LOGO_URL = "https://coinfest.asia/logo%20navbar/logo%20navbar.png";
 
-export function CoinfestPopup() {
-  const [open, setOpen] = useState(false);
+type Props = {
+  onClose: () => void;
+};
 
-  useEffect(() => {
-    try {
-      if (localStorage.getItem(STORAGE_KEY) === "1") return;
-    } catch {
-      /* private browsing */
-    }
-    const t = window.setTimeout(() => setOpen(true), 400);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  function dismiss() {
-    setOpen(false);
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-  }
-
-  if (!open) return null;
-
+export function CoinfestPopup({ onClose }: Props) {
   return (
     <div
       className="fixed inset-0 z-[200] flex items-center justify-center p-4"
@@ -42,7 +21,7 @@ export function CoinfestPopup() {
         type="button"
         aria-label="Tutup popup"
         className="absolute inset-0 bg-zinc-950/55 backdrop-blur-[2px]"
-        onClick={dismiss}
+        onClick={onClose}
       />
 
       <div
@@ -53,7 +32,7 @@ export function CoinfestPopup() {
       >
         <button
           type="button"
-          onClick={dismiss}
+          onClick={onClose}
           aria-label="Tutup"
           className="absolute right-3 top-3 rounded-lg p-1.5 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
         >
@@ -115,7 +94,7 @@ export function CoinfestPopup() {
 
           <button
             type="button"
-            onClick={dismiss}
+            onClick={onClose}
             className="mt-3 w-full rounded-xl px-4 py-2 text-sm font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
           >
             Tutup

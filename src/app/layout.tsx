@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
-import { CoinfestPopup } from "@/components/CoinfestPopup";
 import { APP, SITE_URL } from "@/lib/config";
 import "./globals.css";
 
@@ -40,10 +39,7 @@ export default function RootLayout({
       className={`${outfit.variable} h-full`}
       suppressHydrationWarning
     >
-      <body className="min-h-full font-sans antialiased">
-        {children}
-        <CoinfestPopup />
-      </body>
+      <body className="min-h-full font-sans antialiased">{children}</body>
     </html>
   );
 }

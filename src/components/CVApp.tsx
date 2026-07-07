@@ -3,13 +3,19 @@
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { BuilderWorkspace } from "@/components/BuilderWorkspace";
+import { CoinfestPopup } from "@/components/CoinfestPopup";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { TrakteerFab } from "@/components/TrakteerFab";
 import { ResumeProvider } from "@/context/ResumeContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 
 function CVAppInner() {
+  const [showPromo, setShowPromo] = useState(true);
   const [showWelcome, setShowWelcome] = useState(true);
+
+  if (showPromo) {
+    return <CoinfestPopup onClose={() => setShowPromo(false)} />;
+  }
 
   if (showWelcome) {
     return <WelcomeScreen onStart={() => setShowWelcome(false)} />;
