@@ -48,9 +48,12 @@ export function AtsPdfBullet({
   text: string;
   bulletStyle: Styles[keyof Styles];
 }) {
+  const markSize =
+    typeof bulletStyle.fontSize === "number" ? bulletStyle.fontSize : 10;
+
   return (
     <Text style={bulletStyle} wrap>
-      <Text style={{ color: BULLET_MARK_COLOR, fontSize: 7 }}>
+      <Text style={{ color: BULLET_MARK_COLOR, fontSize: markSize }}>
         {ATS_BULLET_MARK}{" "}
       </Text>
       {text}

@@ -17,7 +17,7 @@ import {
   PDF_SIDEBAR_WIDTH_PT,
 } from "@/lib/pdf-modern-layout";
 import { shouldShowPhoto } from "@/lib/photo-display";
-import { getPdfSheetTokens } from "@/lib/typography";
+import { getPdfBulletStyle, getPdfSheetTokens } from "@/lib/typography";
 import type { ModernTemplate, ResumeConfig, ResumeData } from "@/lib/types";
 import {
   modernContactItems,
@@ -73,8 +73,8 @@ function baseStyles(
       paddingBottom: 4,
     },
     itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.md },
-    itemSub: { fontSize: tk.sm, color: "#666" },
-    bullet: { fontSize: tk.sm, marginLeft: 10, marginBottom: 2 },
+    itemSub: { fontFamily: tk.bodyFamily, fontSize: tk.base, color: "#666" },
+    bullet: getPdfBulletStyle(tk),
     tag: colors
       ? {
           backgroundColor: colors.light,
@@ -592,8 +592,8 @@ function CompactTemplate({ data, config }: Props) {
       letterSpacing: 1,
     },
     itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.sm },
-    itemSub: { fontSize: tk.xs, color: "#666" },
-    bullet: { fontSize: tk.xs, marginLeft: 8, marginBottom: 0 },
+    itemSub: { fontFamily: tk.bodyFamily, fontSize: tk.base, color: "#666" },
+    bullet: { ...getPdfBulletStyle(tk), marginLeft: 8, marginBottom: 2 },
   });
 
   const compactBody: ModernPdfStyles = {

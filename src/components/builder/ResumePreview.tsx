@@ -424,7 +424,7 @@ function PreviewSections({
           marginBottom: ats.paragraph.marginBottom,
           ...extra,
         }
-      : { fontSize: ty.sizes.sm, ...extra };
+      : { fontSize: ty.sizes.base, lineHeight: ty.lineHeight, ...extra };
 
   const titleText = () =>
     isAts && ats
@@ -527,7 +527,12 @@ function PreviewSections({
           marginBottom: ats.bullet.marginBottom,
         }}
       >
-        <span style={{ color: ats.bullet.markColor, fontSize: "0.65em" }}>
+        <span
+          style={{
+            color: ats.bullet.markColor,
+            fontSize: ats.bullet.fontSize,
+          }}
+        >
           {ATS_BULLET_MARK}{" "}
         </span>
         {text}

@@ -316,7 +316,7 @@ function PdfExperience({
             </>
           )}
           {exp.description ? (
-            <Text style={[styles.itemSub, { marginTop: 2 }]}>
+            <Text style={[styles.bullet, { marginTop: 2, marginLeft: 0 }]}>
               {exp.description}
             </Text>
           ) : null}

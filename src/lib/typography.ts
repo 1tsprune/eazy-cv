@@ -123,6 +123,25 @@ export const DEFAULT_TYPOGRAPHY = {
   fontBold: false,
 };
 
+/** Bullet / highlight lines — same scale as body text (not xs/sm). */
+export function getPdfBulletStyle(
+  tk: ReturnType<typeof getPdfSheetTokens>,
+): {
+  fontFamily: string;
+  fontSize: number;
+  lineHeight: number;
+  marginLeft: number;
+  marginBottom: number;
+} {
+  return {
+    fontFamily: tk.bodyFamily,
+    fontSize: tk.base,
+    lineHeight: tk.lh,
+    marginLeft: 10,
+    marginBottom: 4,
+  };
+}
+
 export function getPdfSheetTokens(config: ResumeConfig) {
   const ty = getPdfTypography(config);
   const font = resolveFont(config);
