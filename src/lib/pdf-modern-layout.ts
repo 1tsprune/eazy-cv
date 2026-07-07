@@ -14,7 +14,11 @@ export const MODERN_PAD_PT = 18;
 /** Tailwind p-8 → 32px → 24pt (academic) */
 export const MODERN_PAD_LG_PT = 24;
 
-export const PDF_MAIN_BOTTOM_PAD = 16;
+/** Bottom margin on every printed page (matches top pad). */
+export const PDF_MAIN_BOTTOM_PAD = MODERN_PAD_PT;
+
+/** Min space below a section title before page break. */
+export const PDF_SECTION_MIN_PRESENCE = 56;
 
 /** @deprecated use MODERN_PAD_PT */
 export const PDF_PAGE_PAD_MD = MODERN_PAD_PT;

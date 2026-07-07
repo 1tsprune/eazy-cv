@@ -106,6 +106,8 @@ function ProfessionalTemplate({ data, config }: Props) {
       fontSize: tk.base,
       lineHeight: tk.lh,
       position: "relative",
+      paddingTop: MODERN_PAD_PT,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
     },
     /** Colored strip on every page — no text (fixed). */
     sidebarBg: {
@@ -143,9 +145,7 @@ function ProfessionalTemplate({ data, config }: Props) {
     main: {
       marginLeft: PDF_SIDEBAR_WIDTH_PT,
       width: PDF_MAIN_WIDTH_PT,
-      paddingTop: MODERN_PAD_PT,
       paddingHorizontal: MODERN_PAD_PT,
-      paddingBottom: PDF_MAIN_BOTTOM_PAD,
     },
     photo: {
       width: 72,
@@ -346,10 +346,15 @@ function ExecutiveTemplate({ data, config }: Props) {
       fontSize: tk.base,
       lineHeight: tk.lh,
       color: "#1a1a1a",
+      paddingTop: MODERN_PAD_PT,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+      paddingHorizontal: MODERN_PAD_PT,
     },
     header: {
       backgroundColor: colors.primary,
       color: "#ffffff",
+      marginTop: -MODERN_PAD_PT,
+      marginHorizontal: -MODERN_PAD_PT,
       padding: MODERN_PAD_PT,
       marginBottom: 10,
       textAlign: "center",
@@ -363,11 +368,7 @@ function ExecutiveTemplate({ data, config }: Props) {
       opacity: 0.8,
       marginTop: 8,
     },
-    body: {
-      paddingTop: MODERN_PAD_PT,
-      paddingHorizontal: MODERN_PAD_PT,
-      paddingBottom: PDF_MAIN_BOTTOM_PAD,
-    },
+    body: {},
     photo: {
       width: 68,
       height: 68,
@@ -448,9 +449,14 @@ function CreativeTemplate({ data, config }: Props) {
       fontFamily: tk.fontFamily,
       fontSize: tk.base,
       lineHeight: tk.lh,
+      paddingTop: MODERN_PAD_PT,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+      paddingHorizontal: MODERN_PAD_PT,
     },
     topBar: {
       backgroundColor: colors.primary,
+      marginTop: -MODERN_PAD_PT,
+      marginHorizontal: -MODERN_PAD_PT,
       padding: MODERN_PAD_PT,
       color: "#ffffff",
       flexDirection: "row",
@@ -464,10 +470,7 @@ function CreativeTemplate({ data, config }: Props) {
       color: "#ffffff",
       opacity: 0.85,
     },
-    body: {
-      padding: MODERN_PAD_PT,
-      paddingBottom: PDF_MAIN_BOTTOM_PAD,
-    },
+    body: {},
     photo: {
       width: 72,
       height: 72,

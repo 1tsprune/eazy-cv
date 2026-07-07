@@ -6,6 +6,7 @@ import {
   formatAtsEducationMeta,
   formatAtsPeriodLine,
 } from "@/lib/pdf-ats-layout";
+import { PDF_SECTION_MIN_PRESENCE } from "@/lib/pdf-modern-layout";
 import {
   hasSkillContent,
   normalizeSkillGroups,
@@ -87,9 +88,14 @@ function PdfEducation({
   if (variant === "compact") {
     return (
       <>
-        <Text style={styles.sectionTitle}>{t(lang, "education")}</Text>
+        <Text
+          style={styles.sectionTitle}
+          minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+        >
+          {t(lang, "education")}
+        </Text>
         {educations.map((edu) => (
-          <View key={edu.id} style={{ marginBottom: 4 }}>
+          <View key={edu.id} style={{ marginBottom: 4 }} wrap={false}>
             <Text style={styles.itemTitle}>
               {edu.degree} — {edu.institution}
             </Text>
@@ -107,9 +113,14 @@ function PdfEducation({
   if (variant === "academic") {
     return (
       <>
-        <Text style={styles.sectionTitle}>{t(lang, "education")}</Text>
+        <Text
+          style={styles.sectionTitle}
+          minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+        >
+          {t(lang, "education")}
+        </Text>
         {educations.map((edu) => (
-          <View key={edu.id} style={{ marginBottom: 6 }}>
+          <View key={edu.id} style={{ marginBottom: 6 }} wrap={false}>
             <Text style={styles.itemTitle}>{edu.institution}</Text>
             <Text style={styles.itemSub}>
               {[
@@ -131,9 +142,14 @@ function PdfEducation({
 
   return (
     <>
-      <Text style={styles.sectionTitle}>{t(lang, "education")}</Text>
+      <Text
+        style={styles.sectionTitle}
+        minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+      >
+        {t(lang, "education")}
+      </Text>
       {educations.map((edu) => (
-        <View key={edu.id} style={{ marginBottom: 6 }}>
+        <View key={edu.id} style={{ marginBottom: 6 }} wrap={false}>
           {layout === "row" ? (
             <ModernPdfEntryHeader
               primary={
@@ -189,9 +205,14 @@ function PdfOrganizations({
 
   return (
     <>
-      <Text style={styles.sectionTitle}>{t(lang, "organizations")}</Text>
+      <Text
+        style={styles.sectionTitle}
+        minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+      >
+        {t(lang, "organizations")}
+      </Text>
       {organizations.map((org) => (
-        <View key={org.id} style={{ marginBottom: 8 }}>
+        <View key={org.id} style={{ marginBottom: 8 }} wrap={false}>
           {layout === "row" ? (
             <ModernPdfEntryHeader
               primary={org.role}
@@ -256,11 +277,14 @@ function PdfExperience({
 
   return (
     <>
-      <Text style={styles.sectionTitle}>
+      <Text
+        style={styles.sectionTitle}
+        minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+      >
         {t(lang, "experience", profile)}
       </Text>
       {data.experiences.map((exp) => (
-        <View key={exp.id} style={{ marginBottom: entryMargin }}>
+        <View key={exp.id} style={{ marginBottom: entryMargin }} wrap={false}>
           {layout === "row" ? (
             <ModernPdfEntryHeader
               primary={exp.position}
@@ -351,7 +375,12 @@ function PdfSkills({
       <>
         {blocks.map((block) => (
           <View key={block.title}>
-            <Text style={styles.sectionTitle}>{block.title}</Text>
+            <Text
+              style={styles.sectionTitle}
+              minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+            >
+              {block.title}
+            </Text>
             <Text style={{ fontSize: styles.itemSub?.fontSize ?? 10 }}>
               {block.text}
             </Text>
@@ -365,7 +394,12 @@ function PdfSkills({
     <>
       {tech.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>{t(lang, "technicalSkills")}</Text>
+          <Text
+            style={styles.sectionTitle}
+            minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+          >
+            {t(lang, "technicalSkills")}
+          </Text>
           {styles.tag ? (
             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
               {tech.map((s) => (
@@ -381,7 +415,12 @@ function PdfSkills({
       )}
       {soft.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>{t(lang, "softSkills")}</Text>
+          <Text
+            style={styles.sectionTitle}
+            minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+          >
+            {t(lang, "softSkills")}
+          </Text>
           {styles.tag ? (
             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
               {soft.map((s) => (
@@ -399,7 +438,12 @@ function PdfSkills({
         ? groups.map((group) => (
             <View key={group.id}>
               {group.name ? (
-                <Text style={styles.sectionTitle}>{group.name}</Text>
+                <Text
+                  style={styles.sectionTitle}
+                  minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+                >
+                  {group.name}
+                </Text>
               ) : null}
               {styles.tag ? (
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
@@ -431,9 +475,14 @@ function PdfProjects({
   if (!data.projects.length) return null;
   return (
     <>
-      <Text style={styles.sectionTitle}>{t(lang, "projects")}</Text>
+      <Text
+        style={styles.sectionTitle}
+        minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+      >
+        {t(lang, "projects")}
+      </Text>
       {data.projects.map((p) => (
-        <View key={p.id} style={{ marginBottom: 6 }}>
+        <View key={p.id} style={{ marginBottom: 6 }} wrap={false}>
           <Text style={styles.itemTitle}>{p.name}</Text>
           {p.description ? (
             <Text style={styles.itemSub}>{p.description}</Text>
@@ -461,11 +510,17 @@ function PdfCertifications({
   if (!data.certifications.length) return null;
   return (
     <>
-      <Text style={styles.sectionTitle}>{t(lang, "certifications")}</Text>
+      <Text
+        style={styles.sectionTitle}
+        minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+      >
+        {t(lang, "certifications")}
+      </Text>
       {data.certifications.map((cert) =>
         layout === "row" ? (
           <View
             key={cert.id}
+            wrap={false}
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
@@ -490,7 +545,7 @@ function PdfCertifications({
             ) : null}
           </View>
         ) : (
-          <View key={cert.id} style={{ marginBottom: 4 }}>
+          <View key={cert.id} style={{ marginBottom: 4 }} wrap={false}>
             <Text style={styles.itemTitle}>{cert.name}</Text>
             <Text style={styles.itemSub}>
               {[cert.issuer, cert.date].filter(Boolean).join(" · ")}
@@ -514,7 +569,12 @@ function PdfLanguages({
   if (!data.languages.length) return null;
   return (
     <>
-      <Text style={styles.sectionTitle}>{t(lang, "languages")}</Text>
+      <Text
+        style={styles.sectionTitle}
+        minPresenceAhead={PDF_SECTION_MIN_PRESENCE}
+      >
+        {t(lang, "languages")}
+      </Text>
       <Text style={styles.itemSub}>
         {data.languages
           .map(

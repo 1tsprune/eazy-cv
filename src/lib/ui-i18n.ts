@@ -50,8 +50,10 @@ const dict = {
     exportAts: "ATS",
     template: "Template",
     cvStyle: "Gaya CV",
+    cvStyleMenuHint:
+      "Pilih template di sini. Warna, font, dan download PDF ada di menu Style CV.",
     atsStyleMenuHint:
-      "Mode ATS: format plain, aman mesin rekrutmen. Atur font di bawah. Pilih gaya lain di panel Gaya CV.",
+      "Mode ATS: format plain untuk mesin rekrutmen. Atur font & download PDF di menu ini.",
     color: "Warna",
     fontFamily: "Font",
     fontSize: "Ukuran",
@@ -230,8 +232,10 @@ const dict = {
     exportAts: "ATS",
     template: "Template",
     cvStyle: "CV style",
+    cvStyleMenuHint:
+      "Pick a template here. Color, fonts, and PDF download are in the CV Style menu.",
     atsStyleMenuHint:
-      "ATS mode: plain layout for applicant tracking systems. Set fonts below. Pick another style in the CV style panel.",
+      "ATS mode: plain layout for applicant tracking systems. Set fonts & download PDF in this menu.",
     color: "Color",
     fontFamily: "Font",
     fontSize: "Size",
