@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { DevAvatar } from "@/components/DevAvatar";
+import { IgStoryLink } from "@/components/IgStoryLink";
 import { Logo } from "@/components/Logo";
 import { DONATION, SOCIAL } from "@/lib/config";
 import { themeColors } from "@/lib/colors";
@@ -117,6 +118,8 @@ export function AppHeader() {
         <Logo size="sm" showTagline />
 
         <div className="flex items-center gap-2">
+          <IgStoryLink label={t.igStoryTemplate} shortLabel={t.igStoryShort} />
+
           <a
             href={SOCIAL.twitter.url}
             target="_blank"

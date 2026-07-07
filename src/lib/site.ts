@@ -1,7 +1,8 @@
-import { APP } from "./config";
+import { APP, SITE_URL } from "./config";
 
 export const SITE = {
   name: APP.name,
+  url: SITE_URL,
   tagline: "Bikin CV gratis — tanpa login, data di browser",
   whatsapp: "6287863520135",
   whatsappDisplay: "+62 878-6352-0135",

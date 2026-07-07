@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#fafafa" />
+  <title>Eazy CV Story — Screenshot di HP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; overflow: hidden; font-family: Inter, system-ui, sans-serif; }
+    body { background: #000; }
+
+    .deck { height: 100dvh; width: 100%; position: relative; touch-action: pan-y; }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: max(48px, env(safe-area-inset-top)) 28px max(40px, env(safe-area-inset-bottom));
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; }
+
+    .bg-grid {
+      background: #fafafa;
+      background-image:
+        linear-gradient(to right, rgba(0,0,0,.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .bg-dark { background: #18181b; color: #fff; }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: .35;
+      pointer-events: none;
+    }
+    .b1 { width: 220px; height: 220px; background: #475569; top: -40px; left: -50px; }
+    .b2 { width: 200px; height: 200px; background: #10b981; top: 80px; right: -40px; opacity: .28; }
+    .b3 { width: 220px; height: 220px; background: #334155; bottom: 80px; left: -30px; }
+
+    .content { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }
+
+    .headline {
+      font-size: clamp(28px, 8vw, 36px);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -.04em;
+      color: #18181b;
+    }
+    .headline.white { color: #fff; }
+
+    .sub {
+      font-size: clamp(17px, 4.5vw, 22px);
+      font-weight: 600;
+      line-height: 1.45;
+      color: #52525b;
+      margin-top: 16px;
+    }
+    .sub.light { color: rgba(255,255,255,.8); }
+
+    .list { margin-top: 28px; display: flex; flex-direction: column; gap: 14px; }
+    .list-item { font-size: clamp(18px, 5vw, 22px); font-weight: 700; line-height: 1.3; }
+    .red { color: #ef4444; }
+    .green { color: #16a34a; }
+
+    .logo { display: flex; align-items: center; gap: 14px; margin-top: 24px; }
+    .logo-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: linear-gradient(135deg, #334155, #475569 55%, #64748b);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px; font-weight: 900;
+      box-shadow: 0 6px 24px rgba(51,65,85,.35);
+      position: relative;
+    }
+    .logo-icon::after {
+      content: "⚡";
+      position: absolute;
+      bottom: -2px; right: -4px;
+      font-size: 14px;
+    }
+    .logo-text { font-size: 38px; font-weight: 800; letter-spacing: -.06em; color: #18181b; }
+    .logo-text.white { color: #fff; }
+
+    .tag {
+      display: inline-block; margin-top: 14px; padding: 10px 18px;
+      border-radius: 999px; background: #18181b; color: #fff;
+      font-size: 14px; font-weight: 700; width: fit-content;
+    }
+
+    .cta-box {
+      margin-top: auto;
+      background: #27272a;
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .cta-url {
+      font-size: 20px; font-weight: 800; color: #86efac;
+      margin-top: 10px; word-break: break-all;
+    }
+
+    .mock {
+      margin-top: 24px; background: #fff; border-radius: 16px;
+      border: 2px solid #e4e4e7; padding: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    }
+    .mock-header {
+      height: 28px; border-radius: 8px;
+      background: linear-gradient(90deg, #334155, #475569);
+      margin-bottom: 12px;
+    }
+    .mock-bar { height: 8px; background: #f4f4f5; border-radius: 4px; margin-bottom: 8px; }
+    .mock-bar.short { width: 55%; }
+    .mock-bar.accent { width: 40%; background: #e2e8f0; }
+    .mock-pill {
+      display: inline-block; margin-top: 10px; margin-right: 6px;
+      padding: 4px 10px; border-radius: 999px;
+      background: #f1f5f9; font-size: 10px; font-weight: 700; color: #475569;
+    }
+
+    .footer-note {
+      margin-top: auto;
+      padding-top: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #a1a1aa;
+      text-align: center;
+    }
+
+    .chrome {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 100;
+      padding: 12px 16px max(14px, env(safe-area-inset-bottom));
+      background: linear-gradient(transparent, rgba(0,0,0,.75));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .chrome.hidden { opacity: 0; pointer-events: none; }
+
+    .dots { display: flex; gap: 6px; }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,.35);
+    }
+    .dot.on { background: #fff; width: 20px; border-radius: 4px; }
+
+    .btn {
+      border: none; background: #fff; color: #18181b;
+      font: 700 13px Inter, system-ui, sans-serif;
+      padding: 10px 16px; border-radius: 999px;
+    }
+    .btn-ghost {
+      background: rgba(255,255,255,.15); color: #fff;
+      font-size: 12px; padding: 10px 14px;
+    }
+
+    .hint-top {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: max(10px, env(safe-area-inset-top)) 16px 10px;
+      background: rgba(24,24,27,.88);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.4;
+      transition: opacity .2s;
+    }
+    .hint-top.hidden { opacity: 0; pointer-events: none; }
+
+    .spacer-top { margin-top: 56px; }
+  </style>
+</head>
+<body>
+  <div class="hint-top" id="hint">
+    📱 Screenshot tiap slide (Power + Volume Bawah)<br />
+    Tap <strong>Sembunyikan UI</strong> dulu biar bersih → geser → screenshot
+  </div>
+
+  <div class="deck" id="deck">
+    <section class="slide bg-grid active" data-i="0">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="content spacer-top">
+        <h1 class="headline">lagi nyari kerja,<br />magang, atau kuliah?</h1>
+        <p class="sub">CV masih kosong<br />atau berantakan? 😭</p>
+      </div>
+    </section>
+
+    <section class="slide bg-grid" data-i="1">
+      <div class="blob b3"></div>
+      <div class="content spacer-top">
+        <h1 class="headline">ribet banget kan?</h1>
+        <div class="list">
+          <p class="list-item red">❌ harus login</p>
+          <p class="list-item red">❌ template jelek / cuma 1</p>
+          <p class="list-item red">❌ ga tau siap ATS atau belum</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide bg-grid" data-i="2">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="content spacer-top">
+        <div class="logo">
+          <div class="logo-icon">CV</div>
+          <span class="logo-text">Eazy CV</span>
+        </div>
+        <span class="tag">bikin CV satset · gaperlu login</span>
+        <p class="sub" style="margin-top:20px">gratis · langsung di browser<br />data cuma di HP / laptop kamu</p>
+      </div>
+    </section>
+
+    <section class="slide bg-grid" data-i="3">
+      <div class="blob b2"></div>
+      <div class="content spacer-top">
+        <h1 class="headline">yang bisa kamu lakuin 👇</h1>
+        <div class="list">
+          <p class="list-item green">✅ 7 template modern</p>
+          <p class="list-item green">✅ mode ATS + download PDF</p>
+          <p class="list-item green">✅ skor ATS real-time</p>
+          <p class="list-item green">✅ preview = hasil PDF</p>
+          <p class="list-item green">✅ CV kerja / magang / pelajar</p>
+        </div>
+        <div class="mock">
+          <div class="mock-header"></div>
+          <div class="mock-bar"></div>
+          <div class="mock-bar short"></div>
+          <div class="mock-bar accent"></div>
+          <span class="mock-pill">React</span>
+          <span class="mock-pill">ATS 87</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide bg-dark" data-i="4">
+      <div class="blob b1" style="opacity:.2"></div>
+      <div class="content spacer-top">
+        <div class="logo">
+          <div class="logo-icon">CV</div>
+          <span class="logo-text white">Eazy CV</span>
+        </div>
+        <div class="cta-box">
+          <h1 class="headline white" style="font-size:26px">coba sekarang 👇</h1>
+          <p class="cta-url">cv.1tsprune.com</p>
+        </div>
+        <p class="footer-note" style="color:#71717a">by @itsprune · 100% gratis</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="chrome" id="chrome">
+    <div class="dots" id="dots"></div>
+    <button type="button" class="btn-ghost" id="hideUi">Sembunyikan UI</button>
+    <button type="button" class="btn" id="nextBtn">Slide berikutnya →</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const dotsEl = document.getElementById("dots");
+    const nextBtn = document.getElementById("nextBtn");
+    const hideUi = document.getElementById("hideUi");
+    const chrome = document.getElementById("chrome");
+    const hint = document.getElementById("hint");
+    let i = 0;
+    let uiHidden = false;
+
+    slides.forEach((_, idx) => {
+      const d = document.createElement("span");
+      d.className = "dot" + (idx === 0 ? " on" : "");
+      dotsEl.appendChild(d);
+    });
+
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      [...dotsEl.children].forEach((d, idx) => d.classList.toggle("on", idx === i));
+      nextBtn.textContent = i === slides.length - 1 ? "Selesai ✓" : "Slide berikutnya →";
+      document.documentElement.style.background = slides[i].classList.contains("bg-dark") ? "#18181b" : "#000";
+    }
+
+    nextBtn.addEventListener("click", () => show(i + 1));
+    hideUi.addEventListener("click", () => {
+      uiHidden = !uiHidden;
+      chrome.classList.toggle("hidden", uiHidden);
+      hint.classList.toggle("hidden", uiHidden);
+      hideUi.textContent = uiHidden ? "Tampilkan UI" : "Sembunyikan UI";
+    });
+
+    let touchX = 0;
+    document.getElementById("deck").addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+    document.getElementById("deck").addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+  </script>
+</body>
+</html>

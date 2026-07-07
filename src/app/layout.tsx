@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
-import { APP } from "@/lib/config";
+import { APP, SITE_URL } from "@/lib/config";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -9,6 +9,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: `${APP.name} — Bikin CV Gratis, No Ribet`,
   description:
     "Bikin CV + preview langsung + cek skor ATS. Gratis tanpa login. Data cuma di browser kamu.",
