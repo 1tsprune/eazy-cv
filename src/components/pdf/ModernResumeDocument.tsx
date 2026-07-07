@@ -8,20 +8,28 @@ import {
 } from "@react-pdf/renderer";
 import { themeColors } from "@/lib/colors";
 import { t } from "@/lib/i18n";
+import {
+  PDF_MAIN_BOTTOM_PAD,
+  PDF_PAGE_PAD_LG,
+  PDF_PAGE_PAD_MD,
+  PDF_PAGE_PAD_SM,
+  PDF_PAGE_PAD_XS,
+  PDF_SIDEBAR_WIDTH_PT,
+} from "@/lib/pdf-modern-layout";
 import { shouldShowPhoto } from "@/lib/photo-display";
 import { getPdfSheetTokens } from "@/lib/typography";
 import type { ModernTemplate, ResumeConfig, ResumeData } from "@/lib/types";
-import {
-  PdfCustomSections,
-  PdfEducation,
-  PdfOrganizations,
-} from "./pdf-blocks";
 import {
   modernContactItems,
   PdfContactInline,
   PdfContactItem,
 } from "./pdf-contact";
 import { PdfPhoto } from "./pdf-photo";
+import {
+  PdfModernBody,
+  PdfSidebarSkills,
+  type ModernPdfStyles,
+} from "./pdf-modern-sections";
 
 interface Props {
   data: ResumeData;
@@ -37,91 +45,152 @@ function ContactLine({ data }: { data: ResumeData }) {
   );
 }
 
+function baseStyles(tk: ReturnType<typeof getPdfSheetTokens>, colors?: { primary: string; light: string }): ModernPdfStyles {
+  return {
+    sectionTitle: {
+      fontSize: tk.md,
+      fontFamily: tk.headingFamily,
+      color: colors?.primary ?? "#334155",
+      marginBottom: 6,
+      marginTop: 12,
+      textTransform: "uppercase",
+      letterSpacing: 1,
+      borderBottomWidth: 1,
+      borderBottomColor: "#e5e5e5",
+      paddingBottom: 4,
+    },
+    itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.md },
+    itemSub: { fontSize: tk.sm, color: "#666" },
+    bullet: { fontSize: tk.sm, marginLeft: 10, marginBottom: 2 },
+    tag: colors
+      ? {
+          backgroundColor: colors.light,
+          color: colors.primary,
+          paddingHorizontal: 6,
+          paddingVertical: 2,
+          borderRadius: 3,
+          fontSize: tk.xs,
+          marginRight: 4,
+          marginBottom: 4,
+        }
+      : undefined,
+  };
+}
+
 function ProfessionalTemplate({ data, config }: Props) {
   const colors = themeColors[config.colorTheme];
   const lang = config.language;
   const { personal } = data;
   const showPhoto = shouldShowPhoto(config, data);
   const tk = getPdfSheetTokens(config);
+  const body = baseStyles(tk, colors);
 
   const styles = StyleSheet.create({
-    page: { flexDirection: "row", fontFamily: tk.fontFamily, fontSize: tk.base, lineHeight: tk.lh },
-    sidebar: { width: "32%", backgroundColor: colors.primary, color: "#fff", padding: 24 },
-    main: { width: "68%", padding: 28 },
-    sidebarName: { fontSize: tk.lg, fontFamily: tk.headingFamily, marginBottom: 4 },
-    sidebarTitle: { fontSize: tk.sm, marginBottom: 16 },
-    sidebarLabel: { fontSize: tk.xs, fontFamily: tk.headingFamily, textTransform: "uppercase", letterSpacing: 1, marginTop: 14, marginBottom: 6 },
+    page: {
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+      position: "relative",
+    },
+    sidebar: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      bottom: 0,
+      width: PDF_SIDEBAR_WIDTH_PT,
+      backgroundColor: colors.primary,
+      color: "#fff",
+      padding: 22,
+    },
+    sidebarName: {
+      fontSize: tk.lg,
+      fontFamily: tk.headingFamily,
+      marginBottom: 4,
+    },
+    sidebarTitle: { fontSize: tk.sm, marginBottom: 14 },
+    sidebarLabel: {
+      fontSize: tk.xs,
+      fontFamily: tk.headingFamily,
+      textTransform: "uppercase",
+      letterSpacing: 1,
+      marginTop: 12,
+      marginBottom: 6,
+    },
     sidebarText: { fontSize: tk.sm, marginBottom: 3 },
-    sectionTitle: { fontSize: tk.md, fontFamily: tk.headingFamily, color: colors.primary, marginBottom: 6, textTransform: "uppercase", letterSpacing: 1.2, borderBottomWidth: 1, borderBottomColor: "#e5e5e5", paddingBottom: 4, marginTop: 10 },
-    itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.md },
-    itemSub: { fontSize: tk.sm, color: "#666" },
-    bullet: { fontSize: tk.sm, marginLeft: 10, marginBottom: 2 },
-    photo: { width: 72, height: 72, borderRadius: 36, marginBottom: 10, alignSelf: "center" },
+    main: {
+      marginLeft: PDF_SIDEBAR_WIDTH_PT,
+      paddingTop: PDF_PAGE_PAD_MD,
+      paddingHorizontal: PDF_PAGE_PAD_MD,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+    },
+    photo: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      marginBottom: 10,
+      alignSelf: "center",
+    },
+    summaryTitle: {
+      ...body.sectionTitle,
+      marginTop: 0,
+    },
   });
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
-        <View style={styles.sidebar}>
+        <View fixed style={styles.sidebar}>
           {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
-          <Text style={styles.sidebarName}>{personal.fullName || "Your Name"}</Text>
-          {personal.title && <Text style={styles.sidebarTitle}>{personal.title}</Text>}
+          <Text style={styles.sidebarName}>
+            {personal.fullName || "Your Name"}
+          </Text>
+          {personal.title ? (
+            <Text style={styles.sidebarTitle}>{personal.title}</Text>
+          ) : null}
           <Text style={styles.sidebarLabel}>Contact</Text>
-          {personal.email && (
+          {personal.email ? (
             <PdfContactItem value={personal.email} style={styles.sidebarText} />
-          )}
-          {personal.phone && (
+          ) : null}
+          {personal.phone ? (
             <PdfContactItem value={personal.phone} style={styles.sidebarText} />
-          )}
-          {personal.linkedin && (
-            <PdfContactItem value={personal.linkedin} style={styles.sidebarText} />
-          )}
-          {personal.github && (
+          ) : null}
+          {personal.linkedin ? (
+            <PdfContactItem
+              value={personal.linkedin}
+              style={styles.sidebarText}
+            />
+          ) : null}
+          {personal.github ? (
             <PdfContactItem value={personal.github} style={styles.sidebarText} />
-          )}
-          {personal.website && (
+          ) : null}
+          {personal.website ? (
             <PdfContactItem value={personal.website} style={styles.sidebarText} />
-          )}
-          {personal.location && (
-            <PdfContactItem value={personal.location} style={styles.sidebarText} />
-          )}
-          {data.technicalSkills.length > 0 && (
-            <>
-              <Text style={styles.sidebarLabel}>{t(lang, "technicalSkills")}</Text>
-              {data.technicalSkills.map((s) => (
-                <Text key={s} style={styles.sidebarText}>{s}</Text>
-              ))}
-            </>
-          )}
+          ) : null}
+          {personal.location ? (
+            <PdfContactItem
+              value={personal.location}
+              style={styles.sidebarText}
+            />
+          ) : null}
+          <PdfSidebarSkills
+            data={data}
+            lang={lang}
+            textStyle={styles.sidebarText}
+            labelStyle={styles.sidebarLabel}
+          />
         </View>
         <View style={styles.main}>
-          {personal.summary && (
+          {personal.summary ? (
             <>
-              <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
+              <Text style={styles.summaryTitle}>{t(lang, "summary")}</Text>
               <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
             </>
-          )}
-          {data.experiences.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
-              {data.experiences.map((exp) => (
-                <View key={exp.id} style={{ marginBottom: 8 }}>
-                  <Text style={styles.itemTitle}>{exp.position}{exp.company ? ` @ ${exp.company}` : ""}</Text>
-                  <Text style={styles.itemSub}>{[exp.startDate, exp.endDate || (exp.current ? t(lang, "present") : ""), exp.location].filter(Boolean).join(" — ")}</Text>
-                  {exp.highlights.map((h, i) => <Text key={i} style={styles.bullet}>• {h}</Text>)}
-                </View>
-              ))}
-            </>
-          )}
-          <PdfEducation educations={data.educations} lang={lang} styles={styles} />
-          <PdfOrganizations
-            organizations={data.organizations}
-            lang={lang}
-            styles={styles}
-          />
-          <PdfCustomSections
-            sections={data.customSections}
-            styles={{ sectionTitle: styles.sectionTitle, bullet: styles.bullet }}
+          ) : null}
+          <PdfModernBody
+            data={data}
+            config={config}
+            styles={body}
+            options={{ skipSections: ["skills"] }}
           />
         </View>
       </Page>
@@ -134,19 +203,47 @@ function MinimalTemplate({ data, config }: Props) {
   const { personal } = data;
   const showPhoto = shouldShowPhoto(config, data);
   const tk = getPdfSheetTokens(config);
+  const body = baseStyles(tk);
 
   const styles = StyleSheet.create({
-    page: { padding: 48, fontFamily: tk.fontFamily, fontSize: tk.base, lineHeight: tk.lh, color: "#1a1a1a" },
-    name: { fontSize: tk.display, fontFamily: tk.headingFamily, letterSpacing: -0.5, marginBottom: 4 },
+    page: {
+      padding: PDF_PAGE_PAD_LG,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+      color: "#1a1a1a",
+    },
+    name: {
+      fontSize: tk.display,
+      fontFamily: tk.headingFamily,
+      letterSpacing: -0.5,
+      marginBottom: 4,
+    },
     title: { fontSize: tk.md, color: "#888", marginBottom: 10 },
-    contact: { fontSize: tk.xs, color: "#999" },
-    sectionTitle: { fontSize: tk.xs, fontFamily: tk.headingFamily, color: "#999", letterSpacing: 2, marginTop: 20, marginBottom: 8 },
-    itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.md },
-    itemSub: { fontSize: tk.sm, color: "#666" },
-    bullet: { fontSize: tk.sm, marginLeft: 10, marginBottom: 2 },
-    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 },
-    photo: { width: 64, height: 64, borderRadius: 32 },
+    contact: { fontSize: tk.xs, color: "#999", marginBottom: 4 },
+    headerRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 8,
+    },
+    photo: { width: 64, height: 64, borderRadius: 32, marginLeft: 12 },
+    sectionTitle: {
+      fontSize: tk.xs,
+      fontFamily: tk.headingFamily,
+      color: "#999",
+      letterSpacing: 2,
+      marginTop: 16,
+      marginBottom: 8,
+      textTransform: "uppercase",
+    },
   });
+
+  const minimalBody: ModernPdfStyles = {
+    ...body,
+    sectionTitle: styles.sectionTitle,
+  };
 
   return (
     <Document>
@@ -154,34 +251,24 @@ function MinimalTemplate({ data, config }: Props) {
         <View style={styles.headerRow}>
           <View style={{ flex: 1 }}>
             <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
-            {personal.title && <Text style={styles.title}>{personal.title}</Text>}
+            {personal.title ? (
+              <Text style={styles.title}>{personal.title}</Text>
+            ) : null}
           </View>
-          {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
+          {showPhoto ? (
+            <PdfPhoto src={personal.photo} style={styles.photo} />
+          ) : null}
         </View>
-        <View style={styles.contact}><ContactLine data={data} /></View>
-        {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
-        {data.experiences.length > 0 && (
+        <View style={styles.contact}>
+          <ContactLine data={data} />
+        </View>
+        {personal.summary ? (
           <>
-            <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
-            {data.experiences.map((exp) => (
-              <View key={exp.id} style={{ marginBottom: 8 }}>
-                <Text style={styles.itemTitle}>{exp.position}{exp.company ? ` @ ${exp.company}` : ""}</Text>
-                <Text style={styles.itemSub}>{[exp.startDate, exp.endDate || (exp.current ? t(lang, "present") : ""), exp.location].filter(Boolean).join(" — ")}</Text>
-                {exp.highlights.map((h, i) => <Text key={i} style={styles.bullet}>• {h}</Text>)}
-              </View>
-            ))}
+            <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
+            <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
           </>
-        )}
-        <PdfEducation educations={data.educations} lang={lang} styles={styles} />
-        <PdfOrganizations
-          organizations={data.organizations}
-          lang={lang}
-          styles={styles}
-        />
-        <PdfCustomSections
-          sections={data.customSections}
-          styles={{ sectionTitle: styles.sectionTitle, bullet: styles.bullet }}
-        />
+        ) : null}
+        <PdfModernBody data={data} config={config} styles={minimalBody} />
       </Page>
     </Document>
   );
@@ -193,20 +280,53 @@ function ElegantTemplate({ data, config }: Props) {
   const { personal } = data;
   const showPhoto = shouldShowPhoto(config, data);
   const tk = getPdfSheetTokens(config);
+  const body = baseStyles(tk, colors);
 
   const styles = StyleSheet.create({
-    page: { padding: 36, fontFamily: tk.fontFamily, fontSize: tk.base, lineHeight: tk.lh, color: "#1a1a1a" },
-    header: { borderBottomWidth: 2, borderBottomColor: colors.primary, paddingBottom: 14, marginBottom: 16, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
-    name: { fontSize: tk.xl, fontFamily: tk.headingFamily, color: colors.primary, marginBottom: 3 },
+    page: {
+      padding: PDF_PAGE_PAD_MD,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+      color: "#1a1a1a",
+    },
+    header: {
+      borderBottomWidth: 2,
+      borderBottomColor: colors.primary,
+      paddingBottom: 14,
+      marginBottom: 14,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+    },
+    name: {
+      fontSize: tk.xl,
+      fontFamily: tk.headingFamily,
+      color: colors.primary,
+      marginBottom: 3,
+    },
     title: { fontSize: tk.md, color: "#555", marginBottom: 8 },
     contact: { fontSize: tk.sm, color: "#777" },
-    sectionTitle: { fontSize: tk.md, fontFamily: tk.headingFamily, color: colors.primary, marginBottom: 6, textTransform: "uppercase", letterSpacing: 1.2, borderLeftWidth: 3, borderLeftColor: colors.primary, paddingLeft: 8, marginTop: 12 },
-    itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.md },
-    itemSub: { fontSize: tk.sm, color: "#666" },
-    bullet: { fontSize: tk.sm, marginLeft: 10, marginBottom: 2 },
-    tag: { backgroundColor: colors.light, color: colors.primary, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 3, fontSize: tk.xs, marginRight: 4, marginBottom: 4 },
-    photo: { width: 68, height: 68, borderRadius: 34 },
+    photo: { width: 68, height: 68, borderRadius: 34, marginLeft: 12 },
+    sectionTitle: {
+      fontSize: tk.md,
+      fontFamily: tk.headingFamily,
+      color: colors.primary,
+      marginBottom: 6,
+      marginTop: 10,
+      textTransform: "uppercase",
+      letterSpacing: 1.2,
+      borderLeftWidth: 3,
+      borderLeftColor: colors.primary,
+      paddingLeft: 8,
+    },
   });
+
+  const elegantBody: ModernPdfStyles = {
+    ...body,
+    sectionTitle: styles.sectionTitle,
+  };
 
   return (
     <Document>
@@ -214,54 +334,28 @@ function ElegantTemplate({ data, config }: Props) {
         <View style={styles.header}>
           <View style={{ flex: 1 }}>
             <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
-            {personal.title && <Text style={styles.title}>{personal.title}</Text>}
-            <View style={styles.contact}><ContactLine data={data} /></View>
+            {personal.title ? (
+              <Text style={styles.title}>{personal.title}</Text>
+            ) : null}
+            <View style={styles.contact}>
+              <ContactLine data={data} />
+            </View>
           </View>
-          {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
+          {showPhoto ? (
+            <PdfPhoto src={personal.photo} style={styles.photo} />
+          ) : null}
         </View>
-        {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
-        {data.experiences.length > 0 && (
+        {personal.summary ? (
           <>
-            <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
-            {data.experiences.map((exp) => (
-              <View key={exp.id} style={{ marginBottom: 8 }}>
-                <Text style={styles.itemTitle}>{exp.position}{exp.company ? ` @ ${exp.company}` : ""}</Text>
-                <Text style={styles.itemSub}>{[exp.startDate, exp.endDate || (exp.current ? t(lang, "present") : ""), exp.location].filter(Boolean).join(" — ")}</Text>
-                {exp.highlights.map((h, i) => <Text key={i} style={styles.bullet}>• {h}</Text>)}
-              </View>
-            ))}
+            <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
+            <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
           </>
-        )}
-        <PdfEducation educations={data.educations} lang={lang} styles={styles} />
-        <PdfOrganizations
-          organizations={data.organizations}
-          lang={lang}
-          styles={styles}
-        />
-        {data.technicalSkills.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>{t(lang, "technicalSkills")}</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-              {data.technicalSkills.map((s) => <Text key={s} style={styles.tag}>{s}</Text>)}
-            </View>
-          </>
-        )}
-        {data.softSkills.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>{t(lang, "softSkills")}</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-              {data.softSkills.map((s) => <Text key={s} style={styles.tag}>{s}</Text>)}
-            </View>
-          </>
-        )}
-        <PdfOrganizations
-          organizations={data.organizations}
-          lang={lang}
-          styles={styles}
-        />
-        <PdfCustomSections
-          sections={data.customSections}
-          styles={{ sectionTitle: styles.sectionTitle, bullet: styles.bullet }}
+        ) : null}
+        <PdfModernBody
+          data={data}
+          config={config}
+          styles={elegantBody}
+          options={{ skillDisplay: "tags" }}
         />
       </Page>
     </Document>
@@ -274,64 +368,82 @@ function ExecutiveTemplate({ data, config }: Props) {
   const { personal } = data;
   const showPhoto = shouldShowPhoto(config, data);
   const tk = getPdfSheetTokens(config);
+  const body = baseStyles(tk, colors);
 
   const styles = StyleSheet.create({
-    page: { fontFamily: tk.fontFamily, fontSize: tk.base, lineHeight: tk.lh, color: "#1a1a1a" },
-    header: { backgroundColor: colors.primary, color: "#fff", padding: 28, marginBottom: 20, textAlign: "center", alignItems: "center" },
+    page: {
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+      color: "#1a1a1a",
+    },
+    header: {
+      backgroundColor: colors.primary,
+      color: "#fff",
+      padding: PDF_PAGE_PAD_MD,
+      marginBottom: 16,
+      textAlign: "center",
+      alignItems: "center",
+    },
     name: { fontSize: tk.xl, fontFamily: tk.headingFamily, marginBottom: 4 },
     title: { fontSize: tk.md, opacity: 0.9 },
     contact: { fontSize: tk.xs, opacity: 0.75, marginTop: 8 },
-    body: { paddingHorizontal: 32 },
-    sectionTitle: { fontSize: tk.sm, fontFamily: tk.headingFamily, color: colors.primary, textTransform: "uppercase", letterSpacing: 2, marginTop: 14, marginBottom: 6, borderBottomWidth: 1, borderBottomColor: "#e5e5e5", paddingBottom: 4 },
-    itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.md },
-    itemSub: { fontSize: tk.sm, color: "#666" },
-    bullet: { fontSize: tk.sm, marginLeft: 10, marginBottom: 2 },
-    photo: { width: 68, height: 68, borderRadius: 34, marginBottom: 10 },
+    body: {
+      paddingHorizontal: PDF_PAGE_PAD_MD,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+    },
+    photo: {
+      width: 68,
+      height: 68,
+      borderRadius: 34,
+      marginBottom: 10,
+    },
+    sectionTitle: {
+      fontSize: tk.sm,
+      fontFamily: tk.headingFamily,
+      color: colors.primary,
+      textTransform: "uppercase",
+      letterSpacing: 2,
+      marginTop: 12,
+      marginBottom: 6,
+      borderBottomWidth: 1,
+      borderBottomColor: "#e5e5e5",
+      paddingBottom: 4,
+    },
   });
+
+  const execBody: ModernPdfStyles = {
+    ...body,
+    sectionTitle: styles.sectionTitle,
+  };
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
         <View style={styles.header}>
-          {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
+          {showPhoto ? (
+            <PdfPhoto src={personal.photo} style={styles.photo} />
+          ) : null}
           <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
-          {personal.title && <Text style={styles.title}>{personal.title}</Text>}
-          <View style={styles.contact}><ContactLine data={data} /></View>
+          {personal.title ? (
+            <Text style={styles.title}>{personal.title}</Text>
+          ) : null}
+          <View style={styles.contact}>
+            <ContactLine data={data} />
+          </View>
         </View>
         <View style={styles.body}>
-          {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
-          {data.experiences.length > 0 && (
+          {personal.summary ? (
             <>
-              <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
-              {data.experiences.map((exp) => (
-                <View key={exp.id} style={{ marginBottom: 8 }}>
-                  <Text style={styles.itemTitle}>{exp.position}{exp.company ? ` — ${exp.company}` : ""}</Text>
-                  <Text style={styles.itemSub}>{[exp.startDate, exp.endDate || (exp.current ? t(lang, "present") : ""), exp.location].filter(Boolean).join(" · ")}</Text>
-                  {exp.highlights.map((h, i) => <Text key={i} style={styles.bullet}>• {h}</Text>)}
-                </View>
-              ))}
+              <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
+              <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
             </>
-          )}
-          <PdfEducation educations={data.educations} lang={lang} styles={styles} />
-          <PdfOrganizations
-            organizations={data.organizations}
-            lang={lang}
-            styles={styles}
-          />
-          {data.technicalSkills.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>{t(lang, "technicalSkills")}</Text>
-              <Text style={{ fontSize: tk.sm }}>{data.technicalSkills.join(" · ")}</Text>
-            </>
-          )}
-          <PdfOrganizations
-            organizations={data.organizations}
-            lang={lang}
-            styles={styles}
-          />
-          <PdfCustomSections
-            sections={data.customSections}
-            styles={{ sectionTitle: styles.sectionTitle, bullet: styles.bullet }}
+          ) : null}
+          <PdfModernBody
+            data={data}
+            config={config}
+            styles={execBody}
+            options={{ skillDisplay: "inline", experienceSep: " — " }}
           />
         </View>
       </Page>
@@ -345,60 +457,90 @@ function CreativeTemplate({ data, config }: Props) {
   const { personal } = data;
   const showPhoto = shouldShowPhoto(config, data);
   const tk = getPdfSheetTokens(config);
+  const body = baseStyles(tk, colors);
+
   const styles = StyleSheet.create({
-    page: { fontFamily: tk.fontFamily, fontSize: tk.base, lineHeight: tk.lh },
-    topBar: { backgroundColor: colors.primary, padding: 32, color: "#fff", flexDirection: "row", alignItems: "center", gap: 16 },
+    page: {
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+    },
+    topBar: {
+      backgroundColor: colors.primary,
+      padding: PDF_PAGE_PAD_MD,
+      color: "#fff",
+      flexDirection: "row",
+      alignItems: "center",
+    },
     name: { fontSize: tk.display, fontFamily: tk.headingFamily },
     title: { fontSize: tk.md, marginTop: 4, opacity: 0.9 },
     contact: { fontSize: tk.xs, marginTop: 8, opacity: 0.8 },
-    body: { padding: 28 },
-    sectionTitle: { fontSize: tk.md, fontFamily: tk.headingFamily, color: colors.primary, marginTop: 12, marginBottom: 6, textTransform: "uppercase", letterSpacing: 1.5 },
-    itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.md },
-    itemSub: { fontSize: tk.sm, color: "#666" },
-    bullet: { fontSize: tk.sm, marginLeft: 10, marginBottom: 2 },
-    tag: { backgroundColor: colors.light, color: colors.primary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10, fontSize: tk.xs, marginRight: 4, marginBottom: 4 },
-    photo: { width: 72, height: 72, borderRadius: 36 },
+    body: {
+      padding: PDF_PAGE_PAD_MD,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+    },
+    photo: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      marginRight: 16,
+    },
+    sectionTitle: {
+      fontSize: tk.md,
+      fontFamily: tk.headingFamily,
+      color: colors.primary,
+      marginTop: 10,
+      marginBottom: 6,
+      textTransform: "uppercase",
+      letterSpacing: 1.5,
+    },
   });
+
+  const creativeBody: ModernPdfStyles = {
+    ...body,
+    sectionTitle: styles.sectionTitle,
+    tag: {
+      backgroundColor: colors.light,
+      color: colors.primary,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 10,
+      fontSize: tk.xs,
+      marginRight: 4,
+      marginBottom: 4,
+    },
+  };
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
         <View style={styles.topBar}>
-          {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
+          {showPhoto ? (
+            <PdfPhoto src={personal.photo} style={styles.photo} />
+          ) : null}
           <View style={{ flex: 1 }}>
             <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
-            {personal.title && <Text style={styles.title}>{personal.title}</Text>}
-            <View style={styles.contact}><ContactLine data={data} /></View>
+            {personal.title ? (
+              <Text style={styles.title}>{personal.title}</Text>
+            ) : null}
+            <View style={styles.contact}>
+              <ContactLine data={data} />
+            </View>
           </View>
         </View>
         <View style={styles.body}>
-          {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
-          {data.experiences.length > 0 && (
+          {personal.summary ? (
             <>
-              <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
-              {data.experiences.map((exp) => (
-                <View key={exp.id} style={{ marginBottom: 8 }}>
-                  <Text style={styles.itemTitle}>{exp.position} @ {exp.company}</Text>
-                  <Text style={styles.itemSub}>{[exp.startDate, exp.endDate || (exp.current ? t(lang, "present") : "")].filter(Boolean).join(" — ")}</Text>
-                  {exp.highlights.map((h, i) => <Text key={i} style={styles.bullet}>• {h}</Text>)}
-                </View>
-              ))}
+              <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
+              <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
             </>
-          )}
-          <PdfOrganizations
-            organizations={data.organizations}
-            lang={lang}
-            styles={styles}
+          ) : null}
+          <PdfModernBody
+            data={data}
+            config={config}
+            styles={creativeBody}
+            options={{ skillDisplay: "tags" }}
           />
-          {data.technicalSkills.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>{t(lang, "technicalSkills")}</Text>
-              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                {data.technicalSkills.map((s) => <Text key={s} style={styles.tag}>{s}</Text>)}
-              </View>
-            </>
-          )}
-          <PdfCustomSections sections={data.customSections} styles={{ sectionTitle: styles.sectionTitle, bullet: styles.bullet }} />
         </View>
       </Page>
     </Document>
@@ -411,58 +553,91 @@ function CompactTemplate({ data, config }: Props) {
   const { personal } = data;
   const showPhoto = shouldShowPhoto(config, data);
   const tk = getPdfSheetTokens(config);
+  const body = baseStyles(tk, colors);
+
   const styles = StyleSheet.create({
-    page: { padding: 24, fontFamily: tk.fontFamily, fontSize: tk.base, lineHeight: tk.lh, color: "#1a1a1a" },
-    name: { fontSize: tk.lg, fontFamily: tk.headingFamily, color: colors.primary },
+    page: {
+      padding: PDF_PAGE_PAD_XS,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+      color: "#1a1a1a",
+    },
+    name: {
+      fontSize: tk.lg,
+      fontFamily: tk.headingFamily,
+      color: colors.primary,
+    },
     title: { fontSize: tk.sm, color: "#555", marginBottom: 4 },
-    contact: { fontSize: tk.xs, color: "#777", marginBottom: 10, borderBottomWidth: 1, borderBottomColor: "#ddd", paddingBottom: 6 },
-    sectionTitle: { fontSize: tk.xs, fontFamily: tk.headingFamily, color: colors.primary, marginTop: 8, marginBottom: 4, textTransform: "uppercase", letterSpacing: 1 },
+    contact: {
+      fontSize: tk.xs,
+      color: "#777",
+      marginBottom: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: "#ddd",
+      paddingBottom: 6,
+    },
+    headerRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 4,
+    },
+    photo: { width: 44, height: 44, borderRadius: 6, marginRight: 10 },
+    sectionTitle: {
+      fontSize: tk.xs,
+      fontFamily: tk.headingFamily,
+      color: colors.primary,
+      marginTop: 8,
+      marginBottom: 4,
+      textTransform: "uppercase",
+      letterSpacing: 1,
+    },
     itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.sm },
     itemSub: { fontSize: tk.xs, color: "#666" },
     bullet: { fontSize: tk.xs, marginLeft: 8, marginBottom: 1 },
-    headerRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 2 },
-    photo: { width: 44, height: 44, borderRadius: 6 },
   });
+
+  const compactBody: ModernPdfStyles = {
+    sectionTitle: styles.sectionTitle,
+    itemTitle: styles.itemTitle,
+    itemSub: styles.itemSub,
+    bullet: styles.bullet,
+  };
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
         <View style={styles.headerRow}>
-          {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
+          {showPhoto ? (
+            <PdfPhoto src={personal.photo} style={styles.photo} />
+          ) : null}
           <View>
             <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
-            {personal.title && <Text style={styles.title}>{personal.title}</Text>}
+            {personal.title ? (
+              <Text style={styles.title}>{personal.title}</Text>
+            ) : null}
           </View>
         </View>
-        <View style={styles.contact}><ContactLine data={data} /></View>
-        {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text>{personal.summary}</Text></>)}
-        {data.experiences.length > 0 && (
+        <View style={styles.contact}>
+          <ContactLine data={data} />
+        </View>
+        {personal.summary ? (
           <>
-            <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
-            {data.experiences.map((exp) => (
-              <View key={exp.id} style={{ marginBottom: 5 }}>
-                <Text style={styles.itemTitle}>{exp.position} — {exp.company}</Text>
-                <Text style={styles.itemSub}>{[exp.startDate, exp.endDate || (exp.current ? t(lang, "present") : "")].filter(Boolean).join(" · ")}</Text>
-                {exp.highlights.map((h, i) => <Text key={i} style={styles.bullet}>• {h}</Text>)}
-              </View>
-            ))}
+            <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
+            <Text>{personal.summary}</Text>
           </>
-        )}
-        <PdfEducation
-          educations={data.educations}
-          lang={lang}
-          styles={styles}
-          variant="compact"
+        ) : null}
+        <PdfModernBody
+          data={data}
+          config={config}
+          styles={compactBody}
+          options={{
+            educationVariant: "compact",
+            skillDisplay: "inline",
+            experienceSep: " — ",
+          }}
         />
-        <PdfOrganizations
-          organizations={data.organizations}
-          lang={lang}
-          styles={styles}
-        />
-        {data.technicalSkills.length > 0 && (
-          <><Text style={styles.sectionTitle}>{t(lang, "technicalSkills")}</Text><Text style={{ fontSize: tk.xs }}>{data.technicalSkills.join(", ")}</Text></>
-        )}
-        <PdfCustomSections sections={data.customSections} styles={{ sectionTitle: styles.sectionTitle, bullet: styles.bullet }} />
       </Page>
     </Document>
   );
@@ -474,53 +649,76 @@ function AcademicTemplate({ data, config }: Props) {
   const { personal } = data;
   const showPhoto = shouldShowPhoto(config, data);
   const tk = getPdfSheetTokens(config);
+  const body = baseStyles(tk, colors);
+
   const styles = StyleSheet.create({
-    page: { padding: 40, fontFamily: tk.fontFamily, fontSize: tk.base, lineHeight: tk.lh },
-    header: { textAlign: "center", borderBottomWidth: 1, borderBottomColor: "#333", paddingBottom: 12, marginBottom: 16, alignItems: "center" },
+    page: {
+      padding: PDF_PAGE_PAD_LG,
+      paddingBottom: PDF_MAIN_BOTTOM_PAD,
+      fontFamily: tk.fontFamily,
+      fontSize: tk.base,
+      lineHeight: tk.lh,
+    },
+    header: {
+      textAlign: "center",
+      borderBottomWidth: 1,
+      borderBottomColor: "#333",
+      paddingBottom: 12,
+      marginBottom: 14,
+      alignItems: "center",
+    },
     name: { fontSize: tk.xl, fontFamily: tk.headingFamily },
     title: { fontSize: tk.sm, color: "#444", marginTop: 4 },
     contact: { fontSize: tk.xs, color: "#666", marginTop: 6 },
-    sectionTitle: { fontSize: tk.sm, fontFamily: tk.headingFamily, textTransform: "uppercase", letterSpacing: 1.5, marginTop: 12, marginBottom: 6, borderBottomWidth: 0.5, borderBottomColor: "#999", paddingBottom: 3 },
-    itemTitle: { fontFamily: tk.headingFamily, fontSize: tk.md },
-    itemSub: { fontSize: tk.sm, color: "#555", fontStyle: "italic" },
-    bullet: { fontSize: tk.sm, marginLeft: 10, marginBottom: 2 },
     photo: { width: 64, height: 64, borderRadius: 8, marginBottom: 8 },
+    sectionTitle: {
+      fontSize: tk.sm,
+      fontFamily: tk.headingFamily,
+      textTransform: "uppercase",
+      letterSpacing: 1.5,
+      marginTop: 10,
+      marginBottom: 6,
+      borderBottomWidth: 0.5,
+      borderBottomColor: "#999",
+      paddingBottom: 3,
+      color: colors.primary,
+    },
+    itemSub: { fontSize: tk.sm, color: "#555", fontStyle: "italic" },
   });
+
+  const academicBody: ModernPdfStyles = {
+    ...body,
+    sectionTitle: styles.sectionTitle,
+    itemSub: styles.itemSub,
+  };
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
         <View style={styles.header}>
-          {showPhoto && <PdfPhoto src={personal.photo} style={styles.photo} />}
+          {showPhoto ? (
+            <PdfPhoto src={personal.photo} style={styles.photo} />
+          ) : null}
           <Text style={styles.name}>{personal.fullName || "Your Name"}</Text>
-          {personal.title && <Text style={styles.title}>{personal.title}</Text>}
-          <View style={styles.contact}><ContactLine data={data} /></View>
+          {personal.title ? (
+            <Text style={styles.title}>{personal.title}</Text>
+          ) : null}
+          <View style={styles.contact}>
+            <ContactLine data={data} />
+          </View>
         </View>
-        {personal.summary && (<><Text style={styles.sectionTitle}>{t(lang, "summary")}</Text><Text style={{ fontSize: tk.sm }}>{personal.summary}</Text></>)}
-        <PdfEducation
-          educations={data.educations}
-          lang={lang}
-          styles={styles}
-          variant="academic"
-        />
-        <PdfOrganizations
-          organizations={data.organizations}
-          lang={lang}
-          styles={styles}
-        />
-        {data.experiences.length > 0 && (
+        {personal.summary ? (
           <>
-            <Text style={styles.sectionTitle}>{t(lang, "experience", config.cvProfile)}</Text>
-            {data.experiences.map((exp) => (
-              <View key={exp.id} style={{ marginBottom: 8 }}>
-                <Text style={styles.itemTitle}>{exp.position}, {exp.company}</Text>
-                <Text style={styles.itemSub}>{[exp.startDate, exp.endDate || (exp.current ? t(lang, "present") : "")].filter(Boolean).join(" — ")}</Text>
-                {exp.highlights.map((h, i) => <Text key={i} style={styles.bullet}>• {h}</Text>)}
-              </View>
-            ))}
+            <Text style={styles.sectionTitle}>{t(lang, "summary")}</Text>
+            <Text style={{ fontSize: tk.sm }}>{personal.summary}</Text>
           </>
-        )}
-        <PdfCustomSections sections={data.customSections} styles={{ sectionTitle: styles.sectionTitle, bullet: styles.bullet }} />
+        ) : null}
+        <PdfModernBody
+          data={data}
+          config={config}
+          styles={academicBody}
+          options={{ educationVariant: "academic" }}
+        />
       </Page>
     </Document>
   );

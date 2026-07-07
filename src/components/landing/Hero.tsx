@@ -34,9 +34,9 @@ export function Hero() {
           </h1>
 
           <p className="mt-5 text-lg leading-relaxed text-zinc-500">
-            7 template modern, mode ATS, skor real-time, dan download PDF
-            instan — semua di browser, tanpa login. Preview = hasil PDF,
-            data cuma di perangkat kamu.
+            7 template modern + mode ATS, skor real-time, preview WYSIWYG,
+            dan download PDF A4 — semua di browser, tanpa login. Data cuma
+            di perangkat kamu.
           </p>
 
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">

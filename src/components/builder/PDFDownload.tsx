@@ -6,6 +6,7 @@ import { useDeferredValue, useMemo } from "react";
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { getUiDict } from "@/lib/ui-i18n";
+import { prepareModernPdfData } from "@/lib/pdf-modern-data";
 import { sanitizeResumeData } from "@/lib/sanitize";
 import ATSResumeDocument from "@/components/pdf/ATSResumeDocument";
 import ModernResumeDocument from "@/components/pdf/ModernResumeDocument";
@@ -25,7 +26,10 @@ export function PDFDownload() {
       );
     }
     return (
-      <ModernResumeDocument data={deferredData} config={deferredConfig} />
+      <ModernResumeDocument
+        data={prepareModernPdfData(deferredData)}
+        config={deferredConfig}
+      />
     );
   }, [deferredData, deferredConfig]);
 
