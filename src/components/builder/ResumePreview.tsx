@@ -6,6 +6,10 @@ import { PROSE_JUSTIFY } from "@/lib/document-layout";
 import { t, tAts } from "@/lib/i18n";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
 import { formatAtsPeriodLine } from "@/lib/pdf-ats-layout";
+import {
+  hasSkillContent,
+  normalizeSkillGroups,
+} from "@/lib/skill-groups";
 import { getPreviewTypography } from "@/lib/typography";
 import { shouldShowPhoto } from "@/lib/photo-display";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
@@ -367,10 +371,10 @@ function PreviewSections({
               {exp.highlights.map((h, i) => (
                 <p
                   key={i}
-                  className="ml-3 text-zinc-600"
+                  className={`text-zinc-600 ${isAts ? "" : "ml-3"}`}
                   style={{ fontSize: ty.sizes.sm }}
                 >
-                  • {h}
+                  {isAts ? h : `• ${h}`}
                 </p>
               ))}
             </div>
@@ -445,10 +449,10 @@ function PreviewSections({
               {org.highlights.map((h, i) => (
                 <p
                   key={i}
-                  className="ml-3 text-zinc-600"
+                  className={`text-zinc-600 ${isAts ? "" : "ml-3"}`}
                   style={{ fontSize: ty.sizes.sm }}
                 >
-                  • {h}
+                  {isAts ? h : `• ${h}`}
                 </p>
               ))}
             </div>
@@ -457,29 +461,30 @@ function PreviewSections({
       ) : null,
 
     skills:
-      (data.technicalSkills.length > 0 || data.softSkills.length > 0) &&
-      config.template !== "professional" ? (
+      hasSkillContent(data) && config.template !== "professional" ? (
         isAts ? (
           <>
             <SectionTitle>{sectionLabel("technicalSkills")}</SectionTitle>
-            {data.technicalSkills.length > 0 && (
-              <p className="mb-2 text-zinc-600" style={{ fontSize: ty.sizes.sm }}>
-                {data.technicalSkills.join(" · ")}
-              </p>
-            )}
-            {data.softSkills.length > 0 && (
-              <>
-                <p
-                  className="font-semibold text-zinc-700"
-                  style={{ fontSize: ty.sizes.sm, fontWeight: ty.headingWeight }}
-                >
-                  {t(lang, "softSkills")}
-                </p>
-                <p className="text-zinc-600" style={{ fontSize: ty.sizes.sm }}>
-                  {data.softSkills.join(" · ")}
-                </p>
-              </>
-            )}
+            {normalizeSkillGroups(data)
+              .filter((g) => g.skills.length > 0)
+              .map((group) => (
+                <div key={group.id} className="mb-2">
+                  {group.name ? (
+                    <p
+                      className="font-semibold text-zinc-700"
+                      style={{
+                        fontSize: ty.sizes.sm,
+                        fontWeight: ty.headingWeight,
+                      }}
+                    >
+                      {group.name}
+                    </p>
+                  ) : null}
+                  <p className="text-zinc-600" style={{ fontSize: ty.sizes.sm }}>
+                    {group.skills.join(" · ")}
+                  </p>
+                </div>
+              ))}
           </>
         ) : (
           <>

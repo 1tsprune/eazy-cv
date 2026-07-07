@@ -78,13 +78,30 @@ export const sampleResumeState: ResumeState = {
         ],
       },
     ],
+    skillGroups: [
+      {
+        id: createId(),
+        name: "Frameworks",
+        skills: ["React", "Next.js", "Node.js", "TypeScript"],
+      },
+      {
+        id: createId(),
+        name: "Tools",
+        skills: ["PostgreSQL", "Git"],
+      },
+      {
+        id: createId(),
+        name: "Soft Skills",
+        skills: ["Komunikasi", "Problem solving", "Kerja tim"],
+      },
+    ],
     technicalSkills: [
       "React",
-      "TypeScript",
+      "Next.js",
       "Node.js",
+      "TypeScript",
       "PostgreSQL",
       "Git",
-      "Next.js",
     ],
     softSkills: [
       "Komunikasi",

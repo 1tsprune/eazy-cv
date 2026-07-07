@@ -1,6 +1,10 @@
 import { APP } from "./config";
 import { defaultResumeState } from "./default-data";
 import { normalizeLanguageLevel } from "./language-levels";
+import {
+  normalizeSkillGroups,
+  syncLegacySkills,
+} from "./skill-groups";
 import { DEFAULT_TYPOGRAPHY, normalizeFontFamily } from "./typography";
 import { DEFAULT_SECTION_ORDER, type ResumeState, type SectionKey } from "./types";
 
@@ -18,15 +22,24 @@ function normalizeSectionOrder(order: SectionKey[] | undefined): SectionKey[] {
 }
 
 function normalizeState(parsed: ResumeState): ResumeState {
+  const mergedData = {
+    ...defaultResumeState.data,
+    ...parsed.data,
+    organizations: parsed.data?.organizations ?? [],
+    languages: (parsed.data?.languages ?? []).map((lang) => ({
+      ...lang,
+      level: normalizeLanguageLevel(lang.level ?? ""),
+    })),
+  };
+  const skillGroups = normalizeSkillGroups(mergedData);
+  const legacySkills = syncLegacySkills(skillGroups);
+
   return {
     data: {
-      ...defaultResumeState.data,
-      ...parsed.data,
-      organizations: parsed.data?.organizations ?? [],
-      languages: (parsed.data?.languages ?? []).map((lang) => ({
-        ...lang,
-        level: normalizeLanguageLevel(lang.level ?? ""),
-      })),
+      ...mergedData,
+      skillGroups,
+      technicalSkills: legacySkills.technicalSkills,
+      softSkills: legacySkills.softSkills,
     },
     config: {
       ...defaultResumeState.config,

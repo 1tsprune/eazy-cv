@@ -19,6 +19,7 @@ export const defaultResumeData: ResumeData = {
   experiences: [],
   educations: [],
   organizations: [],
+  skillGroups: [],
   technicalSkills: [],
   softSkills: [],
   projects: [],

@@ -1,4 +1,5 @@
 import { createId } from "./default-data";
+import { normalizeSkillGroups } from "./skill-groups";
 import type { ResumeData } from "./types";
 
 function parseCsv(text: string): Record<string, string>[] {
@@ -336,7 +337,11 @@ export function mergeLinkedInData(
   current: ResumeData,
   imported: Partial<ResumeData>,
 ): ResumeData {
-  return {
+  const technicalSkills = imported.technicalSkills?.length
+    ? imported.technicalSkills
+    : current.technicalSkills;
+  const softSkills = current.softSkills;
+  const merged: ResumeData = {
     ...current,
     personal: { ...current.personal, ...imported.personal },
     experiences: imported.experiences?.length
@@ -345,10 +350,8 @@ export function mergeLinkedInData(
     educations: imported.educations?.length
       ? imported.educations
       : current.educations,
-    technicalSkills: imported.technicalSkills?.length
-      ? imported.technicalSkills
-      : current.technicalSkills,
-    softSkills: current.softSkills,
+    technicalSkills,
+    softSkills,
     projects: current.projects,
     certifications: imported.certifications?.length
       ? imported.certifications
@@ -357,5 +360,15 @@ export function mergeLinkedInData(
       ? imported.languages
       : current.languages,
     customSections: current.customSections,
+    skillGroups: current.skillGroups,
+  };
+
+  return {
+    ...merged,
+    skillGroups: normalizeSkillGroups({
+      ...merged,
+      technicalSkills,
+      softSkills,
+    }),
   };
 }

@@ -1,3 +1,4 @@
+import { countSoftSkills, countTechnicalSkills } from "./skill-groups";
 import type { Language, ResumeData } from "./types";
 
 export interface AtsCheck {
@@ -141,13 +142,13 @@ export function calculateAtsScore(
     {
       id: "tech-skills",
       ...t.techSkills,
-      passed: data.technicalSkills.length >= 3,
+      passed: countTechnicalSkills(data) >= 3,
       weight: 12,
     },
     {
       id: "soft-skills",
       ...t.softSkills,
-      passed: data.softSkills.length >= 2,
+      passed: countSoftSkills(data) >= 2,
       weight: 6,
     },
     {

@@ -8,6 +8,11 @@ import {
 } from "@react-pdf/renderer";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
 import { formatAtsPeriodLine, getAtsPdfLayout } from "@/lib/pdf-ats-layout";
+import {
+  chunkSkillLines,
+  hasSkillContent,
+  normalizeSkillGroups,
+} from "@/lib/skill-groups";
 import { t, tAts } from "@/lib/i18n";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
 import { cvContactItems, PdfContactInline } from "./pdf-contact";
@@ -23,15 +28,6 @@ function splitLines(text: string): string[] {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
-}
-
-function chunkSkillLines(skills: string[], perLine = 7): string[] {
-  if (skills.length <= perLine) return [skills.join(" · ")];
-  const lines: string[] = [];
-  for (let i = 0; i < skills.length; i += perLine) {
-    lines.push(skills.slice(i, i + perLine).join(" · "));
-  }
-  return lines;
 }
 
 function SectionHeading({
@@ -85,8 +81,8 @@ export default function ATSResumeDocument({ data, config }: Props) {
                 </Text>
               ) : null}
               {exp.highlights.map((h, i) => (
-                <Text key={i} style={styles.bullet}>
-                  • {h}
+                <Text key={i} style={styles.paragraph}>
+                  {h}
                 </Text>
               ))}
             </View>
@@ -118,8 +114,8 @@ export default function ATSResumeDocument({ data, config }: Props) {
                   .join(" · ")}
               </Text>
               {splitLines(edu.description).map((line, i) => (
-                <Text key={i} style={styles.bullet}>
-                  • {line}
+                <Text key={i} style={styles.paragraph}>
+                  {line}
                 </Text>
               ))}
             </View>
@@ -150,8 +146,8 @@ export default function ATSResumeDocument({ data, config }: Props) {
                 )}
               </Text>
               {org.highlights.map((h, i) => (
-                <Text key={i} style={styles.bullet}>
-                  • {h}
+                <Text key={i} style={styles.paragraph}>
+                  {h}
                 </Text>
               ))}
             </View>
@@ -159,28 +155,26 @@ export default function ATSResumeDocument({ data, config }: Props) {
         </>
       ) : null,
 
-    skills:
-      data.technicalSkills.length > 0 || data.softSkills.length > 0 ? (
+    skills: hasSkillContent(data) ? (
         <>
           <SectionHeading
             title={tAts(language, "technicalSkills")}
             style={layout}
           />
-          {data.technicalSkills.length > 0
-            ? chunkSkillLines(data.technicalSkills).map((line, i) => (
-                <Text key={i} style={styles.skillsLine}>
-                  {line}
-                </Text>
-              ))
-            : null}
-          {data.softSkills.length > 0 ? (
-            <>
-              <Text style={styles.skillGroup}>{t(language, "softSkills")}</Text>
-              <Text style={styles.skillsLine}>
-                {data.softSkills.join(" · ")}
-              </Text>
-            </>
-          ) : null}
+          {normalizeSkillGroups(data)
+            .filter((g) => g.skills.length > 0)
+            .map((group) => (
+              <View key={group.id}>
+                {group.name ? (
+                  <Text style={styles.skillGroup}>{group.name}</Text>
+                ) : null}
+                {chunkSkillLines(group.skills).map((line, i) => (
+                  <Text key={i} style={styles.skillsLine}>
+                    {line}
+                  </Text>
+                ))}
+              </View>
+            ))}
         </>
       ) : null,
 

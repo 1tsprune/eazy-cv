@@ -18,6 +18,10 @@ import {
   loadFromStorage,
   saveToStorage,
 } from "@/lib/storage";
+import {
+  normalizeSkillGroups,
+  syncLegacySkills,
+} from "@/lib/skill-groups";
 import type {
   Certification,
   CoverLetterData,
@@ -31,6 +35,7 @@ import type {
   ResumeConfig,
   ResumeData,
   ResumeState,
+  SkillGroup,
 } from "@/lib/types";
 
 interface ResumeContextValue {
@@ -62,6 +67,10 @@ interface ResumeContextValue {
   removeLanguage: (id: string) => void;
   setTechnicalSkills: (skills: string[]) => void;
   setSoftSkills: (skills: string[]) => void;
+  addSkillGroup: () => void;
+  updateSkillGroup: (id: string, group: Partial<SkillGroup>) => void;
+  removeSkillGroup: (id: string) => void;
+  reorderSkillGroups: (groups: SkillGroup[]) => void;
   reset: () => void;
   saveJson: () => void;
   loadJson: (file: File) => Promise<void>;
@@ -377,19 +386,125 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  const setTechnicalSkills = useCallback((skills: string[]) => {
+  const applySkillGroups = useCallback((groups: SkillGroup[]) => {
+    const legacy = syncLegacySkills(groups);
     setState((s) => ({
       ...s,
-      data: { ...s.data, technicalSkills: skills },
+      data: {
+        ...s.data,
+        skillGroups: groups,
+        technicalSkills: legacy.technicalSkills,
+        softSkills: legacy.softSkills,
+      },
     }));
   }, []);
 
-  const setSoftSkills = useCallback((skills: string[]) => {
-    setState((s) => ({
-      ...s,
-      data: { ...s.data, softSkills: skills },
-    }));
+  const setTechnicalSkills = useCallback((skills: string[]) => {
+    setState((s) => {
+      const groups = normalizeSkillGroups(s.data);
+      const techIdx = groups.findIndex(
+        (g) => g.name.toLowerCase().includes("technical"),
+      );
+      if (techIdx >= 0) {
+        groups[techIdx] = { ...groups[techIdx], skills };
+      } else {
+        groups.unshift({
+          id: createId(),
+          name: "Technical Skills",
+          skills,
+        });
+      }
+      const legacy = syncLegacySkills(groups);
+      return {
+        ...s,
+        data: {
+          ...s.data,
+          skillGroups: groups,
+          technicalSkills: legacy.technicalSkills,
+          softSkills: legacy.softSkills,
+        },
+      };
+    });
   }, []);
+
+  const setSoftSkills = useCallback((skills: string[]) => {
+    setState((s) => {
+      const groups = normalizeSkillGroups(s.data);
+      const softIdx = groups.findIndex((g) =>
+        g.name.toLowerCase().includes("soft"),
+      );
+      if (softIdx >= 0) {
+        groups[softIdx] = { ...groups[softIdx], skills };
+      } else {
+        groups.push({
+          id: createId(),
+          name: "Soft Skills",
+          skills,
+        });
+      }
+      const legacy = syncLegacySkills(groups);
+      return {
+        ...s,
+        data: {
+          ...s.data,
+          skillGroups: groups,
+          technicalSkills: legacy.technicalSkills,
+          softSkills: legacy.softSkills,
+        },
+      };
+    });
+  }, []);
+
+  const addSkillGroup = useCallback(() => {
+    setState((s) => {
+      const groups = [
+        ...normalizeSkillGroups(s.data),
+        { id: createId(), name: "", skills: [] },
+      ];
+      return { ...s, data: { ...s.data, skillGroups: groups } };
+    });
+  }, []);
+
+  const updateSkillGroup = useCallback(
+    (id: string, group: Partial<SkillGroup>) => {
+      setState((s) => {
+        const groups = normalizeSkillGroups(s.data).map((g) =>
+          g.id === id ? { ...g, ...group } : g,
+        );
+        const legacy = syncLegacySkills(groups);
+        return {
+          ...s,
+          data: {
+            ...s.data,
+            skillGroups: groups,
+            technicalSkills: legacy.technicalSkills,
+            softSkills: legacy.softSkills,
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  const removeSkillGroup = useCallback((id: string) => {
+    setState((s) => {
+      const groups = normalizeSkillGroups(s.data).filter((g) => g.id !== id);
+      const legacy = syncLegacySkills(groups);
+      return {
+        ...s,
+        data: {
+          ...s.data,
+          skillGroups: groups,
+          technicalSkills: legacy.technicalSkills,
+          softSkills: legacy.softSkills,
+        },
+      };
+    });
+  }, []);
+
+  const reorderSkillGroups = useCallback((skillGroups: SkillGroup[]) => {
+    applySkillGroups(skillGroups);
+  }, [applySkillGroups]);
 
   const reset = useCallback(() => {
     setState(defaultResumeState);
@@ -510,6 +625,10 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
       removeLanguage,
       setTechnicalSkills,
       setSoftSkills,
+      addSkillGroup,
+      updateSkillGroup,
+      removeSkillGroup,
+      reorderSkillGroups,
       reset,
       saveJson,
       loadJson,
@@ -552,6 +671,10 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
       removeLanguage,
       setTechnicalSkills,
       setSoftSkills,
+      addSkillGroup,
+      updateSkillGroup,
+      removeSkillGroup,
+      reorderSkillGroups,
       reset,
       saveJson,
       loadJson,

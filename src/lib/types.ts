@@ -105,12 +105,21 @@ export interface CustomSection {
   showInAts: boolean;
 }
 
+export interface SkillGroup {
+  id: string;
+  name: string;
+  skills: string[];
+}
+
 export interface ResumeData {
   personal: PersonalInfo;
   experiences: Experience[];
   educations: Education[];
   organizations: Organization[];
+  skillGroups: SkillGroup[];
+  /** @deprecated synced from skillGroups — kept for import/export compat */
   technicalSkills: string[];
+  /** @deprecated synced from skillGroups — kept for import/export compat */
   softSkills: string[];
   projects: Project[];
   certifications: Certification[];

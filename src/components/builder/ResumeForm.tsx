@@ -24,6 +24,7 @@ import { SectionCard } from "@/components/ui/SectionCard";
 import { TagInput } from "@/components/ui/TagInput";
 import { SortableList } from "@/components/ui/SortableList";
 import { PhotoUpload } from "@/components/ui/PhotoUpload";
+import { normalizeSkillGroups } from "@/lib/skill-groups";
 import { getUiDict } from "@/lib/ui-i18n";
 
 const ITEM_CARD =
@@ -61,8 +62,10 @@ export function ResumeForm() {
     updateLanguage,
     removeLanguage,
     reorderLanguages,
-    setTechnicalSkills,
-    setSoftSkills,
+    addSkillGroup,
+    updateSkillGroup,
+    removeSkillGroup,
+    reorderSkillGroups,
     addCustomSection,
     updateCustomSection,
     removeCustomSection,
@@ -447,21 +450,59 @@ export function ResumeForm() {
         </button>
       </SectionCard>
 
-      <SectionCard title={t.skills} icon={<Code className="h-4 w-4" />}>
-        <div className="space-y-3">
-          <TagInput
-            label={t.technicalSkills}
-            tags={data.technicalSkills}
-            onChange={setTechnicalSkills}
-            placeholder="React, TypeScript, Python..."
-          />
-          <TagInput
-            label={t.softSkills}
-            tags={data.softSkills}
-            onChange={setSoftSkills}
-            placeholder="Leadership, Communication..."
-          />
-        </div>
+      <SectionCard
+        title={t.skills}
+        icon={<Code className="h-4 w-4" />}
+        badge={`${normalizeSkillGroups(data).length}`}
+      >
+        <SortableList
+          items={normalizeSkillGroups(data)}
+          keyExtractor={(group) => group.id}
+          onReorder={reorderSkillGroups}
+          hint={t.dragItemsHint}
+          renderItem={(group, idx) => (
+            <div className={ITEM_CARD}>
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-medium text-zinc-400">
+                  #{idx + 1}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeSkillGroup(group.id)}
+                  className="text-zinc-400 hover:text-rose-500"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="space-y-3">
+                <Input
+                  label={t.skillGroupName}
+                  value={group.name}
+                  onChange={(e) =>
+                    updateSkillGroup(group.id, { name: e.target.value })
+                  }
+                  placeholder={t.skillGroupNamePlaceholder}
+                />
+                <TagInput
+                  label={t.skillsInGroup}
+                  tags={group.skills}
+                  onChange={(skills) =>
+                    updateSkillGroup(group.id, { skills })
+                  }
+                  placeholder={t.skillGroupSkillsPlaceholder}
+                />
+              </div>
+            </div>
+          )}
+        />
+        <button
+          type="button"
+          onClick={addSkillGroup}
+          className={`mt-3 ${ADD_BTN}`}
+        >
+          <Plus className="h-4 w-4" />
+          {t.addSkillGroup}
+        </button>
       </SectionCard>
 
       <SectionCard
