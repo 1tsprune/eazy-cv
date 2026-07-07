@@ -418,7 +418,7 @@ function ExecutiveTemplate({ data, config }: Props) {
       backgroundColor: colors.primary,
       color: "#ffffff",
       padding: MODERN_PAD_PT,
-      marginBottom: 14,
+      marginBottom: 10,
       textAlign: "center",
       alignItems: "center",
     },
@@ -447,7 +447,7 @@ function ExecutiveTemplate({ data, config }: Props) {
       color: colors.primary,
       textTransform: "uppercase",
       letterSpacing: 2,
-      marginTop: 12,
+      marginTop: 9,
       marginBottom: 6,
       borderBottomWidth: 1,
       borderBottomColor: "#e5e5e5",
@@ -523,7 +523,7 @@ function CreativeTemplate({ data, config }: Props) {
       flexDirection: "row",
       alignItems: "center",
     },
-    name: { fontSize: tk.display, fontFamily: tk.headingFamily },
+    name: { fontSize: tk.display, fontFamily: tk.headingFamily, lineHeight: 1.1 },
     title: { fontSize: tk.md, marginTop: 4, color: "#ffffff", opacity: 0.9 },
     contact: {
       fontSize: tk.xs,
@@ -712,7 +712,8 @@ function AcademicTemplate({ data, config }: Props) {
 
   const styles = StyleSheet.create({
     page: {
-      padding: MODERN_PAD_LG_PT,
+      paddingHorizontal: MODERN_PAD_LG_PT,
+      paddingTop: MODERN_PAD_PT,
       paddingBottom: PDF_MAIN_BOTTOM_PAD,
       fontFamily: tk.fontFamily,
       fontSize: tk.base,
@@ -722,8 +723,8 @@ function AcademicTemplate({ data, config }: Props) {
       textAlign: "center",
       borderBottomWidth: 1,
       borderBottomColor: "#333",
-      paddingBottom: 12,
-      marginBottom: 14,
+      paddingBottom: 10,
+      marginBottom: 10,
       alignItems: "center",
     },
     name: { fontSize: tk.xl, fontFamily: tk.headingFamily },

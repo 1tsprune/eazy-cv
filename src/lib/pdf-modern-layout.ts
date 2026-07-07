@@ -14,7 +14,7 @@ export const MODERN_PAD_PT = 18;
 /** Tailwind p-8 → 32px → 24pt (academic) */
 export const MODERN_PAD_LG_PT = 24;
 
-export const PDF_MAIN_BOTTOM_PAD = 28;
+export const PDF_MAIN_BOTTOM_PAD = 16;
 
 /** @deprecated use MODERN_PAD_PT */
 export const PDF_PAGE_PAD_MD = MODERN_PAD_PT;

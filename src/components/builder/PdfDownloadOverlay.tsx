@@ -51,7 +51,7 @@ export function PdfDownloadOverlay({
           rel="noopener noreferrer"
           className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-[#cb3527] px-4 py-2 text-[0.72rem] font-semibold text-white no-underline"
         >
-          ☕ {t.downloadOverlayDonate}
+          🍧 {t.downloadOverlayDonate}
         </a>
       </div>
       <div className="mt-8 flex w-full max-w-[200px] flex-col items-center gap-2">

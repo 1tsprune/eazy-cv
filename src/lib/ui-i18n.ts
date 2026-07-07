@@ -72,7 +72,7 @@ const dict = {
     downloadOverlayGreeting: (name: string) => `Halo, ${name}!`,
     downloadOverlayThanks:
       "Terima kasih sudah pakai Eazy CV — gratis, tanpa iklan. Kalau bermanfaat, dukungan kecil sangat berarti.",
-    downloadOverlayDonate: "Traktir teh ☕",
+    downloadOverlayDonate: "Traktir cendol",
     downloadOverlayProcessing: "Menyiapkan PDF…",
     downloadOverlayCountdown: (s: number) =>
       s > 0 ? `${s}s` : "Selesai",
@@ -254,7 +254,7 @@ const dict = {
     downloadOverlayGreeting: (name: string) => `Hello, ${name}!`,
     downloadOverlayThanks:
       "Thanks for using Eazy CV — free, no ads. A small tip means a lot.",
-    downloadOverlayDonate: "Buy tea ☕",
+    downloadOverlayDonate: "Buy me cendol",
     downloadOverlayProcessing: "Preparing PDF…",
     downloadOverlayCountdown: (s: number) =>
       s > 0 ? `${s}s` : "Done",

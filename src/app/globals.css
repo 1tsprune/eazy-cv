@@ -18,6 +18,12 @@
   --font-sans: var(--font-outfit), system-ui, sans-serif;
 }
 
+html {
+  /* Reserve scrollbar space always so switching tabs (short Skor vs long
+     Isi CV/Preview) doesn't change viewport width and shift the fixed bottom nav. */
+  scrollbar-gutter: stable;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
