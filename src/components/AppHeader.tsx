@@ -324,7 +324,7 @@ export function AppHeader() {
                 <p className="mb-2 mt-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                   {t.fontFamily}
                 </p>
-                <div className="grid grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
                   {CV_FONT_FAMILIES.map((font) => (
                     <button
                       key={font.id}

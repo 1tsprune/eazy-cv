@@ -19,7 +19,12 @@ export type ColorTheme =
   | "amber"
   | "violet";
 
-export type CvFontFamily = "outfit" | "inter" | "serif" | "mono";
+export type CvFontFamily =
+  | "arial"
+  | "helvetica"
+  | "times"
+  | "calibri"
+  | "georgia";
 export type CvFontSize = "sm" | "md" | "lg";
 
 export interface PersonalInfo {

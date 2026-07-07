@@ -23,25 +23,24 @@ export function getAtsPdfLayout(config: ResumeConfig) {
 
   const sheet = {
     page: {
-      paddingTop: 38,
-      paddingBottom: 38,
-      paddingHorizontal: 54,
+      paddingTop: 40,
+      paddingBottom: 40,
+      paddingHorizontal: 52,
       fontFamily: tk.fontFamily,
       fontSize: tk.sm,
-      lineHeight: 1.45,
+      lineHeight: 1.42,
       color: "#111111",
     },
     name: {
-      fontSize: tk.lg,
+      fontSize: tk.xl,
       fontFamily: tk.headingFamily,
-      marginBottom: 3,
-      letterSpacing: -0.2,
+      marginBottom: 2,
     },
     headline: {
-      fontSize: tk.md,
+      fontSize: tk.sm,
       fontFamily: tk.bodyFamily,
-      color: "#3d3d3d",
-      marginBottom: 7,
+      color: "#333333",
+      marginBottom: 6,
     },
     contact: {
       fontSize: tk.xs,

@@ -4,10 +4,11 @@ export const CV_FONT_FAMILIES: {
   id: CvFontFamily;
   label: string;
 }[] = [
-  { id: "outfit", label: "Outfit" },
-  { id: "inter", label: "Inter" },
-  { id: "serif", label: "Serif" },
-  { id: "mono", label: "Mono" },
+  { id: "arial", label: "Arial" },
+  { id: "helvetica", label: "Helvetica" },
+  { id: "times", label: "Times New Roman" },
+  { id: "calibri", label: "Calibri" },
+  { id: "georgia", label: "Georgia" },
 ];
 
 export const CV_FONT_SIZES: { id: CvFontSize }[] = [
@@ -16,11 +17,33 @@ export const CV_FONT_SIZES: { id: CvFontSize }[] = [
   { id: "lg" },
 ];
 
+const LEGACY_FONT_MAP: Record<string, CvFontFamily> = {
+  outfit: "arial",
+  inter: "arial",
+  serif: "times",
+  mono: "helvetica",
+};
+
+export function normalizeFontFamily(value?: string): CvFontFamily {
+  if (
+    value === "arial" ||
+    value === "helvetica" ||
+    value === "times" ||
+    value === "calibri" ||
+    value === "georgia"
+  ) {
+    return value;
+  }
+  if (value && LEGACY_FONT_MAP[value]) return LEGACY_FONT_MAP[value];
+  return "arial";
+}
+
 const PREVIEW_FONTS: Record<CvFontFamily, string> = {
-  outfit: "var(--font-outfit), system-ui, sans-serif",
-  inter: "var(--font-inter), system-ui, sans-serif",
-  serif: "Georgia, 'Times New Roman', Times, serif",
-  mono: "'Courier New', Courier, monospace",
+  arial: "Arial, Helvetica, sans-serif",
+  helvetica: "Helvetica, Arial, sans-serif",
+  times: "'Times New Roman', Times, serif",
+  calibri: "Calibri, 'Segoe UI', Arial, sans-serif",
+  georgia: "Georgia, 'Times New Roman', Times, serif",
 };
 
 const SIZE_SCALE = {
@@ -29,14 +52,16 @@ const SIZE_SCALE = {
   lg: { base: 12, xs: 11, sm: 12, md: 13, lg: 18, xl: 22, display: 30, lh: 1.55 },
 } as const;
 
+/** @react-pdf/renderer built-in fonts (Calibri → Helvetica fallback in PDF) */
 const PDF_FONTS: Record<
   CvFontFamily,
   { regular: string; bold: string }
 > = {
-  outfit: { regular: "Helvetica", bold: "Helvetica-Bold" },
-  inter: { regular: "Helvetica", bold: "Helvetica-Bold" },
-  serif: { regular: "Times-Roman", bold: "Times-Bold" },
-  mono: { regular: "Courier", bold: "Courier-Bold" },
+  arial: { regular: "Helvetica", bold: "Helvetica-Bold" },
+  helvetica: { regular: "Helvetica", bold: "Helvetica-Bold" },
+  times: { regular: "Times-Roman", bold: "Times-Bold" },
+  calibri: { regular: "Helvetica", bold: "Helvetica-Bold" },
+  georgia: { regular: "Times-Roman", bold: "Times-Bold" },
 };
 
 const PDF_SIZE = {
@@ -64,11 +89,16 @@ export type PdfTypography = {
   bodyWeight: "normal" | "bold";
 };
 
+function resolveFont(config: ResumeConfig): CvFontFamily {
+  return normalizeFontFamily(config.fontFamily);
+}
+
 export function getPreviewTypography(config: ResumeConfig): PreviewTypography {
+  const font = resolveFont(config);
   const sizes = SIZE_SCALE[config.fontSize ?? "md"];
   const bold = config.fontBold ?? false;
   return {
-    fontFamily: PREVIEW_FONTS[config.fontFamily ?? "outfit"],
+    fontFamily: PREVIEW_FONTS[font],
     fontWeight: bold ? 500 : 400,
     headingWeight: bold ? 700 : 600,
     sizes,
@@ -77,7 +107,8 @@ export function getPreviewTypography(config: ResumeConfig): PreviewTypography {
 }
 
 export function getPdfTypography(config: ResumeConfig): PdfTypography {
-  const fonts = PDF_FONTS[config.fontFamily ?? "outfit"];
+  const font = resolveFont(config);
+  const fonts = PDF_FONTS[font];
   const sizes = PDF_SIZE[config.fontSize ?? "md"];
   const bold = config.fontBold ?? false;
   return {
@@ -90,14 +121,15 @@ export function getPdfTypography(config: ResumeConfig): PdfTypography {
 }
 
 export const DEFAULT_TYPOGRAPHY = {
-  fontFamily: "outfit" as CvFontFamily,
+  fontFamily: "arial" as CvFontFamily,
   fontSize: "md" as CvFontSize,
   fontBold: false,
 };
 
 export function getPdfSheetTokens(config: ResumeConfig) {
   const ty = getPdfTypography(config);
-  const fonts = PDF_FONTS[config.fontFamily ?? "outfit"];
+  const font = resolveFont(config);
+  const fonts = PDF_FONTS[font];
   const bold = config.fontBold ?? false;
   return {
     fontFamily: fonts.regular,

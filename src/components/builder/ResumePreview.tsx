@@ -254,7 +254,7 @@ export function ResumePreview({ data, config }: Props) {
                 <h1
                   style={{
                     color: isAts ? "#111" : colors.primary,
-                    fontSize: isAts ? ty.sizes.lg : ty.sizes.xl,
+                    fontSize: isAts ? ty.sizes.xl : ty.sizes.xl,
                     fontWeight: ty.headingWeight,
                     letterSpacing: isAts ? "-0.02em" : undefined,
                   }}

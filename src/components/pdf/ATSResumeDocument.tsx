@@ -23,6 +23,15 @@ function splitLines(text: string): string[] {
     .filter(Boolean);
 }
 
+function chunkSkillLines(skills: string[], perLine = 7): string[] {
+  if (skills.length <= perLine) return [skills.join(" · ")];
+  const lines: string[] = [];
+  for (let i = 0; i < skills.length; i += perLine) {
+    lines.push(skills.slice(i, i + perLine).join(" · "));
+  }
+  return lines;
+}
+
 function SectionHeading({
   title,
   style,
@@ -162,11 +171,13 @@ export default function ATSResumeDocument({ data, config }: Props) {
             title={tAts(language, "technicalSkills")}
             style={layout}
           />
-          {data.technicalSkills.length > 0 ? (
-            <Text style={styles.skillsLine}>
-              {data.technicalSkills.join(" · ")}
-            </Text>
-          ) : null}
+          {data.technicalSkills.length > 0
+            ? chunkSkillLines(data.technicalSkills).map((line, i) => (
+                <Text key={i} style={styles.skillsLine}>
+                  {line}
+                </Text>
+              ))
+            : null}
           {data.softSkills.length > 0 ? (
             <>
               <Text style={styles.skillGroup}>{t(language, "softSkills")}</Text>

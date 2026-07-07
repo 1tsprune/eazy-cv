@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Outfit } from "next/font/google";
 import { APP } from "@/lib/config";
 import "./globals.css";
 
 const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-outfit",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${outfit.variable} ${inter.variable} h-full`}
+      className={`${outfit.variable} h-full`}
       suppressHydrationWarning
     >
       <body className="min-h-full font-sans antialiased">{children}</body>
