@@ -1,5 +1,5 @@
 import { APP } from "./config";
-import { DEFAULT_CV_PROFILE } from "./cv-profile";
+import { DEFAULT_CV_PROFILE, getRecommendedSectionOrder } from "./cv-profile";
 import { defaultResumeState } from "./default-data";
 import { normalizeLanguageLevel } from "./language-levels";
 import { splitAtsProseLines } from "./pdf-ats-layout";
@@ -10,7 +10,6 @@ import {
 import { DEFAULT_TYPOGRAPHY, normalizeFontFamily } from "./typography";
 import { normalizeColorTheme } from "./template-theme";
 import {
-  DEFAULT_SECTION_ORDER,
   normalizeModernTemplate,
   type ResumeState,
   type SectionKey,
@@ -19,14 +18,10 @@ import {
 const STORAGE_KEY = `${APP.slug}-resume-v1`;
 const LEGACY_STORAGE_KEYS = ["cvcepat-resume-v1", "cvforge-resume-v1"];
 
-function normalizeSectionOrder(order: SectionKey[] | undefined): SectionKey[] {
-  const base = order ? [...order] : [...DEFAULT_SECTION_ORDER];
-  if (!base.includes("organizations")) {
-    const eduIdx = base.indexOf("education");
-    const at = eduIdx >= 0 ? eduIdx + 1 : base.length;
-    base.splice(at, 0, "organizations");
-  }
-  return base;
+function normalizeSectionOrder(
+  profile: ResumeState["config"]["cvProfile"],
+): SectionKey[] {
+  return getRecommendedSectionOrder(profile ?? DEFAULT_CV_PROFILE);
 }
 
 function normalizeEducationHighlights(
@@ -67,8 +62,10 @@ function normalizeState(parsed: ResumeState): ResumeState {
     config: {
       ...defaultResumeState.config,
       ...parsed.config,
-      sectionOrder: normalizeSectionOrder(parsed.config?.sectionOrder),
       cvProfile: parsed.config?.cvProfile ?? DEFAULT_CV_PROFILE,
+      sectionOrder: normalizeSectionOrder(
+        parsed.config?.cvProfile ?? DEFAULT_CV_PROFILE,
+      ),
       fontFamily: normalizeFontFamily(parsed.config?.fontFamily),
       fontSize: parsed.config?.fontSize ?? DEFAULT_TYPOGRAPHY.fontSize,
       fontBold: parsed.config?.fontBold ?? DEFAULT_TYPOGRAPHY.fontBold,

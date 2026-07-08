@@ -3,6 +3,7 @@
 import { PreviewPhoto } from "@/components/builder/PreviewPhoto";
 import { themeColors } from "@/lib/colors";
 import { PROSE_JUSTIFY } from "@/lib/document-layout";
+import { getRecommendedSectionOrder } from "@/lib/cv-profile";
 import { t, tAts } from "@/lib/i18n";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
 import {
@@ -378,7 +379,7 @@ function PreviewSections({
 }) {
   const lang = config.language;
   const isAts = config.exportMode === "ats";
-  const order = config.sectionOrder;
+  const order = getRecommendedSectionOrder(config.cvProfile);
   const sep = isAts ? " · " : " — ";
   const sectionLabel = (key: Parameters<typeof t>[1]) =>
     isAts

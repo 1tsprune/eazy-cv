@@ -52,7 +52,6 @@ export function ResumePdfProvider({ children }: { children: ReactNode }) {
       config.language,
       config.showPhoto,
       config.cvProfile,
-      config.sectionOrder,
     ],
   );
 

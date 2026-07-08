@@ -19,7 +19,7 @@ import { PreviewDesk } from "@/components/builder/PreviewDesk";
 import { TemplatePicker } from "@/components/builder/TemplatePicker";
 import { WelcomePanel } from "@/components/builder/WelcomePanel";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
-import { SectionOrderPanel } from "@/components/builder/SectionOrderPanel";
+
 import { useResume } from "@/context/ResumeContext";
 import { useTheme } from "@/context/ThemeContext";
 import { resolveCoverLetterBody } from "@/lib/cover-letter";
@@ -116,7 +116,6 @@ export function BuilderWorkspace() {
             <>
               <WelcomePanel />
               <TemplatePicker />
-              <SectionOrderPanel />
               <ResumeForm />
             </>
           )}
@@ -169,7 +168,6 @@ export function BuilderWorkspace() {
               <>
                 <WelcomePanel />
                 <TemplatePicker />
-                <SectionOrderPanel />
                 <ResumeForm />
               </>
             )}

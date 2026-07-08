@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Text, View, type Styles } from "@react-pdf/renderer";
+import { getRecommendedSectionOrder } from "@/lib/cv-profile";
 import { t } from "@/lib/i18n";
 import { getLanguageLevelLabel } from "@/lib/language-levels";
 import {
@@ -671,7 +672,7 @@ export function PdfModernBody({
 
   return (
     <>
-      {config.sectionOrder.map((key) => {
+      {getRecommendedSectionOrder(config.cvProfile).map((key) => {
         const block = blocks[key];
         if (!block) return null;
         return <View key={key}>{block}</View>;

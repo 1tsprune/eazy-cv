@@ -1,0 +1,20 @@
+{
+  "name": "get_style_guide",
+  "description": "This tool returns a style guide for design inspiration based on a set of tags.\n\nUsage:\n- USE for any design task that benefits from creative direction or visual inspiration\n- USE when creating landing pages, marketing sites, dashboards, or app screens\n- USE when the user asks for a specific aesthetic, style, or mood\n- USE when designing from scratch, on a blank canvas, or exploring new directions\n- USE when remixing, restyling, or creating variations\n- Consider SKIPPING only when the task is purely compositional (e.g., \"add a button here\") with an existing design system\n- Try to include mobile, website, or webapp tag if possible\n- ONLY use tags received from the earlier \"get_style_guide_tags\" call.\n- If a style guide name is explicitly provided, just pass the name to this tool to use it to retrieve a specific style guide by name instead of searching by tags.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "description": "Optional style guide name to retrieve a specific style guide by name instead of searching by tags",
+        "type": "string"
+      },
+      "tags": {
+        "description": "Optional: Specify 5-10 tags best fitting for the current design task based on the available set of tags returned by \"get_style_guide_tags\"",
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      }
+    }
+  }
+}

@@ -117,7 +117,7 @@ const dict = {
     importLinkedInHint:
       "Bukan login LinkedIn. Copy teks profil kamu atau upload file ZIP export LinkedIn. Semua diproses di browser — data tidak dikirim ke server.",
     exampleCvHint:
-      "Contoh CV fiktif: kerja, magang, atau pelajar. Ganti dengan info kamu.",
+      "Pilih contoh CV (kerja, magang, atau pelajar) — format & urutan section mengikuti jenis ini.",
     personalInfo: "Informasi Pribadi",
     fullName: "Nama Lengkap",
     jobTitle: "Jabatan / Title",
@@ -308,7 +308,7 @@ const dict = {
     importLinkedInHint:
       "Not a LinkedIn login. Paste your profile text or upload a LinkedIn data export ZIP. Everything runs in your browser — nothing is sent to a server.",
     exampleCvHint:
-      "Sample CV: job, internship, or student. Replace with your own info.",
+      "Pick a sample CV (job, internship, or student) — layout and section order follow that type.",
     personalInfo: "Personal Information",
     fullName: "Full Name",
     jobTitle: "Job Title",

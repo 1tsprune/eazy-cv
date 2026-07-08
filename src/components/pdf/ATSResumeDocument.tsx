@@ -14,6 +14,7 @@ import {
   hasSkillContent,
   normalizeSkillGroups,
 } from "@/lib/skill-groups";
+import { getRecommendedSectionOrder } from "@/lib/cv-profile";
 import { getPdfSheetTokens } from "@/lib/typography";
 import type { ResumeConfig, ResumeData, SectionKey } from "@/lib/types";
 import { PdfCustomSections } from "./pdf-blocks";
@@ -383,7 +384,7 @@ export default function ATSResumeDocument({ data, config }: Props) {
   const { personal } = data;
   const styles = createStyles(config);
   const blocks = buildAtsSectionBlocks(data, config, styles);
-  const order = config.sectionOrder ?? [];
+  const order = getRecommendedSectionOrder(config.cvProfile);
 
   return (
     <Document title={`${personal.fullName || "Resume"} - ATS`}>
