@@ -4,10 +4,10 @@ export const CV_FONT_FAMILIES: {
   id: CvFontFamily;
   label: string;
 }[] = [
+  { id: "inter", label: "Inter" },
   { id: "arial", label: "Arial" },
   { id: "helvetica", label: "Helvetica" },
   { id: "times", label: "Times New Roman" },
-  { id: "calibri", label: "Calibri" },
 ];
 
 export const CV_FONT_SIZES: { id: CvFontSize }[] = [
@@ -17,8 +17,8 @@ export const CV_FONT_SIZES: { id: CvFontSize }[] = [
 ];
 
 const LEGACY_FONT_MAP: Record<string, CvFontFamily> = {
-  outfit: "arial",
-  inter: "arial",
+  outfit: "inter",
+  calibri: "inter",
   serif: "times",
   mono: "helvetica",
   georgia: "times",
@@ -26,22 +26,22 @@ const LEGACY_FONT_MAP: Record<string, CvFontFamily> = {
 
 export function normalizeFontFamily(value?: string): CvFontFamily {
   if (
+    value === "inter" ||
     value === "arial" ||
     value === "helvetica" ||
-    value === "times" ||
-    value === "calibri"
+    value === "times"
   ) {
     return value;
   }
   if (value && LEGACY_FONT_MAP[value]) return LEGACY_FONT_MAP[value];
-  return "arial";
+  return "inter";
 }
 
 const PREVIEW_FONTS: Record<CvFontFamily, string> = {
+  inter: "Inter, system-ui, sans-serif",
   arial: "Arial, Helvetica, sans-serif",
   helvetica: "Helvetica, Arial, sans-serif",
   times: "'Times New Roman', Times, serif",
-  calibri: "Calibri, 'Segoe UI', Arial, sans-serif",
 };
 
 const SIZE_SCALE = {
@@ -50,15 +50,14 @@ const SIZE_SCALE = {
   lg: { base: 13, xs: 11, sm: 13, md: 14, lg: 18, xl: 24, display: 30, lh: 1.55 },
 } as const;
 
-/** @react-pdf/renderer built-in fonts (Calibri → Helvetica fallback in PDF) */
 const PDF_FONTS: Record<
   CvFontFamily,
   { regular: string; bold: string }
 > = {
+  inter: { regular: "Inter", bold: "Inter-Bold" },
   arial: { regular: "Helvetica", bold: "Helvetica-Bold" },
   helvetica: { regular: "Helvetica", bold: "Helvetica-Bold" },
   times: { regular: "Times-Roman", bold: "Times-Bold" },
-  calibri: { regular: "Helvetica", bold: "Helvetica-Bold" },
 };
 
 const PDF_SIZE = {
@@ -118,7 +117,7 @@ export function getPdfTypography(config: ResumeConfig): PdfTypography {
 }
 
 export const DEFAULT_TYPOGRAPHY = {
-  fontFamily: "arial" as CvFontFamily,
+  fontFamily: "inter" as CvFontFamily,
   fontSize: "md" as CvFontSize,
   fontBold: false,
 };

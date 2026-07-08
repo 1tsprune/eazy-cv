@@ -10,7 +10,7 @@ import {
   formatAtsEducationMeta,
   formatAtsPeriodLine,
   getAtsPreviewMetrics,
-  splitAtsProseLines,
+
   type AtsPreviewMetrics,
 } from "@/lib/pdf-ats-layout";
 import {
@@ -606,8 +606,10 @@ function PreviewSections({
             <div key={edu.id} style={entryGap()}>
               {isAts ? (
                 <AtsEntryHeader
-                  primary={edu.degree}
-                  secondary={edu.institution}
+                  primary={[edu.degree, edu.field].filter(Boolean).join(" — ")}
+                  secondary={[edu.institution, edu.location]
+                    .filter(Boolean)
+                    .join(" · ")}
                   period={formatAtsEducationMeta(
                     edu.startDate,
                     edu.endDate,
@@ -629,12 +631,8 @@ function PreviewSections({
                     .join(" · ")}
                 />
               )}
-              {isAts && edu.description
-                ? splitAtsProseLines(edu.description).map((line, i) => (
-                    <p key={i} className={PROSE_JUSTIFY} style={bodyText()}>
-                      {line}
-                    </p>
-                  ))
+              {isAts
+                ? edu.highlights.map((h, i) => <AtsBullet key={i} text={h} />)
                 : null}
             </div>
           ))}

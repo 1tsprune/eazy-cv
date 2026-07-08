@@ -2,6 +2,7 @@ import { APP } from "./config";
 import { DEFAULT_CV_PROFILE } from "./cv-profile";
 import { defaultResumeState } from "./default-data";
 import { normalizeLanguageLevel } from "./language-levels";
+import { splitAtsProseLines } from "./pdf-ats-layout";
 import {
   normalizeSkillGroups,
   syncLegacySkills,
@@ -28,11 +29,26 @@ function normalizeSectionOrder(order: SectionKey[] | undefined): SectionKey[] {
   return base;
 }
 
+function normalizeEducationHighlights(
+  edu: ResumeState["data"]["educations"][number],
+): ResumeState["data"]["educations"][number] {
+  const legacy = edu.description?.trim() ?? "";
+  const highlights =
+    edu.highlights?.length
+      ? edu.highlights
+      : legacy
+        ? splitAtsProseLines(legacy)
+        : [];
+  const { description: _legacy, ...rest } = edu;
+  return { ...rest, highlights };
+}
+
 function normalizeState(parsed: ResumeState): ResumeState {
   const mergedData = {
     ...defaultResumeState.data,
     ...parsed.data,
     organizations: parsed.data?.organizations ?? [],
+    educations: (parsed.data?.educations ?? []).map(normalizeEducationHighlights),
     languages: (parsed.data?.languages ?? []).map((lang) => ({
       ...lang,
       level: normalizeLanguageLevel(lang.level ?? ""),

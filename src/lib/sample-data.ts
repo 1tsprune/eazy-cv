@@ -85,7 +85,7 @@ export const sampleProfessionalState: ResumeState = {
         startDate: "2015",
         endDate: "2019",
         gpa: "3.70",
-        description: "",
+        highlights: [],
       },
     ],
     organizations: [
@@ -209,7 +209,7 @@ export const sampleInternshipState: ResumeState = {
         startDate: "2022",
         endDate: "2026 (perkiraan)",
         gpa: "3.65",
-        description: "",
+        highlights: [],
       },
     ],
     organizations: [
@@ -316,7 +316,7 @@ export const sampleStudentState: ResumeState = {
         startDate: "2022",
         endDate: "2026 (perkiraan)",
         gpa: "88/100",
-        description: "",
+        highlights: [],
       },
     ],
     organizations: [

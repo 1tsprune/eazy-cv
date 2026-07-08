@@ -147,7 +147,7 @@ export function parseLinkedInPaste(text: string): Partial<ResumeData> {
       startDate: "",
       endDate: blockLines.find((l) => /\d{4}/.test(l)) ?? "",
       gpa: "",
-      description: "",
+      highlights: [],
     };
   });
 
@@ -277,7 +277,7 @@ export function parseLinkedInCsvFiles(
       startDate: pick(row, "Start Date", "Tanggal Mulai"),
       endDate: pick(row, "End Date", "Tanggal Selesai"),
       gpa: "",
-      description: "",
+      highlights: [],
     }));
   }
 

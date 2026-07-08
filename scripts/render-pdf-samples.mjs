@@ -15,10 +15,12 @@ register();
 const outDir = join(root, "samples", "eazycv-output");
 mkdirSync(outDir, { recursive: true });
 
-const { renderToFile } = await import("@react-pdf/renderer");
+const { renderToFile, Font } = await import("@react-pdf/renderer");
+const { registerPdfFonts } = await import("../src/lib/pdf-setup.ts");
 const { buildResumePdfDocument } = await import(
   "../src/lib/build-resume-pdf-document.tsx"
 );
+registerPdfFonts(Font);
 const { sampleProfessionalState } = await import("../src/lib/sample-data.ts");
 
 const { data } = sampleProfessionalState;

@@ -5,7 +5,7 @@ import {
 import type { Language } from "@/lib/types";
 
 const FIELD_CLASS =
-  "w-full min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-base text-zinc-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-100 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400 sm:text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-800 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500";
+  "box-border w-full min-w-0 max-w-full appearance-none rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-100 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-800 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-500 [color-scheme:light] dark:[color-scheme:dark]";
 
 interface Props {
   label?: string;

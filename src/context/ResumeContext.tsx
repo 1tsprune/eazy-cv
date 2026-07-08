@@ -211,7 +211,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
             startDate: "",
             endDate: "",
             gpa: "",
-            description: "",
+            highlights: [],
           },
         ],
       },

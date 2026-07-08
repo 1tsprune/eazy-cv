@@ -39,7 +39,8 @@ import { getUiDict } from "@/lib/ui-i18n";
 const ITEM_CARD =
   "rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/50 sm:p-4";
 const DATE_RANGE_ROW =
-  "grid grid-cols-1 gap-2 sm:col-span-2 sm:grid-cols-2";
+  "col-span-full grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2";
+const FORM_GRID = "grid min-w-0 gap-3 sm:grid-cols-2 [&>*]:min-w-0";
 const ADD_BTN =
   "flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 py-3 text-sm font-bold text-zinc-500 transition hover:border-slate-400 hover:text-slate-700 dark:border-zinc-600 dark:text-zinc-400 dark:hover:border-slate-500 dark:hover:text-slate-500";
 
@@ -146,7 +147,7 @@ export function ResumeForm() {
             {profileStrings.cvProfileHint}
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className={FORM_GRID}>
           <Input
             label={t.fullName}
             value={data.personal.fullName}
@@ -227,7 +228,7 @@ export function ResumeForm() {
                 onDelete={() => removeExperience(exp.id)}
                 deleteLabel={t.deleteItem}
               />
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className={FORM_GRID}>
                 <Input
                   label={t.position}
                   value={exp.position}
@@ -326,7 +327,7 @@ export function ResumeForm() {
                 onDelete={() => removeEducation(edu.id)}
                 deleteLabel={t.deleteItem}
               />
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className={FORM_GRID}>
                 <Input
                   label={t.institution}
                   value={edu.institution}
@@ -382,6 +383,16 @@ export function ResumeForm() {
                   }
                 />
               </div>
+              <div className="mt-3">
+                <TagInput
+                  label={t.highlights}
+                  tags={edu.highlights}
+                  onChange={(highlights) =>
+                    updateEducation(edu.id, { highlights })
+                  }
+                  placeholder="Juara lomba, beasiswa, proyek akhir..."
+                />
+              </div>
             </div>
           )}
         />
@@ -410,7 +421,7 @@ export function ResumeForm() {
                 onDelete={() => removeOrganization(org.id)}
                 deleteLabel={t.deleteItem}
               />
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className={FORM_GRID}>
                 <Input
                   label={t.orgName}
                   value={org.name}
@@ -618,7 +629,7 @@ export function ResumeForm() {
                 onDelete={() => removeCertification(cert.id)}
                 deleteLabel={t.deleteItem}
               />
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className={FORM_GRID}>
                 <Input
                   label={t.certName}
                   value={cert.name}

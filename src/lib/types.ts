@@ -40,10 +40,10 @@ export type ColorTheme =
   | "violet";
 
 export type CvFontFamily =
+  | "inter"
   | "arial"
   | "helvetica"
-  | "times"
-  | "calibri";
+  | "times";
 export type CvFontSize = "sm" | "md" | "lg";
 
 export interface PersonalInfo {
@@ -81,7 +81,9 @@ export interface Education {
   startDate: string;
   endDate: string;
   gpa: string;
-  description: string;
+  /** @deprecated migrated to highlights — kept for JSON import compat */
+  description?: string;
+  highlights: string[];
 }
 
 export interface Organization {

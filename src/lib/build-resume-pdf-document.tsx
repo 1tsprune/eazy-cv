@@ -5,12 +5,14 @@ import ModernResumeDocument from "@/components/pdf/ModernResumeDocument";
 import { prepareModernPdfData } from "@/lib/pdf-modern-data";
 import { sanitizeResumeData } from "@/lib/sanitize";
 import type { ResumeConfig, ResumeData } from "@/lib/types";
+import { ensurePdfSetup } from "@/lib/pdf-setup";
 
 /** Single source of truth — preview & download use the same React-PDF tree. */
 export function buildResumePdfDocument(
   data: ResumeData,
   config: ResumeConfig,
 ): ReactElement<DocumentProps> {
+  ensurePdfSetup();
   const clean = sanitizeResumeData(data);
 
   if (config.exportMode === "ats") {

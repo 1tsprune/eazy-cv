@@ -253,17 +253,41 @@ export default function ATSResumeDocument({ data, config }: Props) {
 
         {data.educations.length > 0 ? (
           <AtsSection title={t(lang, "education")} styles={styles}>
-            {data.educations.map((edu) => (
-              <View key={edu.id} style={styles.entryWrap}>
-                <View style={styles.entryRow}>
-                  <Text style={styles.entryTitle}>{edu.degree}</Text>
-                  <Text style={styles.entryDate}>
-                    {ezcvPeriod(edu.startDate, edu.endDate, false, lang)}
+            {data.educations.map((edu) => {
+              const degreeLine = [edu.degree, edu.field]
+                .filter(Boolean)
+                .join(" — ");
+              const dateMeta = [
+                ezcvPeriod(edu.startDate, edu.endDate, false, lang),
+                edu.gpa ? `${t(lang, "gpa")}: ${edu.gpa}` : "",
+              ]
+                .filter(Boolean)
+                .join(" · ");
+              const bullets = ezcvBullets(edu.highlights);
+
+              return (
+                <View key={edu.id} style={styles.entryWrap}>
+                  <View style={styles.entryRow}>
+                    <Text style={styles.entryTitle}>{degreeLine}</Text>
+                    <Text style={styles.entryDate}>{dateMeta}</Text>
+                  </View>
+                  <Text style={styles.entrySubtitle}>
+                    {[edu.institution, edu.location]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </Text>
+                  {bullets.length > 0 ? (
+                    <View style={styles.bulletList}>
+                      {bullets.map((h, i) => (
+                        <Text key={i} style={styles.bulletItem}>
+                          • {h}
+                        </Text>
+                      ))}
+                    </View>
+                  ) : null}
                 </View>
-                <Text style={styles.entrySubtitle}>{edu.institution}</Text>
-              </View>
-            ))}
+              );
+            })}
           </AtsSection>
         ) : null}
 
@@ -329,6 +353,15 @@ export default function ATSResumeDocument({ data, config }: Props) {
                 </View>
                 {org.role ? (
                   <Text style={styles.entrySubtitle}>{org.role}</Text>
+                ) : null}
+                {ezcvBullets(org.highlights).length > 0 ? (
+                  <View style={styles.bulletList}>
+                    {ezcvBullets(org.highlights).map((h, i) => (
+                      <Text key={i} style={styles.bulletItem}>
+                        • {h}
+                      </Text>
+                    ))}
+                  </View>
                 ) : null}
               </View>
             ))}

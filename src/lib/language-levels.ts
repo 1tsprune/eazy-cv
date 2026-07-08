@@ -19,7 +19,7 @@ const LEVEL_LABELS: Record<
   LanguageProficiencyLevel,
   { id: string; en: string }
 > = {
-  native: { id: "Asli / Native", en: "Native" },
+  native: { id: "Native", en: "Native" },
   fluent: { id: "Fasih", en: "Fluent" },
   professional: { id: "Profesional", en: "Professional" },
   intermediate: { id: "Menengah", en: "Intermediate" },

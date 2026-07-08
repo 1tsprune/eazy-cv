@@ -348,7 +348,7 @@ function countWords(data: ResumeData): number {
       e.degree,
       e.institution,
       e.field,
-      e.description,
+      ...e.highlights,
     ]),
     ...data.organizations.flatMap((o) => [o.role, o.name, ...o.highlights]),
     ...data.projects.flatMap((p) => [p.name, p.description]),
