@@ -1,7 +1,0 @@
-{
-  "name": "get_style_guide_tags",
-  "description": "This tool returns all the available style guide tags available.\n\nUsage:\n- USE for any design task that benefits from creative direction or visual inspiration\n- USE when creating landing pages, marketing sites, dashboards, or app screens\n- USE when the user asks for a specific aesthetic, style, or mood\n- USE when designing from scratch or on a blank canvas\n- USE when remixing, restyling, or exploring variations\n- Consider SKIPPING only when the task is purely compositional (e.g., \"add a button here\") with an existing design system\n- Call this tool first, then use the tags or style guide name in \"get_style_guide\".",
-  "inputSchema": {
-    "type": "object"
-  }
-}
