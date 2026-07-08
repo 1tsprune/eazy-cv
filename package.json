@@ -10,6 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "icons": "node scripts/generate-icons.mjs",
+    "og": "node scripts/generate-og.mjs",
     "pdf:samples": "tsx scripts/render-pdf-samples.mjs"
   },
   "dependencies": {

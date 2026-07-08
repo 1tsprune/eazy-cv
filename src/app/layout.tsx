@@ -24,15 +24,34 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: APP.name,
+    locale: "id_ID",
     title: siteTitle,
     description: siteDescription,
-    images: [{ url: "/brand/og-icon.png", width: 512, height: 512, alt: APP.name }],
+    images: [
+      {
+        url: "/brand/og.png",
+        width: 1200,
+        height: 630,
+        alt: `${APP.name} — ${APP.tagline}`,
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
-    images: ["/brand/og-icon.png"],
+    images: [
+      {
+        url: "/brand/og.png",
+        width: 1200,
+        height: 630,
+        alt: `${APP.name} — ${APP.tagline}`,
+      },
+    ],
     site: SOCIAL.twitter.handle,
     creator: SOCIAL.twitter.handle,
   },
