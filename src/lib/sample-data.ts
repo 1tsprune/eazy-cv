@@ -1,8 +1,15 @@
 import { getRecommendedSectionOrder } from "./cv-profile";
 import { createId } from "./default-data";
 import { defaultCoverLetter } from "./cover-letter";
+import { samplesEn } from "./sample-data-en";
 import { DEFAULT_TYPOGRAPHY } from "./typography";
-import type { CvProfile, ModernTemplate, ResumeConfig, ResumeState } from "./types";
+import type {
+  CvProfile,
+  Language,
+  ModernTemplate,
+  ResumeConfig,
+  ResumeState,
+} from "./types";
 
 /** Best dummy profile per template layout */
 export function getProfileForTemplate(template: ModernTemplate): CvProfile {
@@ -159,8 +166,7 @@ export const sampleProfessionalState: ResumeState = {
     bodyCustom: false,
     company: "Acme Digital",
     position: "Software Engineer",
-    body:
-      "Saya tertarik melamar posisi Software Engineer di Acme Digital. Sebagai engineer berpengalaman, saya percaya keahlian teknis dan kolaborasi tim saya selaras dengan kebutuhan peran ini.\n\nSaya berharap dapat berdiskusi lebih lanjut mengenai kontribusi saya untuk tim Anda. Terima kasih atas waktu dan pertimbangannya.",
+    body: "",
   },
 };
 
@@ -268,8 +274,7 @@ export const sampleInternshipState: ResumeState = {
     bodyCustom: false,
     company: "Tech Startup Nusantara",
     position: "Magang Frontend Developer",
-    body:
-      "Saya tertarik melamar program magang Frontend Developer di Tech Startup Nusantara. Sebagai mahasiswa Teknik Informatika yang sudah memiliki pengalaman magang singkat, saya ingin mengembangkan skill teknis sambil berkontribusi pada tim.\n\nSaya berharap dapat bergabung dan belajar langsung di lingkungan kerja profesional. Terima kasih atas kesempatannya.",
+    body: "",
   },
 };
 
@@ -393,26 +398,35 @@ export const sampleStudentState: ResumeState = {
     bodyCustom: false,
     company: "Perusahaan Contoh",
     position: "Program Magang SMA",
-    body:
-      "Saya tertarik mengikuti program magang yang Bapak/Ibu tawarkan. Sebagai pelajar SMA kelas 12, saya memiliki pengalaman organisasi dan minat kuat di bidang teknologi.\n\nSaya berharap dapat belajar dan berkontribusi. Terima kasih atas perhatiannya.",
+    body: "",
   },
 };
 
-const samples: Record<CvProfile, ResumeState> = {
+const samplesId: Record<CvProfile, ResumeState> = {
   professional: sampleProfessionalState,
   internship: sampleInternshipState,
   student: sampleStudentState,
 };
 
+function pickSamples(lang: Language): Record<CvProfile, ResumeState> {
+  return lang === "en" ? samplesEn : samplesId;
+}
+
 export function getSampleResumeState(
   profile: CvProfile = "professional",
   configOverrides?: Partial<ResumeConfig>,
 ): ResumeState {
-  const base = structuredClone(samples[profile]);
+  const lang = configOverrides?.language ?? "id";
+  const base = structuredClone(pickSamples(lang)[profile]);
   if (!configOverrides) return base;
   return {
     ...base,
     config: { ...base.config, ...configOverrides },
+    coverLetter: {
+      ...base.coverLetter,
+      date: defaultCoverLetter(configOverrides.language ?? base.config.language)
+        .date,
+    },
   };
 }
 

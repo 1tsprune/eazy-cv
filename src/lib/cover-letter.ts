@@ -16,36 +16,186 @@ export function formatLetterDate(lang: Language, date = new Date()): string {
 export function defaultCoverLetter(lang: Language): CoverLetterData {
   return {
     date: formatLetterDate(lang),
-    recipient: "Hiring Manager",
+    recipient: lang === "id" ? "Hiring Manager" : "Hiring Manager",
     company: "",
     position: "",
     body: "",
   };
 }
 
-/** Opening line, tuned per CV profile (kerja / magang / pelajar). */
-function openingLine(
+function eduStatusLine(
+  data: ResumeData,
   lang: Language,
-  profile: CvProfile,
-  position: string,
-  company: string,
-): string {
+): string | null {
+  const edu = data.educations[0];
+  if (!edu) return null;
+  const field = edu.field ? ` ${edu.field}` : "";
   if (lang === "id") {
-    if (profile === "internship") {
-      return `Saya tertarik untuk mengikuti program magang sebagai ${position} di ${company}.`;
+    const inst = edu.institution ? ` di ${edu.institution}` : "";
+    return `Saat ini saya menempuh ${edu.degree || "pendidikan"}${field}${inst}.`;
+  }
+  const inst = edu.institution ? ` at ${edu.institution}` : "";
+  return `I am currently pursuing ${edu.degree || "my studies"}${field}${inst}.`;
+}
+
+function experienceEvidence(
+  data: ResumeData,
+  lang: Language,
+): string | null {
+  const exp = data.experiences[0];
+  if (!exp) return null;
+  const highlight = exp.highlights.find((h) => h.trim());
+  if (lang === "id") {
+    if (highlight) {
+      return `Di ${exp.company || "pengalaman terakhir saya"} sebagai ${exp.position || "kontributor tim"}, salah satu kontribusi saya adalah ${highlight.charAt(0).toLowerCase()}${highlight.slice(1)}.`;
     }
-    if (profile === "student") {
-      return `Sebagai mahasiswa/lulusan baru, saya tertarik untuk melamar posisi ${position} di ${company}.`;
-    }
-    return `Saya tertarik untuk melamar posisi ${position} di ${company}.`;
+    return `Di ${exp.company || "peran sebelumnya"}, saya berperan sebagai ${exp.position || "kontributor tim"} dan terbiasa bekerja dengan target yang terukur.`;
   }
-  if (profile === "internship") {
-    return `I am writing to apply for the ${position} internship at ${company}.`;
+  if (highlight) {
+    return `In my recent role at ${exp.company || "my previous organization"} as ${exp.position || "a team contributor"}, one result I delivered was ${highlight.charAt(0).toLowerCase()}${highlight.slice(1)}.`;
   }
-  if (profile === "student") {
-    return `As a recent graduate, I am writing to apply for the ${position} role at ${company}.`;
+  return `In my previous role at ${exp.company || "my last organization"}, I worked as ${exp.position || "a team contributor"} with a focus on measurable outcomes.`;
+}
+
+function skillsLine(skills: string, lang: Language): string | null {
+  if (!skills) return null;
+  return lang === "id"
+    ? `Keahlian utama saya meliputi ${skills}.`
+    : `My core skills include ${skills}.`;
+}
+
+function buildProfessionalDraft(
+  data: ResumeData,
+  cover: CoverLetterData,
+  lang: Language,
+): string {
+  const company =
+    cover.company || (lang === "id" ? "[Nama Perusahaan]" : "[Company Name]");
+  const position =
+    cover.position || (lang === "id" ? "[Posisi]" : "[Position]");
+  const title = data.personal.title.trim();
+  const summary = data.personal.summary.trim();
+  const skills = data.technicalSkills.slice(0, 5).join(", ");
+
+  if (lang === "id") {
+    const intro = title
+      ? `Saya menulis untuk melamar posisi ${position} di ${company}. Sebagai ${title}, saya percaya pengalaman dan keahlian saya selaras dengan kebutuhan peran ini.`
+      : `Saya menulis untuk melamar posisi ${position} di ${company}. Saya percaya latar belakang profesional saya selaras dengan kebutuhan peran ini.`;
+
+    return [
+      intro,
+      summary || experienceEvidence(data, lang),
+      skillsLine(skills, lang),
+      `Saya berharap dapat berdiskusi lebih lanjut mengenai bagaimana saya dapat memberikan kontribusi untuk ${company}. Terima kasih atas waktu dan pertimbangan Bapak/Ibu.`,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
   }
-  return `I am writing to express my interest in the ${position} role at ${company}.`;
+
+  const intro = title
+    ? `I am writing to apply for the ${position} role at ${company}. As a ${title}, I believe my experience and skills align well with what this role requires.`
+    : `I am writing to apply for the ${position} role at ${company}. I believe my professional background aligns well with what this role requires.`;
+
+  return [
+    intro,
+    summary || experienceEvidence(data, lang),
+    skillsLine(skills, lang),
+    `I would welcome the opportunity to discuss how I can contribute to ${company}. Thank you for your time and consideration.`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+function buildInternshipDraft(
+  data: ResumeData,
+  cover: CoverLetterData,
+  lang: Language,
+): string {
+  const company =
+    cover.company || (lang === "id" ? "[Nama Perusahaan]" : "[Company Name]");
+  const position =
+    cover.position || (lang === "id" ? "[Posisi Magang]" : "[Internship Role]");
+  const title = data.personal.title.trim();
+  const summary = data.personal.summary.trim();
+  const skills = data.technicalSkills.slice(0, 5).join(", ");
+  const status = title
+    ? lang === "id"
+      ? `Saat ini saya ${title}.`
+      : `I am currently a ${title}.`
+    : eduStatusLine(data, lang);
+
+  if (lang === "id") {
+    const intro = `Saya mengajukan lamaran magang untuk posisi ${position} di ${company}.${status ? ` ${status}` : ""} Saya ingin memperdalam pengalaman praktis sambil memberikan kontribusi nyata bagi tim.`;
+
+    return [
+      intro,
+      summary || experienceEvidence(data, lang),
+      skillsLine(skills, lang),
+      `Saya antusias untuk belajar dan berkontribusi di ${company}, dan berharap dapat berdiskusi lebih lanjut mengenai kesempatan ini. Terima kasih atas waktu Bapak/Ibu.`,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+  }
+
+  const intro = `I am applying for the ${position} internship at ${company}.${status ? ` ${status}` : ""} I am eager to gain hands-on experience while contributing meaningfully to your team.`;
+
+  return [
+    intro,
+    summary || experienceEvidence(data, lang),
+    skillsLine(skills, lang),
+    `I am excited to learn and contribute at ${company}, and I would welcome the chance to discuss this opportunity further. Thank you for your time.`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+function buildStudentDraft(
+  data: ResumeData,
+  cover: CoverLetterData,
+  lang: Language,
+): string {
+  const company =
+    cover.company || (lang === "id" ? "[Nama Perusahaan]" : "[Organization]");
+  const position =
+    cover.position || (lang === "id" ? "[Posisi/Program]" : "[Role/Program]");
+  const title = data.personal.title.trim();
+  const summary = data.personal.summary.trim();
+  const skills = data.technicalSkills.slice(0, 5).join(", ");
+  const org = data.organizations[0];
+  const orgLine =
+    org && lang === "id"
+      ? `Saya aktif di ${org.name}${org.role ? ` sebagai ${org.role}` : ""} dan terbiasa bekerja dalam tim.`
+      : org
+        ? `I am active in ${org.name}${org.role ? ` as ${org.role}` : ""} and comfortable collaborating in a team setting.`
+        : null;
+
+  if (lang === "id") {
+    const intro = title
+      ? `Saya tertarik pada kesempatan ${position} di ${company}. Sebagai ${title}, saya ingin mengembangkan kemampuan praktis sambil memberikan kontribusi.`
+      : `Saya tertarik pada kesempatan ${position} di ${company}, dan ingin mengembangkan kemampuan praktis sambil memberikan kontribusi.`;
+
+    return [
+      intro,
+      summary || orgLine || experienceEvidence(data, lang),
+      skillsLine(skills, lang),
+      `Saya berharap dapat belajar dan berkontribusi di ${company}. Terima kasih atas perhatian dan kesempatannya.`,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+  }
+
+  const intro = title
+    ? `I am interested in the ${position} opportunity at ${company}. As a ${title}, I hope to grow practical skills while contributing to your team.`
+    : `I am interested in the ${position} opportunity at ${company}, and I hope to grow practical skills while contributing to your team.`;
+
+  return [
+    intro,
+    summary || orgLine || experienceEvidence(data, lang),
+    skillsLine(skills, lang),
+    `I would appreciate the chance to learn and contribute at ${company}. Thank you for your consideration.`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 export function buildCoverLetterDraft(
@@ -54,75 +204,13 @@ export function buildCoverLetterDraft(
   lang: Language,
   profile: CvProfile = "professional",
 ): string {
-  const title = data.personal.title;
-  const company =
-    cover.company || (lang === "id" ? "[Nama Perusahaan]" : "[Company Name]");
-  const position =
-    cover.position || (lang === "id" ? "[Posisi]" : "[Position]");
-  const skills = data.technicalSkills.slice(0, 5).join(", ");
-  const summary = data.personal.summary.trim();
-  const exp = data.experiences[0];
-  const edu = data.educations[0];
-
-  if (lang === "id") {
-    const framing =
-      profile === "internship" || profile === "student"
-        ? title
-          ? `Sebagai ${title}, saya ingin menerapkan ilmu dan antusiasme saya untuk mendukung kebutuhan tim Anda.`
-          : edu
-            ? `Sebagai mahasiswa ${edu.degree || edu.field || "aktif"}, saya ingin menerapkan ilmu dan antusiasme saya untuk mendukung kebutuhan tim Anda.`
-            : `Saya ingin menerapkan ilmu dan antusiasme saya untuk mendukung kebutuhan tim Anda.`
-        : title
-          ? `Sebagai ${title}, saya percaya pengalaman dan keahlian saya selaras dengan kebutuhan peran ini.`
-          : `Saya percaya latar belakang saya selaras dengan kebutuhan peran ini.`;
-
-    const closing =
-      profile === "internship" || profile === "student"
-        ? `Saya sangat antusias untuk belajar dan berkontribusi, serta berharap dapat berdiskusi lebih lanjut mengenai kesempatan ini di ${company}.`
-        : `Saya berharap dapat berdiskusi lebih lanjut mengenai bagaimana saya dapat memberikan kontribusi untuk ${company}.`;
-
-    return [
-      openingLine(lang, profile, position, company),
-      framing,
-      summary
-        ? summary
-        : exp
-          ? `Di ${exp.company || "peran sebelumnya"}, saya berperan sebagai ${exp.position || "kontributor tim"} dan berkontribusi pada hasil kerja yang terukur.`
-          : `Saya memiliki motivasi tinggi untuk berkontribusi dan terus berkembang.`,
-      skills ? `Keahlian utama saya meliputi ${skills}.` : null,
-      closing,
-    ]
-      .filter(Boolean)
-      .join("\n\n");
+  if (profile === "internship") {
+    return buildInternshipDraft(data, cover, lang);
   }
-
-  const framing =
-    profile === "internship" || profile === "student"
-      ? title
-        ? `As a ${title}, I am eager to apply my knowledge and enthusiasm to support your team.`
-        : `I am eager to apply my knowledge and enthusiasm to support your team.`
-      : title
-        ? `As a ${title}, I believe my experience aligns well with the requirements of this position.`
-        : `I believe my background aligns well with the requirements of this position.`;
-
-  const closing =
-    profile === "internship" || profile === "student"
-      ? `I am excited to learn and contribute, and I would welcome the opportunity to discuss this role at ${company}.`
-      : `I would welcome the opportunity to discuss how I can contribute to ${company}.`;
-
-  return [
-    openingLine(lang, profile, position, company),
-    framing,
-    summary
-      ? summary
-      : exp
-        ? `At ${exp.company || "my previous role"}, I worked as ${exp.position || "a team contributor"} and delivered measurable results.`
-        : `I am highly motivated to contribute and grow.`,
-    skills ? `My core skills include ${skills}.` : null,
-    closing,
-  ]
-    .filter(Boolean)
-    .join("\n\n");
+  if (profile === "student") {
+    return buildStudentDraft(data, cover, lang);
+  }
+  return buildProfessionalDraft(data, cover, lang);
 }
 
 /**
